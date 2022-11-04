@@ -94,7 +94,7 @@ export default function Top() {
                 </Link>
               </Button>
             )}
-            <Button
+            {/* <Button
               style={{
                 width: "70%",
                 display: "flex",
@@ -109,7 +109,7 @@ export default function Top() {
               >
                 Start to Select Courses
               </Link>
-            </Button>
+            </Button> */}
           </Paper>
         </Grid>
       </div>

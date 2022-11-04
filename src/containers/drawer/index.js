@@ -4,7 +4,8 @@ import clsx from "clsx";
 import { Link, useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 // material_ui
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import {
   CssBaseline,
   AppBar,
@@ -15,15 +16,16 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-} from "@material-ui/core/";
-import MenuIcon from "@material-ui/icons/Menu";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import HomeIcon from "@material-ui/icons/Home"; // Main
-import ExitToAppIcon from "@material-ui/icons/ExitToApp"; // Login, Logout
-import PeopleIcon from "@material-ui/icons/People"; // Student Data
+  IconButton,
+} from "@mui/material/";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import HomeIcon from "@mui/icons-material/Home"; // Main
+import ExitToAppIcon from "@mui/icons-material/ExitToApp"; // Login, Logout
+import PeopleIcon from "@mui/icons-material/People"; // Student Data
+
 import { Redirect } from "react-router";
 import { selectSession, logout } from "../../slices/sessionSlice";
 // route
@@ -181,7 +183,7 @@ const Drawer = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             color="inherit"
             aria-label="close drawer"
             onClick={handleDrawerClose}
@@ -191,14 +193,14 @@ const Drawer = ({ children }) => {
             })}
           >
             <KeyboardArrowUpIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography variant="h5" className={classes.appBarTypography}>
             <div
               style={{ cursor: "pointer" }}
               onClick={() => history.push("/")}
               aria-hidden="true"
             >
-              NTUEE
+              MakeNTU
             </div>
           </Typography>
           <Typography
@@ -243,7 +245,7 @@ const Drawer = ({ children }) => {
         <div className={classes.toolbar}>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
+              <KeyboardArrowUpIcon />
             ) : (
               <ChevronLeftIcon />
             )}

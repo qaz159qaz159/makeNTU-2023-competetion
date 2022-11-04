@@ -1,15 +1,17 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@mui/material/styles";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     fontFamily: ["Ubuntu Condensed", "sans-serif"].join(","),
     fontSize: 15,
   },
   palette: {
-    type: "dark",
+    mode: "dark",
     primary: {
-      main: "#b2ebf2",
-      contrastText: "#000",
+      light: "#0066ff",
+      main: "#0044ff",
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: "#ffcc00",
     },
     secondary: {
       main: "#b2dfdb",
@@ -17,7 +19,7 @@ const theme = createMuiTheme({
       contrastText: "#000",
     },
     background: {
-      paper: "rgba(0, 0, 0, 0.7)",
+      paper: "rgba(0, 0, 0, 0.1)",
     },
   },
   breakpoints: {

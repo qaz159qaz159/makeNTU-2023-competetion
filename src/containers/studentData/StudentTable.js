@@ -1,24 +1,27 @@
 import React from "react";
 import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TablePagination from "@material-ui/core/TablePagination";
-import Typography from "@material-ui/core/Typography";
-import TableHead from "@material-ui/core/TableHead";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
-import TableRow from "@material-ui/core/TableRow";
-import Toolbar from "@material-ui/core/Toolbar";
-import Paper from "@material-ui/core/Paper";
-import Checkbox from "@material-ui/core/Checkbox";
-import Input from "@material-ui/core/Input";
+import { makeStyles } from "@mui/styles";
+import { lighten } from "@mui/material/";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TablePagination,
+  TableHead,
+  TableSortLabel,
+  TableRow,
+  Toolbar,
+  Paper,
+  Checkbox,
+  Input,
+  Typography,
+  Tooltip,
+  IconButton,
+} from "@mui/material/";
 import PropTypes from "prop-types";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -51,7 +54,6 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: "id", numeric: false, disablePadding: true, label: "id" },
   { id: "name", numeric: false, disablePadding: true, label: "name" },
-  { id: "grade", numeric: false, disablePadding: true, label: "grade" },
   {
     id: "authority",
     numeric: false,
@@ -90,7 +92,7 @@ function EnhancedTableHead(props) {
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
-            className={(classes.headCell, classes.grade)}
+            className={classes.headCell}
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "default"}
@@ -206,7 +208,7 @@ const EnhancedTableToolbar = (props) => {
             <IconButton
               aria-label="delete"
               onClick={() => handleDelete()}
-              disabled={authority !== 2}
+              disabled={authority !== 1}
             >
               <DeleteIcon />
             </IconButton>
@@ -250,7 +252,6 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   headCell: {},
-  grade: {},
   visuallyHidden: {
     border: 0,
     clip: "rect(0 0 0 0)",
@@ -304,7 +305,7 @@ export default function StudentTable({
 
   const studentFilter = (e) => {
     return search
-      ? e.name.toUpperCase().startsWith(search.toUpperCase()) ||
+      ? e.teamName.toUpperCase().startsWith(search.toUpperCase()) ||
           e.id.toUpperCase().startsWith(search.toUpperCase())
       : true;
   };
@@ -448,7 +449,7 @@ export default function StudentTable({
                         }
                         className={classes.tablecell}
                       >
-                        {row.name}
+                        {row.teamName}
                       </TableCell>
                       <TableCell
                         key={headCells[2].id}
@@ -458,23 +459,13 @@ export default function StudentTable({
                         }
                         className={classes.tablecell}
                       >
-                        {row.grade}
+                        {row.authority}
                       </TableCell>
                       <TableCell
                         key={headCells[3].id}
                         align={headCells[3].numeric ? "right" : "left"}
                         padding={
                           headCells[3].disablePadding ? "none" : "default"
-                        }
-                        className={classes.tablecell}
-                      >
-                        {row.authority}
-                      </TableCell>
-                      <TableCell
-                        key={headCells[4].id}
-                        align={headCells[4].numeric ? "right" : "left"}
-                        padding={
-                          headCells[4].disablePadding ? "none" : "default"
                         }
                         className={classes.tablecell}
                       >
@@ -498,14 +489,14 @@ export default function StudentTable({
                         <IconButton
                           onClick={() => handleEdit(row.id)}
                           className={classes.icon}
-                          disabled={selected.length !== 0 || authority !== 2}
+                          disabled={selected.length !== 0 || authority !== 1}
                         >
                           <EditIcon />
                         </IconButton>
                         <IconButton
                           onClick={() => handleDelete([row.id])}
                           className={classes.icon}
-                          disabled={selected.length !== 0 || authority !== 2}
+                          disabled={selected.length !== 0 || authority !== 1}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -522,8 +513,8 @@ export default function StudentTable({
           count={data.filter((e) => studentFilter(e)).length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
     </div>
@@ -534,9 +525,7 @@ StudentTable.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      grade: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        .isRequired,
+      teamName: PropTypes.string.isRequired,
       authority: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         .isRequired,
       password: PropTypes.string,

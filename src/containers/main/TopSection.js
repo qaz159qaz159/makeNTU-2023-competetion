@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Element } from "react-scroll";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
+import { Button, Grid, Paper, Typography } from "@mui/material/";
 import { Link, useHistory } from "react-router-dom";
 import { selectSession } from "../../slices/sessionSlice";
 /**
@@ -66,14 +63,14 @@ export default function Top() {
                 className={classes.text}
                 style={{ opacity: ".5", textDecoration: "none" }}
               >
-                NTUEE
+                MakeNTU
               </Typography>
               <Typography
                 variant="h3"
                 className={classes.text}
                 style={{ marginBottom: "18px" }}
               >
-                Pre-selection
+                Competition Web
               </Typography>
             </Grid>
             {!isLogin && (

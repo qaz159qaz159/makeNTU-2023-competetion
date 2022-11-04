@@ -1,26 +1,25 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
 
-import Grid from "@material-ui/core/Grid";
 import {
+  Alert,
+  Button,
+  Container,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
+  Grid,
   FormControl,
   MenuItem,
   InputLabel,
   Select,
   Typography,
   Snackbar,
-} from "@material-ui/core";
+} from "@mui/material/";
 
-import { Alert } from "@material-ui/lab";
-
-import Container from "@material-ui/core/Container";
 import Papa from "papaparse";
 import { selectSession } from "../../slices/sessionSlice";
 
@@ -41,7 +40,6 @@ const genPassword = () => {
   return result;
 };
 
-const gradeData = ["1", "2", "3", "4", "5", "6", "7"];
 const authorityData = ["0", "1"];
 
 const useStyles = makeStyles(() => ({
@@ -83,22 +81,22 @@ export default function StudentData() {
   const [alert, setAlert] = React.useState({});
   const [errors, setErrors] = React.useState({
     id: false,
-    name: false,
+    teamName: false,
     authority: false,
   });
   const [errorsMsg, setErrorsMsg] = React.useState({
     id: "",
-    name: "",
+    teamName: "",
     authority: "",
   });
   const [newStudentMultiple, setNewStudentMultiple] = React.useState({
     id: "",
-    name: "",
+    teamName: "",
     authority: "",
   });
   const [newStudent, setNewStudent] = React.useState({
     id: "",
-    name: "",
+    teamName: "",
     authority: "",
   });
   const { authority } = useSelector(selectSession);
@@ -125,7 +123,7 @@ export default function StudentData() {
     setAddMultipleOpen(true);
     setNewStudentMultiple({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setLoaded(false);
@@ -142,17 +140,17 @@ export default function StudentData() {
     // console.log("handleOpenAdd");
     setNewStudent({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setErrors({
       id: false,
-      name: false,
+      teamName: false,
       authority: false,
     });
     setErrorsMsg({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setAddOpen(true);
@@ -162,17 +160,17 @@ export default function StudentData() {
     // console.log("handleCloseAdd");
     setNewStudent({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setErrors({
       id: false,
-      name: false,
+      teamName: false,
       authority: false,
     });
     setErrorsMsg({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setAddOpen(false);
@@ -185,17 +183,17 @@ export default function StudentData() {
     const student = data.find((e) => e.id === id);
     setNewStudent({
       id: student.id,
-      name: student.name,
+      teamName: student.teamName,
       authority: String(student.authority),
     });
     setErrors({
       id: false,
-      name: false,
+      teamName: false,
       authority: false,
     });
     setErrorsMsg({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setAddOpen(true);
@@ -206,17 +204,17 @@ export default function StudentData() {
     setEditId("");
     setNewStudent({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setErrors({
       id: false,
-      name: false,
+      teamName: false,
       authority: false,
     });
     setErrorsMsg({
       id: "",
-      name: "",
+      teamName: "",
       authority: "",
     });
     setAddOpen(false);
@@ -224,7 +222,7 @@ export default function StudentData() {
 
   const handleOpenDelete = (ids) => {
     if (
-      data.filter((e) => ids.includes(e.id)).filter((e) => e.authority === 2)
+      data.filter((e) => ids.includes(e.id)).filter((e) => e.authority === 1)
         .length !== 0
     ) {
       setInvalidDelete(true);
@@ -243,7 +241,7 @@ export default function StudentData() {
     if (
       data
         .filter((e) => selected.includes(e.id))
-        .filter((e) => e.authority === 2).length !== 0
+        .filter((e) => e.authority === 1).length !== 0
     ) {
       setInvalidRegenerate(true);
     } else {
@@ -274,7 +272,7 @@ export default function StudentData() {
   const onNameChange = (e) => {
     setNewStudent({
       ...newStudent,
-      name: e.target.value,
+      teamName: e.target.value,
     });
   };
 
@@ -300,8 +298,7 @@ export default function StudentData() {
           results.data.slice(1).forEach((student) => {
             if (
               // !/^(b|r|d)\d{8}$/i.test(student[0]) ||
-              !student[1] ||
-              !/^\d+$/.test(student[2])
+              !student[1]
             ) {
               valid = false;
               // console.log(student);
@@ -316,7 +313,7 @@ export default function StudentData() {
               return obj.concat([
                 {
                   id: cur[0].toUpperCase(),
-                  name: cur[1],
+                  teamName: cur[1],
                   authority: 0,
                 },
               ]);
@@ -342,7 +339,7 @@ export default function StudentData() {
           }
           setNewStudentMultiple({
             id: "",
-            name: "",
+            teamName: "",
             authority: "",
           });
           setLoaded(false);
@@ -367,7 +364,7 @@ export default function StudentData() {
             return {
               teamID: student.id,
               password: student.password,
-              teamName: student.name,
+              teamName: student.teamName,
               authority: Number(student.authority),
             };
           })
@@ -380,7 +377,7 @@ export default function StudentData() {
 
         setNewStudentMultiple({
           id: "",
-          name: "",
+          teamName: "",
           authority: "",
         });
 
@@ -389,7 +386,7 @@ export default function StudentData() {
         newData.forEach((e) => {
           csvData.push({
             teamID: e.id,
-            teamName: e.name,
+            teamName: e.teamName,
             password: e.password,
           });
         });
@@ -432,7 +429,7 @@ export default function StudentData() {
         .forEach((e) => {
           csvData.push({
             teamID: e.id,
-            teamName: e.name,
+            teamName: e.teamName,
             password: e.password,
           });
         });
@@ -498,13 +495,16 @@ export default function StudentData() {
       newErrors = { ...newErrors, id: false };
       newErrorsMsg = { ...newErrorsMsg, id: "" };
     }
-    if (!newStudent.name) {
-      newErrors = { ...newErrors, name: true };
-      newErrorsMsg = { ...newErrorsMsg, name: "name should not be empty" };
+    if (!newStudent.teamName) {
+      newErrors = { ...newErrors, teamName: true };
+      newErrorsMsg = {
+        ...newErrorsMsg,
+        teamName: "teamName should not be empty",
+      };
       error = true;
     } else {
-      newErrors = { ...newErrors, name: false };
-      newErrorsMsg = { ...newErrorsMsg, name: "" };
+      newErrors = { ...newErrors, teamName: false };
+      newErrorsMsg = { ...newErrorsMsg, teamName: "" };
     }
     // if (!newStudent.authority) {
     //   newErrors = { ...newErrors, authority: true };
@@ -518,7 +518,7 @@ export default function StudentData() {
       newErrors = { ...newErrors, authority: true };
       newErrorsMsg = {
         ...newErrorsMsg,
-        authority: "authority should be a 0, 1 or 2",
+        authority: "authority should be a 0, 1",
       };
       error = true;
     } else {
@@ -540,7 +540,7 @@ export default function StudentData() {
           {
             teamID: newStudent.id,
             password,
-            teamName: newStudent.name,
+            teamName: newStudent.teamName,
             authority: Number(newStudent.authority),
           },
         ]);
@@ -554,7 +554,7 @@ export default function StudentData() {
         );
         setNewStudent({
           id: "",
-          name: "",
+          teamName: "",
           authority: "",
         });
         handleCloseAdd();
@@ -573,7 +573,7 @@ export default function StudentData() {
         await StudentDataAPI.putStudentData([
           {
             teamID: newStudent.id,
-            teamName: newStudent.name,
+            teamName: newStudent.teamName,
             authority: Number(newStudent.authority),
           },
         ]);
@@ -582,7 +582,7 @@ export default function StudentData() {
             if (e.id === newStudent.id) {
               return {
                 id: newStudent.id,
-                name: newStudent.name,
+                teamName: newStudent.teamName,
                 authority: Number(newStudent.authority),
               };
             }
@@ -591,7 +591,7 @@ export default function StudentData() {
         );
         setNewStudent({
           id: "",
-          name: "",
+          teamName: "",
           authority: "",
         });
         handleCloseEdit();
@@ -651,10 +651,10 @@ export default function StudentData() {
             label="teamName"
             type="text"
             fullWidth
-            value={newStudent.name}
-            error={errors.name}
+            value={newStudent.teamName}
+            error={errors.teamName}
             onChange={onNameChange}
-            helperText={errorsMsg.name}
+            helperText={errorsMsg.teamName}
           />
 
           <FormControl fullWidth>
@@ -694,7 +694,7 @@ export default function StudentData() {
       >
         {invalidDelete ? (
           <DialogTitle id="simple-dialog-title">
-            Students with authority 2 are invalid to delete
+            Students with authority 1 are invalid to delete
           </DialogTitle>
         ) : (
           <DialogTitle id="simple-dialog-title">
@@ -705,11 +705,11 @@ export default function StudentData() {
           {invalidDelete
             ? data
                 .filter((e) => selected.includes(e.id))
-                .filter((e) => e.authority === 2)
+                .filter((e) => e.authority === 1)
                 .map((e) => (
                   <Typography key={e.id}>
                     {`id: ${e.id}, 
-              teamName: ${e.name},
+              teamName: ${e.teamName},
               authority: ${e.authority}`}
                   </Typography>
                 ))
@@ -719,7 +719,7 @@ export default function StudentData() {
                 .map((id) => (
                   <Typography key={id}>
                     {`id: ${data.find((e) => e.id === id).id}, 
-              teamName: ${data.find((e) => e.id === id).name},
+              teamName: ${data.find((e) => e.id === id).teamName},
               authority: ${data.find((e) => e.id === id).authority}`}
                   </Typography>
                 ))}
@@ -826,11 +826,11 @@ export default function StudentData() {
           {invalidRegenerate
             ? data
                 .filter((e) => selected.includes(e.id))
-                .filter((e) => e.authority === 2)
+                .filter((e) => e.authority === 1)
                 .map((e) => (
                   <Typography key={e.id}>
                     {`id: ${e.id}, 
-              teamName: ${e.name},
+              teamName: ${e.teamName},
               authority: ${e.authority}`}
                   </Typography>
                 ))
@@ -840,7 +840,7 @@ export default function StudentData() {
                 .map((id) => (
                   <Typography key={id}>
                     {`id: ${data.find((e) => e.id === id).id}, 
-              teamName: ${data.find((e) => e.id === id).name},
+              teamName: ${data.find((e) => e.id === id).teamName},
               authority: ${data.find((e) => e.id === id).authority}`}
                   </Typography>
                 ))}
@@ -884,7 +884,7 @@ export default function StudentData() {
             .map((e) => (
               <Typography key={e.id}>
                 {`id: ${e.id}, 
-              teamName: ${e.name},
+              teamName: ${e.teamName},
               authority: ${e.authority}`}
               </Typography>
             ))}
@@ -919,7 +919,7 @@ export default function StudentData() {
                 variant="contained"
                 color="primary"
                 onClick={handleOpenAdd}
-                disabled={authority !== 2}
+                disabled={authority !== 1}
               >
                 Add Single Student
               </Button>
@@ -929,7 +929,7 @@ export default function StudentData() {
                 variant="contained"
                 color="primary"
                 onClick={handleOpenAddMultiple}
-                disabled={authority !== 2}
+                disabled={authority !== 1}
               >
                 Add Students (csv)
               </Button>
@@ -939,7 +939,7 @@ export default function StudentData() {
                 variant="outlined"
                 color="primary"
                 onClick={handleDownloadPassword}
-                disabled={selected.length === 0 || authority !== 2}
+                disabled={selected.length === 0 || authority !== 1}
               >
                 Download Password
               </Button>
@@ -949,7 +949,7 @@ export default function StudentData() {
                 variant="contained"
                 color="primary"
                 onClick={handleOpenRegenerate}
-                disabled={selected.length === 0 || authority !== 2}
+                disabled={selected.length === 0 || authority !== 1}
               >
                 Generate Password
               </Button>

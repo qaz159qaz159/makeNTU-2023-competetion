@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from "@mui/material/styles";
+
 // Route
 import { Redirect } from "react-router";
 import PublicRoute from "./components/routes/publicRoute";

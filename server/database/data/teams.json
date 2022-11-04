@@ -1,61 +1,62 @@
-[{
-        "teamID": "0",
-        "password": "1111",
-        "teamName": "ADMIN",
-        "authority": 1
-    },
-    {
-        "teamID": "1",
-        "password": "1111",
-        "teamName": "第1組",
-        "authority": 0
-    },
-    {
-        "teamID": "2",
-        "password": "1111",
-        "teamName": "第2組",
-        "authority": 0
-    },
-    {
-        "teamID": "3",
-        "password": "1111",
-        "teamName": "第3組",
-        "authority": 0
-    },
-    {
-        "teamID": "4",
-        "password": "1111",
-        "teamName": "第4組",
-        "authority": 0
-    },
-    {
-        "teamID": "5",
-        "password": "1111",
-        "teamName": "第5組",
-        "authority": 0
-    },
-    {
-        "teamID": "6",
-        "password": "1111",
-        "teamName": "第6組",
-        "authority": 0
-    },
-    {
-        "teamID": "7",
-        "password": "1111",
-        "teamName": "第7組",
-        "authority": 0
-    },
-    {
-        "teamID": "8",
-        "password": "1111",
-        "teamName": "第8組",
-        "authority": 0
-    },
-    {
-        "teamID": "9",
-        "password": "1111",
-        "teamName": "第9組",
-        "authority": 0
-    }
+[
+  {
+    "teamID": "0",
+    "password": "1111",
+    "teamName": "ADMIN",
+    "authority": 1
+  },
+  {
+    "teamID": "1",
+    "password": "1111",
+    "teamName": "第1組",
+    "authority": 0
+  },
+  {
+    "teamID": "2",
+    "password": "1111",
+    "teamName": "第2組",
+    "authority": 0
+  },
+  {
+    "teamID": "3",
+    "password": "1111",
+    "teamName": "第3組",
+    "authority": 0
+  },
+  {
+    "teamID": "4",
+    "password": "1111",
+    "teamName": "第4組",
+    "authority": 0
+  },
+  {
+    "teamID": "5",
+    "password": "1111",
+    "teamName": "第5組",
+    "authority": 0
+  },
+  {
+    "teamID": "6",
+    "password": "1111",
+    "teamName": "第6組",
+    "authority": 0
+  },
+  {
+    "teamID": "7",
+    "password": "1111",
+    "teamName": "第7組",
+    "authority": 0
+  },
+  {
+    "teamID": "8",
+    "password": "1111",
+    "teamName": "第8組",
+    "authority": 0
+  },
+  {
+    "teamID": "9",
+    "password": "1111",
+    "teamName": "第9組",
+    "authority": 0
+  }
 ]

@@ -15,6 +15,7 @@ import Drawer from "./containers/drawer";
 import Main from "./containers/main";
 import Login from "./containers/login";
 import StudentData from "./containers/studentData";
+import LaserCutter from "./containers/leichie";
 import theme from "./theme";
 // compononets
 import Loading from "./components/loading";
@@ -39,6 +40,9 @@ const Routes = () => {
       </LoginRoute>
       <AdminRoute exact path="/studentdata">
         <StudentData />
+      </AdminRoute>
+      <AdminRoute exact path="/lasercutter">
+        <LaserCutter/>
       </AdminRoute>
       <Redirect to="/login" />
     </Switch>

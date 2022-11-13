@@ -152,6 +152,7 @@ const Drawer = ({ children }) => {
     : {
         1: [
           { text: "Main", to: "/", icon: <HomeIcon /> },
+          { text: "雷切", to: "/lasercutter", icon: <HomeIcon /> },
           {
             text: "Student Data",
             to: "/studentdata",

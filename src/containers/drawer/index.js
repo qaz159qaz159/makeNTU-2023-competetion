@@ -158,7 +158,8 @@ const Drawer = ({ children }) => {
             icon: <PeopleIcon />,
           },
         ],
-      }[authority] || [{ text: "Main", to: "/", icon: <HomeIcon /> }];
+        0: [{ text: "Main", to: "/", icon: <HomeIcon /> }],
+      }[authority];
 
   const userName = isLogin ? userID : "";
 

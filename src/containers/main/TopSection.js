@@ -94,22 +94,42 @@ export default function Top() {
                 </Link>
               </Button>
             )}
-            {/* <Button
-              style={{
-                width: "70%",
-                display: "flex",
-                margin: "auto",
-              }}
-              variant="contained"
-              color="primary"
-            >
-              <Link
-                style={{ textDecoration: "none", color: "white" }}
-                to="/courses"
+            {isLogin && (
+              <Button
+                style={{
+                  width: "70%",
+                  display: "flex",
+                  margin: "auto",
+                }}
+                variant="contained"
+                color="primary"
               >
-                Start to Select Courses
-              </Link>
-            </Button> */}
+                <Link
+                  style={{ textDecoration: "none", color: "white" }}
+                  to="/courses"
+                >
+                  3DP
+                </Link>
+              </Button>
+            )}
+            {isLogin && (
+              <Button
+                style={{
+                  width: "70%",
+                  display: "flex",
+                  margin: "auto",
+                }}
+                variant="contained"
+                color="primary"
+              >
+                <Link
+                  style={{ textDecoration: "none", color: "white" }}
+                  to="/courses"
+                >
+                  雷切
+                </Link>
+              </Button>
+            )}
           </Paper>
         </Grid>
       </div>

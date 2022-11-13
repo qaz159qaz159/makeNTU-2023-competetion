@@ -6,10 +6,10 @@ import { ThemeProvider } from "@mui/material/styles";
 // Route
 import { Redirect } from "react-router";
 import PublicRoute from "./components/routes/publicRoute";
-import PrivateRoute from "./components/routes/privateRoute";
+import AdminRoute from "./components/routes/adminRoute";
 import LoginRoute from "./components/routes/loginRoute";
 import MainRoute from "./components/routes/mainRoute";
-import AdminRoute from "./components/routes/adminRoute";
+import UserRoute from "./components/routes/userRoute";
 // containers
 import Drawer from "./containers/drawer";
 import Main from "./containers/main";
@@ -37,9 +37,9 @@ const Routes = () => {
       <LoginRoute exact path="/login">
         <Login />
       </LoginRoute>
-      <PrivateRoute exact path="/studentdata">
+      <AdminRoute exact path="/studentdata">
         <StudentData />
-      </PrivateRoute>
+      </AdminRoute>
       <Redirect to="/login" />
     </Switch>
   );

@@ -42,7 +42,7 @@ const Routes = () => {
         <StudentData />
       </AdminRoute>
       <AdminRoute exact path="/lasercutter">
-        <LaserCutter/>
+        <LaserCutter />
       </AdminRoute>
       <Redirect to="/login" />
     </Switch>

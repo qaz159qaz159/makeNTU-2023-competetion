@@ -113,22 +113,22 @@ export default function Top() {
               </Button>
             )}
             {isLogin && (
-              
-                <Link
-                  style={{ textDecoration: "none", color: "white" }}
-                  to="/lasercutter"
-                ><Button
-                style={{
-                  width: "70%",
-                  display: "flex",
-                  margin: "auto",
-                }}
-                variant="contained"
-                color="primary"
+              <Link
+                style={{ textDecoration: "none", color: "white" }}
+                to="/lasercutter"
               >
+                <Button
+                  style={{
+                    width: "70%",
+                    display: "flex",
+                    margin: "auto",
+                  }}
+                  variant="contained"
+                  color="primary"
+                >
                   雷切
-              </Button>
-                </Link>
+                </Button>
+              </Link>
             )}
           </Paper>
         </Grid>

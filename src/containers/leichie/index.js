@@ -45,6 +45,7 @@ export default function LaserCutter() {
   const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
   const [timeChange, setTimeChange] = useState(20);
+  const [laserIdx, setLaserIdx] = useState([1,2]); // 雷切機陣列 預設1,2號機台
   const [laserNo, setLaserNo] = useState(""); // 雷切機編號
   const [open, setOpen] = useState(false); // 新增雷切機
   const handleOpen = () => setOpen(true); // 開啟新增雷切機
@@ -109,7 +110,9 @@ export default function LaserCutter() {
                   required
                   label="機台編號"
                   variant="standard"
-                  onChange={(e) => setLaserNo(e.target.value.trim())}
+                  onChange={(e) => {
+                    setLaserNo(e.target.value.trim())
+                  }}
                   value={laserNo}
                   defaultValue="A"
                   helperText={laserNo ? "" : "必填"}
@@ -124,7 +127,12 @@ export default function LaserCutter() {
                     color: "black",
                     borderRadius: 10,
                   }}
-                  onClick={handleConfirm}
+                  onClick={() => {
+                      setLaserNumber(laserNumber + 1);
+                      setLaserIdx([...laserIdx, laserNumber + 1])
+                      handleConfirm();
+                    }
+                  }
                 >
                   確認
                 </Button>
@@ -146,9 +154,11 @@ export default function LaserCutter() {
         </Modal>
       </Box>
 
+      {/* ------- 雷切狀態列 ------- */}
       <Box sx={{ width: "90%", border: 1 }}>
-        <LaserCutterBox />
+        <LaserCutterBox laserNumber={laserNumber} setLaserNumber={setLaserNumber} laserIdx={laserIdx} setLaserIdx={setLaserIdx}/>
       </Box>
+      {/* ------- 雷切工具列 ------- */}
       <Stack direction="row" 
         sx={{ width: '90%', height: 80, fontSize: 20, fontWeight: 'medium', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p>雷切機數量：{laserNumber} 台</p>

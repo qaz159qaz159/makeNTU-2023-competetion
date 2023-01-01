@@ -13,7 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import LaserCutterCards from "./leichieCard";
 
-const LaserCutterBox = () => (
+const LaserCutterBox = ({laserNumber, setLaserNumber, laserIdx, setLaserIdx}) => (
   <Card>
     <CardContent>
       {/* Grid container for all cards */}
@@ -25,10 +25,12 @@ const LaserCutterBox = () => (
         style={{ padding: 10, overflow: "auto" }}
       >
         {/* 有幾台雷切就放幾個components */}
-        <LaserCutterCards />
-        <LaserCutterCards />
-        <LaserCutterCards />
-        <LaserCutterCards />
+        {/* Add 新增功能 1/1 */}
+        {laserIdx.map((item) => {
+          return(
+            <LaserCutterCards id={item} laserNumber={laserNumber} setLaserNumber={setLaserNumber} laserIdx={laserIdx} setLaserIdx={setLaserIdx}/>
+          )
+        })}
       </Grid>
     </CardContent>
   </Card>

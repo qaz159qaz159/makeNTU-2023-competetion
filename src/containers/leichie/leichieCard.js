@@ -18,18 +18,18 @@ let shown = true;
 let leichieNo = "一"; //雷切一
 
 // 預計完成時間
-let doneTime = () => {
+const doneTime = () => {
   if (status === 1) return "15 : 30"; // if使用中則回傳預估完成時間
   else return "-- : --"; // 未使用則沒有時間
 };
 // 機台使用狀態
 const showStatus = (status) => {
-  if (status == 0) return "○ 準備中";
-  if (status == 1) return "● 運作中";
+  if (status === 0) return "○ 準備中";
+  if (status === 1) return "● 運作中";
   return "X 暫停使用"; // debug
 };
 
-const cards = () => (
+const cards = ({id, laserNumber, setLaserNumber, laserIdx, setLaserIdx}) => (
   <Grid item>
     {/* a card for a leichie made up by multi grids */}
     <Card sx={{ minHeight: 200, minWidth: 300 }} variant="outlined">
@@ -51,7 +51,7 @@ const cards = () => (
               {showStatus(status)}
             </Typography>
             <Typography variant="h4" component="div">
-              {`雷切${leichieNo}`}
+              {`雷切${id}`}
             </Typography>
           </Grid>
         </Grid>
@@ -113,7 +113,10 @@ const cards = () => (
               disabled={status === 1 ? true : false} // 需判斷若在使用中則不能按移除，必須先按使用完成才可以
               variant="outlined"
               startIcon={<DeleteIcon />}
-              // todo: onclick -> 使用完成(暫停使用)
+              onClick={()=>{
+                setLaserNumber(laserNumber - 1);
+                setLaserIdx(laserIdx.filter(item => item !== id));
+              }}
             >
               移除機台
             </Button>

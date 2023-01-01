@@ -22,6 +22,7 @@ import theme from "./theme";
 import Loading from "./components/loading";
 // initialize, slices
 import { init, selectSession } from "./slices/sessionSlice";
+import LaserCutter from "./containers/leichie";
 
 const Routes = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,9 @@ const Routes = () => {
       </LoginRoute>
       <AdminRoute exact path="/studentdata">
         <StudentData />
+      </AdminRoute>
+      <AdminRoute exact path="/lasercutter">
+        <LaserCutter/>
       </AdminRoute>
       <Redirect to="/login" />
     </Switch>

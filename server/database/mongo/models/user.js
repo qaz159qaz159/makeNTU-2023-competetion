@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const { MONGO_HOST, MONGO_DBNAME } = process.env;
 const conn = mongoose.createConnection(
@@ -10,42 +9,26 @@ const conn = mongoose.createConnection(
   }
 );
 
-// ========================================
-
-// const courseIDs = courses.map((course) => course.id);
-// const selections = {};
-// courseIDs.forEach((courseID) => {
-//   selections[courseID] = [String];
-// });
-
 const teamSchema = new mongoose.Schema({
   teamID: {
     type: String,
     required: true,
     immutable: true,
   },
-  password: {
-    type: String,
-    required: true,
-    immutable: false,
-  },
   teamName: {
     type: String,
     required: true,
     immutable: false,
   },
-  authority: {
-    type: Number,
+  status: {
+    // 0: idle, 1: using, 2: finished
+    type: String,
     required: true,
-    immutable: false,
   },
 });
 
-const Team = conn.model("Team", teamSchema);
-
-// ========================================
+const Team = conn.model("User", teamSchema);
 
 module.exports = {
   Team,
-  conn,
 };

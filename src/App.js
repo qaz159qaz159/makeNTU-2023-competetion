@@ -10,11 +10,13 @@ import AdminRoute from "./components/routes/adminRoute";
 import LoginRoute from "./components/routes/loginRoute";
 import MainRoute from "./components/routes/mainRoute";
 import UserRoute from "./components/routes/userRoute";
+
 // containers
 import Drawer from "./containers/drawer";
 import Main from "./containers/main";
 import Login from "./containers/login";
 import StudentData from "./containers/studentData";
+import DP from "./containers/3dp";
 import theme from "./theme";
 // compononets
 import Loading from "./components/loading";
@@ -34,6 +36,9 @@ const Routes = () => {
       <MainRoute exact path="/">
         <Main />
       </MainRoute>
+      <AdminRoute exact path="/3dp">
+        <DP />
+      </AdminRoute>
       <LoginRoute exact path="/login">
         <Login />
       </LoginRoute>

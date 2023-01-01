@@ -46,7 +46,8 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     color: "#fff",
     boxShadow: "none",
-    backgroundColor: "rgb(25,34,49,.7)",
+    // backgroundColor: "rgb(25,34,49,.7)",
+    backgroundColor: "black",
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
@@ -157,8 +158,12 @@ const Drawer = ({ children }) => {
             to: "/studentdata",
             icon: <PeopleIcon />,
           },
+          { text: "3dp", to: "/3dp", icon: <PeopleIcon /> },
         ],
-        0: [{ text: "Main", to: "/", icon: <HomeIcon /> }],
+        0: [
+          { text: "Main", to: "/", icon: <HomeIcon /> },
+          { text: "3dp", to: "/3dp", icon: <PeopleIcon /> },
+        ],
       }[authority];
 
   const userName = isLogin ? userID : "";

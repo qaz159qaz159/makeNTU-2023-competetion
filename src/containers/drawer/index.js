@@ -25,9 +25,11 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import HomeIcon from "@mui/icons-material/Home"; // Main
 import ExitToAppIcon from "@mui/icons-material/ExitToApp"; // Login, Logout
 import PeopleIcon from "@mui/icons-material/People"; // Student Data
-
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"; // admin icon
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Redirect } from "react-router";
 import { selectSession, logout } from "../../slices/sessionSlice";
+
 // route
 
 const drawerWidth = 200;
@@ -152,14 +154,22 @@ const Drawer = ({ children }) => {
     : {
         1: [
           { text: "Main", to: "/", icon: <HomeIcon /> },
-          { text: "雷切", to: "/lasercutter", icon: <HomeIcon /> },
+          {
+            text: "Admin雷切",
+            to: "/adminlasercutter",
+            icon: <AdminPanelSettingsIcon />,
+          },
+          { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
           {
             text: "Student Data",
             to: "/studentdata",
             icon: <PeopleIcon />,
           },
         ],
-        0: [{ text: "Main", to: "/", icon: <HomeIcon /> }],
+        0: [
+          { text: "Main", to: "/", icon: <HomeIcon /> },
+          { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
+        ],
       }[authority];
 
   const userName = isLogin ? userID : "";

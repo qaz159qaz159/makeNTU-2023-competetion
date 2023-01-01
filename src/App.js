@@ -15,7 +15,9 @@ import Drawer from "./containers/drawer";
 import Main from "./containers/main";
 import Login from "./containers/login";
 import StudentData from "./containers/studentData";
-import LaserCutter from "./containers/leichie";
+import AdminLaserCutter from "./containers/admin_leichie";
+import LaserCutter from "./containers/user_leichie";
+
 import theme from "./theme";
 // compononets
 import Loading from "./components/loading";
@@ -40,6 +42,9 @@ const Routes = () => {
       </LoginRoute>
       <AdminRoute exact path="/studentdata">
         <StudentData />
+      </AdminRoute>
+      <AdminRoute exact path="/adminlasercutter">
+        <AdminLaserCutter />
       </AdminRoute>
       <AdminRoute exact path="/lasercutter">
         <LaserCutter />

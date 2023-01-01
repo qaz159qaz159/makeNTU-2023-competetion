@@ -25,11 +25,11 @@ function createData(team, order, material, thickness, arrangement) {
 }
 
 const rows = [
-  createData("Team 1", 1, "壓克力", 3, "1"),
-  createData("Team 2", 2, "密集板", 5, "2"),
-  createData("Team 3", 3, "密集板", 5, "3"),
-  createData("Team 4", 4, "壓克力", 3, ""),
-  createData("Team 5", 5, "密集板", 5, ""),
+  createData("1", 1, "壓克力", 3, "1"),
+  createData("2", 2, "密集板", 5, "2"),
+  createData("3", 3, "密集板", 5, "3"),
+  createData("4", 4, "壓克力", 3, ""),
+  createData("5", 5, "密集板", 5, ""),
 ];
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -53,21 +53,21 @@ var completeTime = (timeLim) => {
 };
 var timeLim = 20;
 
-// fake 先假裝是從資料庫家資料回來QQ
+// fake 先假裝是從資料庫get資料回來QQ
 const fakelaserCutterInfo = [
   {
     id: 1,
-    name: '一',
+    // name: "一",
     status: "99",
     usedBy: "",
     completeTime: "",
-    done: true,
-    remove: true,
+    done: true, // ?
+    remove: true, // ?
   },
 
   {
     id: 2,
-    name: '二',
+    // name: "二",
     status: "0",
     usedBy: "",
     completeTime: "",
@@ -76,7 +76,7 @@ const fakelaserCutterInfo = [
   },
   {
     id: 3,
-    name: '三',
+    // name: "三",
     status: "1",
     usedBy: "1",
     completeTime: completeTime(timeLim),
@@ -85,9 +85,9 @@ const fakelaserCutterInfo = [
   },
   {
     id: 4,
-    name: '四',
+    // name: "四",
     status: "1",
-    usedBy: "1",
+    usedBy: "2",
     completeTime: completeTime(timeLim),
     done: false,
     remove: false,
@@ -100,18 +100,18 @@ export default function LaserCutter() {
   const [laserTime, setLaserTime] = useState(20);
   const [timeChange, setTimeChange] = useState(20);
   const [removeId, setRemoveId] = useState();
-  const [laserIdx, setLaserIdx] = useState([...Array(laserNumber).keys()].map(i => i + 1)); // 雷切機陣列 預設1,2號機台(自動生成陣列)
+  const [laserIdx, setLaserIdx] = useState(
+    [...Array(laserNumber).keys()].map((i) => i + 1)
+  ); // 雷切機陣列 預設1,2號機台(初始時根據總數自動生成id)
   const [laserNo, setLaserNo] = useState(""); // 雷切機編號
   const [open, setOpen] = useState(false); // 新增雷切機
   const [dataRow, setDataRow] = useState(rows);
-  const [laserCutterInfo, setLaserCutterInfo] = useState(fakelaserCutterInfo)
+  const [laserCutterInfo, setLaserCutterInfo] = useState(fakelaserCutterInfo);
   const handleOpen = () => setOpen(true); // 開啟新增雷切機
   const handleClose = () => setOpen(false); // 關閉新增雷切機
   const handleConfirm = () => {
     setOpen(false);
   };
-
-
 
   const modalStyle = {
     position: "absolute",
@@ -166,16 +166,28 @@ export default function LaserCutter() {
               <Stack direction="row" spacing={2} alignItems="baseline">
                 <TextField
                   required
-                  label="機台名稱"
+                  label="機台ID"
                   variant="standard"
                   onChange={(e) => {
+                    if (e.target.value.trim()) {
+                      let id = parseInt(e.target.value.trim());
+                      if (Number.isInteger(id)) {
+                        if (laserIdx.includes(id)) {
+                          alert("ID: " + e.target.value.trim() + " 已存在");
+                          return;
+                        }
+                        setLaserNo(id);
+                      } else {
+                        alert("請輸入整數 ID");
+                        return;
+                      }
+                    }
+
                     setLaserNo(e.target.value.trim());
                   }}
                   value={laserNo}
-                  defaultValue="A"
                   helperText={laserNo ? "" : "必填"}
                 />
-
                 <Button
                   disabled={!laserNo}
                   variant="contained"
@@ -186,8 +198,12 @@ export default function LaserCutter() {
                     borderRadius: 10,
                   }}
                   onClick={() => {
+                    console.log(
+                      "laserNo " + JSON.stringify(laserIdx) + laserNo
+                    );
                     setLaserNumber(laserNumber + 1);
-                    setLaserIdx([...laserIdx, laserNumber + 1]);
+                    // setLaserIdx([...laserIdx, laserNumber + 1]); 如果移除再加入會有重複ID出現的可能性 已修改城下列寫法
+                    setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
                     handleConfirm();
                   }}
                 >
@@ -292,9 +308,11 @@ export default function LaserCutter() {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row" align="center">
-                    {row.team}
+                    {`Team ${row.team}`}
                   </TableCell>
-                  <TableCell align="center">{row.order}</TableCell>
+                  {/* <TableCell align="center">{row.order}</TableCell> */}
+                  <TableCell align="center">{i + 1}</TableCell>{" "}
+                  {/* render的順序即為排序 */}
                   <TableCell align="center">{row.material}</TableCell>
                   <TableCell align="center">{row.thickness}</TableCell>
                   <TableCell align="center">
@@ -314,40 +332,60 @@ export default function LaserCutter() {
                       defaultValue={row.arrangement}
                       // value={}
                       onChange={(e) => {
-                        rows[i]["arrangement"] = e.target.value;
+                        rows[i]["arrangement"] = e.target.value; // 更新資料庫
                         // console.log("rows[i]['arrangement']= "+ rows[i]['arrangement'])
-                        setDataRow(rows);
+                        setDataRow(() => rows);
                       }}
                     >
-                      {/* <MenuItem value={0}>None</MenuItem> */}
-                      <MenuItem value={1}>雷切一</MenuItem>
-                      <MenuItem value={2}>雷切二</MenuItem>
-                      <MenuItem value={3}>雷切三</MenuItem>
-                      <MenuItem value={99}>移除</MenuItem>
+                      {laserIdx.map((id) => (
+                        <MenuItem key={id} value={id}>
+                          雷切{id}
+                        </MenuItem>
+                      ))}
+                      <MenuItem key={99} value={99}>
+                        移除
+                      </MenuItem>
                     </Select>
                     <Button
                       size="small"
                       sx={{ color: "rgba(255,255,255, 0.8)" }}
                       endIcon={<SendIcon />}
-                      value={i}
+                      value={row.team} // 第幾組
                       // disabled={!rows[i]['arrangement']}
                       onClick={(e) => {
-                        if (!rows[i]["arrangement"])
-                          return alert("請選擇排程項目");
-                        setRemoveId(i);
+                        if (!row.arrangement) return alert("請選擇排程項目");
+                        setRemoveId(row.team);
                         console.log("del row = " + i);
-                        // remove the row after GO
-                        const r = rows.splice(i, 1);
-                        console.log(JSON.stringify(rows));
-                        setDataRow(rows);
-                        r[0]["arrangement"] == 99
-                          ? alert("將隊伍 " + r[0]["team"] + " 移除等候隊伍")
-                          : alert(
-                              "將隊伍 " +
-                                r[0]["team"] +
-                                " 排入使用雷切" +
-                                r[0]["arrangement"] // 之後要改成雷切id or name
+                        console.log("del team = " + row.team);
+
+                        setDataRow(() =>
+                          dataRow.filter((data) => data.team != row.team)
+                        );
+
+                        console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
+
+                        if (row.arrangement == 99)
+                          alert("將隊伍 " + row.team + " 移除等候隊伍");
+                        else {
+                          setLaserCutterInfo(() => {
+                            let tmp = laserCutterInfo.findIndex(
+                              (laser) => laser.id == row.arrangement
                             );
+                            laserCutterInfo[tmp].usedBy = row.team;
+                            laserCutterInfo[tmp].status = 1;
+                            console.log(completeTime(timeChange));
+
+                            laserCutterInfo[tmp].completeTime =
+                              completeTime(timeChange);
+                            return laserCutterInfo;
+                          });
+                          alert(
+                            "將隊伍 " +
+                              row.team +
+                              " 排入使用雷切" +
+                              row.arrangement
+                          );
+                        }
                       }}
                     >
                       GO

@@ -24,8 +24,6 @@ const showStatus = (status) => {
 };
 // const [open, setOpen] = useState(false);
 
-
-
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -39,7 +37,19 @@ const modalStyle = {
   p: 3,
 };
 
-const cards = ({ leichieId, leichieName, status, groupNo, doneTime, done, remove, laserNumber, setLaserNumber, laserIdx, setLaserIdx }) => {
+const cards = ({
+  leichieId,
+  // leichieName,
+  status,
+  groupNo,
+  doneTime,
+  done,
+  remove,
+  laserNumber,
+  setLaserNumber,
+  laserIdx,
+  setLaserIdx,
+}) => {
   // const [open, setOpen] = useState(false); // why 不能用！！！！！？？？？
   return (
     <Grid item>
@@ -63,7 +73,7 @@ const cards = ({ leichieId, leichieName, status, groupNo, doneTime, done, remove
                 {showStatus(status)}
               </Typography>
               <Typography variant="h5" component="div">
-                雷切{leichieName}
+                {`雷切 ${leichieId}`}
               </Typography>
             </Grid>
           </Grid>
@@ -115,8 +125,8 @@ const cards = ({ leichieId, leichieName, status, groupNo, doneTime, done, remove
                 sx={{ border: 1.5 }}
                 variant="outlined"
                 startIcon={<CheckIcon />}
-                
-              // todo: onclick -> 使用完成(狀態切換為 準備中)
+
+                // todo: onclick -> 使用完成(狀態切換為 準備中)
               >
                 使用完成
               </Button>
@@ -172,7 +182,7 @@ const cards = ({ leichieId, leichieName, status, groupNo, doneTime, done, remove
         </CardContent>
       </Card>
     </Grid>
-  )
-}
+  );
+};
 
 export default cards;

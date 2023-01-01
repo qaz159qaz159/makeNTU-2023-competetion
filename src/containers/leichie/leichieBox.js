@@ -1,18 +1,26 @@
 import * as React from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import LaserCutterCards from "./admin_leichieCard";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import AddIcon from "@mui/icons-material/Add";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import LaserCutterCards from "./leichieCard";
 
 const LaserCutterBox = ({
-  laserCutterInfo,
   laserNumber,
   setLaserNumber,
   laserIdx,
   setLaserIdx,
 }) => (
   <Card>
-    <CardContent style={{ padding: 0 }}>
+    <CardContent>
       {/* Grid container for all cards */}
       <Grid
         container
@@ -22,20 +30,11 @@ const LaserCutterBox = ({
         style={{ padding: 10, overflow: "auto" }}
       >
         {/* 有幾台雷切就放幾個components */}
-        {/* 從資料庫叫回產生雷切的訊息框*/}
-        {laserCutterInfo.map((c, i) => {
-          if (!laserIdx.includes(parseInt(c.id))) return; // skip unexisting id
-          console.log("機台Id= " + c.id);
+        {/* Add 新增功能 1/1 */}
+        {laserIdx.map((item) => {
           return (
             <LaserCutterCards
-              key={i}
-              leichieId={c.id}
-              // leichieName={c.name}
-              status={c.status}
-              groupNo={c.usedBy}
-              doneTime={c.completeTime}
-              done={c.done}
-              remove={c.remove}
+              id={item}
               laserNumber={laserNumber}
               setLaserNumber={setLaserNumber}
               laserIdx={laserIdx}

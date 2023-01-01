@@ -5,7 +5,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 
-
 import { useState } from "react";
 
 // fake data
@@ -13,7 +12,6 @@ const groupNo = 1;
 let status = 0; // default 0
 let shown = true;
 let leichieNo = "一"; //雷切一
-
 
 // 預計完成時間
 const showTime = (status, completeTime) => {

@@ -28,9 +28,9 @@ const Mutation = {
           completeTime,
         }
       },
-      { returnOriginal: false},
+      {new: true}
     );
-    
+
     if (!laserCutter){
       console.log('Error LaserCutterModel不存在');
     }

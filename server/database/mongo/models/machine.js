@@ -35,36 +35,42 @@ const MachineSchema = new mongoose.Schema({
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  // ID, Name 是否合併？
-  ID: { 
+  // ID, Name 合併
+  id: {
     type: String,
     required: true,
   },
-  Name: {
-    type: String,
-    required: true,
-  },
+  // Name: {
+  //   type: String,
+  //   required: true,
+  // },
+
   // Status 可否直接包含: removed_status
-  Status: {
-    type: String,
+  // --> 如果移除機台可直接刪除該機台在後端的資料，應該不用記錄remove status
+  status: {
+    type: Number, // 0: 準備中(click使用完成後), 1: 運行中(送出排程後)
     required: true,
   },
-  Duration: {
+  duration: {
     type: Number,
     required: true,
   },
-  User: {
+  user: {
     type: String,
     required: true,
   },
-  LeftTime: {
-    type: Number,
+  completeTime: {
+    type: String,
     required: true,
   },
+  // 倒數計時功能在前端呈現即可？
+  // LeftTime: {
+  //   type: Number,
+  //   required: true,
+  // },
 });
 
 const LaserCutter = conn.model("LaserCutter", LaserCutterSchema);
-
 
 module.exports = {
   Machine,

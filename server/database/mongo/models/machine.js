@@ -6,6 +6,7 @@ const conn = mongoose.createConnection(
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   }
 );
 
@@ -35,17 +36,18 @@ const MachineSchema = new mongoose.Schema({
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  id: { 
+  id: {
     type: String,
     required: true,
   },
-  // status 可否直接包含: removed_status
-  status: { 
-    type: String, // 0: 準備中(click使用完成後), 1: 運行中(送出排程後)
+  status: {
+    type: Number, // 0: 準備中(click使用完成後), 1: 運行中(送出排程後)
+    default: 0,
     required: true,
   },
   duration: {
     type: Number,
+    default: 20,
     required: true,
   },
   user: {
@@ -59,7 +61,6 @@ const LaserCutterSchema = new mongoose.Schema({
 });
 
 const LaserCutterModel = conn.model("LaserCutter", LaserCutterSchema);
-
 
 module.exports = {
   Machine,

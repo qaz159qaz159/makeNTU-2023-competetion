@@ -2,15 +2,24 @@ type Query {
   hello: String
 }
 
-type Mutation{
+type Mutation {
   createLaserCutter(info: CreateLaserInfo!): LaserCutter
   updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
+  createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
+  cancelLaserReserve(teamId: ID!): LaserCutterReservation!
 }
 
+#  不是很確定要怎麼寫TT
+type Subscription {
+  LaserCutterInfo: LaserCutter!
+  LaserCutterReservation(teamId: ID!): LaserCutterReservation!
+}
+
+# ======== laser cutter info ========
 input CreateLaserInfo {
   id: ID!
-  status: Int!
-  duration: Int!
+  status: Int # 新機台預設0 準備中
+  duration: Int # 預設20，送出排程時再重新設定就可以了
   user: String
   completeTime: String
 }
@@ -18,15 +27,31 @@ input CreateLaserInfo {
 input UpdateLaserInfo {
   id: ID!
   status: Int!
-  duration: Int
+  duration: Int # duration不會每次都修改所以先改成optinal
   user: String
   completeTime: String
 }
 
 type LaserCutter {
   id: ID!
-  status: Int!
-  duration: Int!
+  status: Int! # default=0
+  duration: Int! # default=20
   user: String
   completeTime: String
+}
+
+# ======== Resevation of laser cutter ========
+
+input ReserveLaserCutter {
+  teamId: ID!
+  material: String!
+  thickness: String!
+}
+
+type LaserCutterReservation {
+  teamId: ID!
+  material: String
+  thickness: String
+  reserveStatus: Int # default=1
+  updated_at: String!
 }

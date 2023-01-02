@@ -17,7 +17,7 @@ const ApolloServerPluginDrainHttpServer =
 const http = require("http");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
-
+const Subscription = require("./resolvers/Subscription");
 // ========================================
 
 // ========================================
@@ -50,6 +50,7 @@ db.once("open", async () => {
       // add other resolvers
       Query,
       Mutation,
+      Subscription,
     },
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     context: async (input) => {

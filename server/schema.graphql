@@ -1,3 +1,32 @@
 type Query {
   hello: String
 }
+
+type Mutation{
+  createLaserCutter(info: CreateLaserInfo!): LaserCutter
+  updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
+}
+
+input CreateLaserInfo {
+  id: ID!
+  status: Int!
+  duration: Int!
+  user: String
+  completeTime: String
+}
+
+input UpdateLaserInfo {
+  id: ID!
+  status: Int!
+  duration: Int
+  user: String
+  completeTime: String
+}
+
+type LaserCutter {
+  id: ID!
+  status: Int!
+  duration: Int!
+  user: String
+  completeTime: String
+}

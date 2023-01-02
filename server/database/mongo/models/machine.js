@@ -35,38 +35,32 @@ const MachineSchema = new mongoose.Schema({
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  // ID, Name 是否合併？
-  ID: { 
+  id: { 
     type: String,
     required: true,
   },
-  Name: {
-    type: String,
-    required: true,
-  },
-  // Status 可否直接包含: removed_status
-  Status: {
-    type: String,
-    required: true,
-  },
-  Duration: {
+  status: {
     type: Number,
     required: true,
   },
-  User: {
-    type: String,
-    required: true,
-  },
-  LeftTime: {
+  duration: {
     type: Number,
     required: true,
+  },
+  user: {
+    type: String,
+    required: false,
+  },
+  completeTime: {
+    type: String,
+    required: false,
   },
 });
 
-const LaserCutter = conn.model("LaserCutter", LaserCutterSchema);
+const LaserCutterModel = conn.model("LaserCutter", LaserCutterSchema);
 
 
 module.exports = {
   Machine,
-  LaserCutter,
+  LaserCutterModel,
 };

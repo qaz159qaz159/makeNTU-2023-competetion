@@ -35,15 +35,20 @@ const MachineSchema = new mongoose.Schema({
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  id: { 
+  ID: { 
     type: String,
     required: true,
   },
-  status: {
-    type: Number,
+  Name: {
+    type: String,
     required: true,
   },
-  duration: {
+  // Status 可否直接包含: removed_status
+  Status: { 
+    type: String, // 0: 準備中(click使用完成後), 1: 運行中(送出排程後)
+    required: true,
+  },
+  Duration: {
     type: Number,
     required: true,
   },
@@ -55,6 +60,11 @@ const LaserCutterSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  // 倒數計時功能在前端呈現即可？
+  // LeftTime: {
+  //   type: Number,
+  //   required: true,
+  // },
 });
 
 const LaserCutterModel = conn.model("LaserCutter", LaserCutterSchema);

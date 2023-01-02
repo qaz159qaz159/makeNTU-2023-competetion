@@ -131,6 +131,7 @@ export default function Top() {
                     }}
                     variant="contained"
                     color="primary"
+                    onClick={() => history.push("/adminlasercutter")}
                   >
                     <Link
                       style={{ textDecoration: "none", color: "white" }}

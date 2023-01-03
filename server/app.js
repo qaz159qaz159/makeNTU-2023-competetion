@@ -21,7 +21,7 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const Subscription = require("./resolvers/Subscription");
-// ========================================
+const { PubSub } = require('graphql-subscriptions');
 
 // ========================================
 
@@ -57,6 +57,8 @@ db.once("open", async () => {
     }, 
   });
 
+  const pubsub = new PubSub();
+
   const httpServer = http.createServer(app);
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
@@ -69,7 +71,13 @@ db.once("open", async () => {
 
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
-  const serverCleanup = useServer({ schema }, wsServer);
+  const serverCleanup = useServer({
+    schema, 
+    context: {pubsub} 
+    },
+    wsServer
+  );
+
   const server = new ApolloServer({
     schema,
     plugins: [
@@ -87,7 +95,7 @@ db.once("open", async () => {
     context: async (input) => {
       console.log("input = ", input);
       const req = input.req.headers;
-      return { req };
+      return { req, pubsub };
     },
   });
 

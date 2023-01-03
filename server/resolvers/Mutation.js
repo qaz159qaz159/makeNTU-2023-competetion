@@ -1,11 +1,13 @@
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 
 const Mutation = {
   createLaserCutter: async (
     parents,
     { info: { id, status, duration, user, completeTime } },
-    { pubsub }
+    // { pubsub }
   ) => {
     let laserCutter = await Model.LaserCutterModel.findOne({ id });
     if (!laserCutter) {
@@ -29,7 +31,7 @@ const Mutation = {
   updateLaserCutter: async (
     parents,
     { info: { id, status, duration, user, completeTime } },
-    { pubsub }
+    // { pubsub }
   ) => {
     let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
       { id },
@@ -51,6 +53,8 @@ const Mutation = {
     }
 
     console.log("Validation of LaserCutter:", laserCutter);
+    console.log(pubsub.publish('LaserCutterInfo', { newInfo: laserCutter }));
+    pubsub.publish('LaserCutterInfo', { LaserCutterInfo: laserCutter });
     return laserCutter;
   },
 

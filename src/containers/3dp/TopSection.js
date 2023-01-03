@@ -18,16 +18,18 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
-// import MuiAlert from '@material-ui/lab/Alert';
-// import Snackbar from '@material-ui/core/Snackbar';
+import { useQuery, useMutation } from "@apollo/client";
+import {
+  CREATE_MACHINE_MUTATION,
+  USER_RESERVE_MACHINE_MUTATION,
+  USER_CANCEL_MACHINE_MUTATION,
+  CLEAR_MACHINE_MUTATION,
+  DELETE_MACHINE_MUTATION,
+} from "../../graphql";
 
 /**
  * This is Main Page
  */
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 export default function Top(props) {
   const { isLogin, authority } = useSelector(selectSession);
@@ -39,6 +41,12 @@ export default function Top(props) {
   const [usings, setUsings] = useState([]);
   const [finisheds, setFinisheds] = useState([]);
   const [machineList, setMachineList] = useState([]);
+
+  const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
+  const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
+  const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
+  const [userReserveMachine] = useMutation(USER_RESERVE_MACHINE_MUTATION);
+  const [userCancelMachine] = useMutation(USER_CANCEL_MACHINE_MUTATION);
 
   useEffect(() => {
     setWaitings([
@@ -236,6 +244,7 @@ export default function Top(props) {
 
   // User Request
   const handleUserRequest = () => {
+    // userReserveMachine();
     setUserRequestFinish(true);
     setUserRequestOpen(false);
   };
@@ -270,13 +279,6 @@ export default function Top(props) {
       });
       return newMachineList;
     });
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setUserRequestOpen(false);
   };
 
   const classes = useStyles();

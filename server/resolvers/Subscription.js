@@ -2,11 +2,11 @@
 // const pubsub = new PubSub();
 
 const Subscription = {
-  // machine: {
-  //   subscribe(parent, { machineId }, { pubsub }) {
-  //     return pubsub.subscribe(`machine`);
-  //   },
-  // },
+  machineCreated: {
+    subscribe: (parent, args, { pubsub }) => {
+      return pubsub.asyncIterator("machineCreated");
+    },
+  },
 
   // 不是很確定要怎麼寫TT
   // 因為無法測試所以高機率我在亂寫QQ

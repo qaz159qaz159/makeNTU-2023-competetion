@@ -104,7 +104,7 @@ const fakelaserCutterInfo = [
 // --- --- ---
 export default function LaserCutter() {
   // --- States ---
-  const [laserNumber, setLaserNumber] = useState(3);
+  const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
   const [timeChange, setTimeChange] = useState(20);
   const [removeId, setRemoveId] = useState();
@@ -189,7 +189,7 @@ export default function LaserCutter() {
                         }
                         setLaserNo(id);
                         // send to DB
-                        newLeichie({ variables: { info: { id: 1 } } });
+                        newLeichie({ variables: { info: { id } } });
                       } else {
                         alert("請輸入整數 ID");
                         return;
@@ -275,7 +275,7 @@ export default function LaserCutter() {
             variant="standard"
             color="secondary"
             onChange={(e) => {
-              setTimeChange(ParseInt(e.target.value));
+              setTimeChange(parseInt(e.target.value));
             }}
             value={timeChange}
           />

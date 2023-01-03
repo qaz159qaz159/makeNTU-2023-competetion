@@ -1,9 +1,9 @@
 const Model = require("../database/mongo/models/machine");
 
 const Query = {
-  machine: async (parents, args, { req }) => {
+  machine: async (parents, args, { pubsub }) => {
     await Model.Machine.find({}).then((machine) => {
-      console.log(machine);
+      console.log(pubsub);
       return machine;
     });
   },

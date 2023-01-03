@@ -1,14 +1,16 @@
 // import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
-const { PubSub } = require("graphql-subscriptions");
-const pubsub = new PubSub();
+// const { PubSub } = require("graphql-subscriptions");
+// const pubsub = new PubSub();
 
 const Mutation = {
+
+// ======== 3DP ========
   createMachine: async (
     parent,
     { info: { name, type, duration } },
-    { req }
+    { req, pubsub }
   ) => {
     const machine = await new Model.Machine({
       name: name,
@@ -18,17 +20,54 @@ const Mutation = {
       user: [],
       completeTime: -1,
     }).save();
+    console.log(machine);
+    pubsub.publish("machineCreated", { machineCreated: machine });
+    pubsub.publish("machineUpdated", { machineUpdated: machine });
     return machine;
   },
-  clearMachine: async (parent, args, { req }) => {
+  clearMachine: async (parent, args, { pubsub }) => {
     await Model.Machine.deleteMany({});
     return "success";
   },
+  deleteMachine: async (parent, { name }, { pubsub }) => {
+    const machine = await Model.Machine.deleteOne({ name: name });
+    pubsub.publish("machineDeleted", { machine: machine });
+    return "success";
+  },
+  userReserveMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: -1 });
+    if (!machine) {
+      return "no machine";
+    } else {
+      const reserveMachine = machine[0];
+      reserveMachine.status = 0;
+      reserveMachine.user.push(name);
+      reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
+      await reserveMachine.save();
+      pubsub.publish("UserReserveMachine", { machine: reserveMachine });
+      return reserveMachine;
+    }
+  },
+  userCancelMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: 0 });
+    if (!machine) {
+      return "no machine";
+    } else {
+      const cancelMachine = machine[0];
+      cancelMachine.status = -1;
+      cancelMachine.user = [];
+      cancelMachine.completeTime = -1;
+      await cancelMachine.save();
+      pubsub.publish("UserCancelMachine", { machine: cancelMachine });
+      return cancelMachine;
+    }
+  },
+  
+// ======== Laser Cutter ========
   createLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } }
+    { info: { id, status, duration, user, completeTime } }, { pubsub }
   ) =>
-    // { pubsub }
     {
       let laserCutter = await Model.LaserCutterModel.findOne({ id });
       if (!laserCutter) {
@@ -46,14 +85,16 @@ const Mutation = {
       }
 
       console.log("Validation of LaserCutter:", laserCutter);
+
+      pubsub.publish("CreateLaserCutter", { laserCutter: laserCutter });
       return laserCutter;
     },
 
   updateLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } }
+    { info: { id, status, duration, user, completeTime } }, { pubsub }
   ) =>
-    // { pubsub }
+    
     {
       let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
         { id },
@@ -84,8 +125,11 @@ const Mutation = {
   deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     await Model.LaserCutterModel.deleteOne({ id });
     console.log("delete laser cutter # " + id);
+
     return "success";
   },
+
+// ======== Reserve Laser Cutter ========
 
   // for reserving a laser cutter
   createLaserReserve: async (

@@ -11,11 +11,14 @@ type Mutation {
   cancelLaserReserve(teamId: ID!): LaserCutterReservation!
   createMachine(info: CreateMachineInfo!): Machine
   clearMachine: String
-  deleteMachine: String
+  deleteMachine(info: DeleteMachineInfo!): String
   userReserveMachine(info: ReserveMachineInfo!): MachineReservation!
   userCancelMachine(teamId: ID!): MachineReservation!
 }
 
+input DeleteMachineInfo {
+  name: String!
+}
 
 #  不是很確定要怎麼寫TT
 type Subscription {

@@ -20,52 +20,74 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { bgcolor, width } from "@mui/system";
 import EditIcon from "@mui/icons-material/Edit";
-// --- Table info ---
-function createData(team, order, material, thickness, arrangement) {
-  return { team, order, material, thickness, arrangement };
-}
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
+import {
+  LEICHIE_QUERY,
+  LEICHIE_RESERVE_QUERY,
+  CREATE_LEICHIE_RESERVE,
+  CANCEL_LEICHIE_RESERVE,
+} from "../../graphql";
 
-const rows = [
-  createData("Team 1", 1, "壓克力", 3, "15:30"),
-  createData("Team 2", 2, "密集板", 5, "15:50"),
-  createData("Team 3", 3, "密集板", 5, "16:00"),
-  createData("Team 4", 4, "壓克力", 3, "16:10"),
-  createData("Team 5", 5, "密集板", 5, "16:20"),
-];
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-  // height: '200px',
-}));
 // --- --- ---
+// 問題：沒有取得使用者組別，變成要自行輸入＋F5後會重置
+// 問題：還沒寫subscribe導致等候組數只能F5刷新 QQ
+
 export default function LaserCutter() {
   // --- States ---
-  const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
   const [open, setOpen] = useState(false); // 開啟預約管理
   const [reserved, setReserved] = useState(false); // 是否已預約借用
   const [material, setMaterial] = useState(1); // 預約雷切機 材料
   const [thickness, setThickness] = useState(1); // 預約雷切機 厚度
-
+  const [waiting, setWaiting] = useState();
+  const [teamId, setTeamId] = useState();
   const handleOpen = () => setOpen(true); // 開啟預約雷切機
   const handleClose = () => setOpen(false); // 關閉預約雷切機
 
+  const [newReserve] = useMutation(CREATE_LEICHIE_RESERVE);
+  const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE);
+  // const [allReserve] = useLazyQuery(LEICHIE_RESERVE_QUERY);
+  const [getReserve, { loading, data, subscribeToMore }] = useLazyQuery(
+    LEICHIE_RESERVE_QUERY
+  );
+
+  useEffect(() => {
+    waitingNum();
+  }, [waiting]);
+
+  const waitingNum = () => {
+    getReserve().then((res) => {
+      const { laserCutterReservation } = res.data;
+      var n = Object.keys(laserCutterReservation ?? []).length;
+      console.log("等候組數：", n);
+      setWaiting(n);
+      return n;
+    });
+
+    // console.log("等候組數：" , n);
+
+    return 0;
+  };
+
+  const materialString = (material) => {
+    if (material == 1) return "壓克力";
+    if (material == 2) return "密集板";
+  };
+
+  const thicknessString = (thickness) => {
+    if (thickness == 1) return "5";
+    if (thickness == 2) return "3";
+  };
   const modalStyle = {
     display: "flex",
     flexWrap: "wrap",
-    border: "0.5px solid #fff",
-    boxShadow: 24,
     p: 3,
   };
 
@@ -73,6 +95,18 @@ export default function LaserCutter() {
   const borrowForm = (
     <>
       <Box component="form" sx={modalStyle}>
+        {/* team id? */}
+
+        <TextField
+          required
+          id="standard-basic"
+          label="Enter Team ID"
+          variant="standard"
+          value={teamId}
+          onChange={(e) => setTeamId(e.target.value.trim())}
+          helperText={teamId ? "" : "必填"}
+        />
+
         <FormControl>
           {/* 選取材料 */}
           <InputLabel id="demo-simple-select-label">材料</InputLabel>
@@ -128,35 +162,26 @@ export default function LaserCutter() {
       <DialogActions sx={{ bgcolor: "rgba(0,0,0)" }}>
         <Button onClick={handleClose}>離開</Button>
         <Button
+          disabled={!teamId}
           onClick={() => {
             setReserved(true); // 使用完成後要設定為false
+            setOpen(!open);
+            console.log(teamId, "material: ", materialString(material));
+            console.log("thickness: ", thicknessString(thickness));
+            // send to DB
+            newReserve({
+              variables: {
+                info: {
+                  teamId,
+                  material: materialString(material),
+                  thickness: thicknessString(thickness),
+                },
+              },
+            });
           }}
         >
           送出
         </Button>
-      </DialogActions>
-    </>
-  );
-
-  // 已登記借用/取消借用
-  const cancelFrom = (
-    <>
-      <Box component="form" sx={modalStyle}>
-        <Typography>
-          已登記借用：
-          {material == 1 ? "壓克力" : material == 2 ? "密集板" : "NA"}（
-          {thickness == 1 ? "5 mm" : thickness == 2 ? "3 mm" : "NA"}）
-        </Typography>
-      </Box>
-      <DialogActions sx={{ bgcolor: "rgba(0,0,0)" }}>
-        <Button
-          onClick={() => {
-            setReserved(false);
-          }}
-        >
-          取消預約
-        </Button>
-        <Button onClick={handleClose}>Ok</Button>
       </DialogActions>
     </>
   );
@@ -179,78 +204,81 @@ export default function LaserCutter() {
           justifyContent: "space-between",
         }}
       >
-        <p>雷射切割機 借用情況</p>
-        <Button
-          size="large"
-          sx={{ color: "rgba(255,255,255)" }}
-          startIcon={<EditIcon />}
-          onClick={handleOpen}
-        >
-          預約管理
-        </Button>
-        {/* 新增雷切機的視窗 */}
-        <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
-          <DialogTitle sx={{ bgcolor: "rgba(0,0,0)" }}>借用資訊</DialogTitle>
-          <DialogContent sx={{ bgcolor: "rgba(0,0,0)" }}>
-            {reserved ? cancelFrom : borrowForm}
-          </DialogContent>
-        </Dialog>
+        <p>雷射切割機 預約管理</p>
       </Box>
 
-      <Box sx={{ width: "90%", border: 1 }}>
-        <LaserCutterBox />
+      <Box sx={{ width: "90%", border: 0, fontSize: 28, padding: 1 }}>
+        {/* <LaserCutterBox /> */}
+        {/* {cancelFrom} */}
+        {/* {cancelFrom} */}
+        <p>
+          {reserved
+            ? `Team #${teamId} 已登記借用：${materialString(
+                material
+              )}（${thicknessString(thickness)} mm）`
+            : "未預約"}
+        </p>
+
+        <Stack direction="row" spacing={2} sx={{ width: "40%" }}>
+          <Button
+            size="large"
+            sx={{ color: "rgba(255,255,255)", border: 1 }}
+            startIcon={<EditIcon />}
+            onClick={handleOpen}
+            disabled={reserved}
+          >
+            我要預約
+          </Button>
+          <Button
+            size="large"
+            sx={{ color: "rgba(255,255,255)", border: 1 }}
+            startIcon={<EditIcon />}
+            onClick={() => {
+              setReserved(false);
+              cancelReserve({ variables: { teamId } });
+            }}
+            disabled={!reserved}
+          >
+            取消預約
+          </Button>
+        </Stack>
+
+        {/* 新增雷切機的視窗 */}
+        <Dialog disableEscapeKeyDown open={open} onClose={handleClose}>
+          {/* <DialogTitle sx={{ bgcolor: "rgba(0,0,0)" }}>借用資訊</DialogTitle> */}
+          <DialogContent sx={{ bgcolor: "rgba(0,0,0)" }}>
+            {reserved ? "" : borrowForm}
+          </DialogContent>
+        </Dialog>
+
+        <p style={{ fontSize: "20px", marginTop: "50px" }}>
+          {/* 雷切機數量：{laserNumber} 台 */}
+        </p>
+        {/* <p style={{ fontSize: "20px" }}>使用時間上限：{laserTime} mins</p> */}
+        {/* <Button
+          size="small"
+          sx={{ color: "rgba(255,255,255)", border: 1, borderRadius: 20 }}
+          onClick={() => {
+            waitingNum();
+          }}
+        >
+          刷新
+        </Button> */}
+        <p style={{ fontSize: "20px" }}>等候組數：{waiting}</p>
       </Box>
+
       <Stack
-        direction="row"
+        direction="column"
         sx={{
-          width: "90%",
-          height: 80,
+          // width: "90%",
+          // height: 80,
           fontSize: 20,
           fontWeight: "medium",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          // justifyContent: "space-between",
+          // alignItems: "center",
         }}
-      >
-        <p>雷切機數量：{laserNumber} 台</p>
-        <p>使用時間上限：{laserTime} mins</p>
-      </Stack>
-
-      <Box sx={{ width: "80%", margin: "auto", m: 2 }}>
-        <TableContainer component={Paper} sx={{ height: 280 }}>
-          <Table
-            stickyHeader
-            sx={{ minWidth: "80%" }}
-            aria-label="simple table"
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">組別 </TableCell>
-                <TableCell align="center">排序</TableCell>
-                <TableCell align="center">材料</TableCell>
-                <TableCell align="center">厚度</TableCell>
-                <TableCell align="center">預計使用</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.team}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row" align="center">
-                    {row.team}
-                  </TableCell>
-                  <TableCell align="center">{row.order}</TableCell>
-                  <TableCell align="center">{row.material}</TableCell>
-                  <TableCell align="center">{row.thickness}</TableCell>
-                  <TableCell align="center">{row.arrangement}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+      ></Stack>
     </Box>
   );
 }

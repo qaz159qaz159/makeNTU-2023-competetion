@@ -10,7 +10,7 @@
     "@graphql-tools/schema": "^9.0.12",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.11.3",
-    "@mui/styles": "^5.10.10",
+    "@mui/styles": "^5.11.2",
     "@reduxjs/toolkit": "^1.1.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

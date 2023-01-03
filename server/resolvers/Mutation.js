@@ -10,12 +10,14 @@ const Mutation = {
     { info: { name, type, duration } },
     { req, pubsub }
   ) => {
+    // const user = await Model.UserModel.findOne({ id: req.session.userId });
+
     const machine = await new Model.Machine({
       name: name,
       type: type,
       status: -1,
       duration: duration,
-      user: [],
+      // user: user._id,
       completeTime: -1,
     }).save();
     console.log(machine);

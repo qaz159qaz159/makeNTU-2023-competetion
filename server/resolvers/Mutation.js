@@ -67,9 +67,10 @@ const Mutation = {
   
 // ======== Laser Cutter ========
   createLaserCutter: async (
-    parents,
-    { info: { id, status, duration, user, completeTime } }, { pubsub }
-  ) =>
+      parents,
+      { info: { id, status, duration, user, completeTime } },
+      { pubsub }
+    ) =>
     {
       let laserCutter = await Model.LaserCutterModel.findOne({ id });
       if (!laserCutter) {
@@ -134,9 +135,9 @@ const Mutation = {
   // for reserving a laser cutter
   createLaserReserve: async (
     parents,
-    { info: { teamId, material, thickness } }
+    { info: { teamId, material, thickness } },
+    { pubsub }
   ) =>
-    // { pubsub }
     {
       // 曾經預約過-> 更新reserveStatus
       let reserveLaser = await ReserveLaserModel.findOneAndUpdate(

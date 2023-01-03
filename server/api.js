@@ -23,10 +23,6 @@ if (process.env.NODE_ENV === "development") {
 
 const router = express.Router();
 
-const { REDIS_HOST, REDIS_PORT } = process.env;
-const redisClient = redis.createClient(REDIS_PORT, REDIS_HOST);
-redisClient.on("error", console.error);
-
 const loginRequired = asyncHandler(async (req, res, next) => {
   if (!req.session.teamID) {
     res.status(403).end();
@@ -47,41 +43,6 @@ const permissionRequired = (permission) =>
 
 // ========================================
 // Session middleware
-
-const secret = uuid.v4();
-
-const RedisStore = connectRedis(session);
-
-const sessionOptions = {
-  cookie: {
-    path: "/",
-    httpOnly: true,
-    secure: false,
-    maxAge: null,
-  },
-  resave: false,
-  saveUninitialized: false,
-  secret,
-  unset: "destroy",
-  store: new RedisStore({
-    client: redisClient,
-    prefix: "ntuee-course-session:",
-  }),
-};
-
-// clear all sessions in redis
-sessionOptions.store.clear();
-
-if (process.env.NODE_ENV === "production") {
-  sessionOptions.cookie.secure = true; // Need https
-  if (!sessionOptions.cookie.secure) {
-    deprecate("Recommend to set secure cookie session if has https!\n");
-  } else {
-    console.log("Secure cookie is on");
-  }
-}
-
-router.use(session(sessionOptions));
 
 // ========================================
 

@@ -93,7 +93,7 @@ db.once("open", async () => {
       },
     ],
     context: async (input) => {
-      console.log("input = ", input);
+      // console.log("input = ", input);
       const req = input.req.headers;
       return { req, pubsub };
     },

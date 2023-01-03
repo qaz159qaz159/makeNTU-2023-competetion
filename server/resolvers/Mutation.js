@@ -1,30 +1,45 @@
+// import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
 const Mutation = {
+  createMachine: async (
+    parent,
+    { info: { name, type, duration } },
+    { req }
+  ) => {
+    const machine = await new Model.Machine({
+      name: name,
+      type: type,
+      status: -1,
+      duration: duration,
+      user: [],
+      completeTime: -1,
+    }).save();
+    return machine;
+  },
+  clearMachine: async (parent, args, { req }) => {
+    await Model.Machine.deleteMany({});
+    return "success";
+  },
   createLaserCutter: async (
     parents,
     { info: { id, status, duration, user, completeTime } },
     // { pubsub }
   ) => {
     let laserCutter = await Model.LaserCutterModel.findOne({ id });
-    if (!laserCutter) {
-      console.log("LaserCutterModel不存在 -> 建立LaserCutterModel");
+    if (!laserCutter){
+      console.log('LaserCutterModel不存在 -> 建立LaserCutterModel');
       // console.log({ id, status, duration, user, completeTime });
-      laserCutter = await new Model.LaserCutterModel({
-        id: id,
-        status: status,
-        duration: duration,
-        user: user,
-        completeTime: completeTime,
-      }).save();
-    } else {
+      laserCutter = await new Model.LaserCutterModel({ id: id, status: status, duration: duration, user: user, completeTime: completeTime }).save();
+    }
+    else{
       console.log("Find Current LaserCutter:", laserCutter.id);
     }
 
-    console.log("Validation of LaserCutter:", laserCutter);
+    console.log('Validation of LaserCutter:', laserCutter);
     return laserCutter;
   },
 
@@ -35,20 +50,20 @@ const Mutation = {
   ) => {
     let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
       { id },
-      {
-        $set: {
+      { $set: {
           status,
           duration,
           user,
           completeTime,
-        },
+        }
       },
-      { new: true }
+      {new: true}
     );
 
-    if (!laserCutter) {
-      console.log("Error LaserCutterModel不存在");
-    } else {
+    if (!laserCutter){
+      console.log('Error LaserCutterModel不存在');
+    }
+    else{
       console.log("Update Current LaserCutter:", laserCutter.id);
     }
 

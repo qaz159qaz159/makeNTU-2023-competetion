@@ -22,8 +22,12 @@ const teamSchema = new mongoose.Schema({
   },
   status: {
     // 0: idle, 1: using, 2: finished
-    type: String,
+    type: Number,
     required: true,
+  },
+  machine: {
+    type: [{ type: mongoose.Types.ObjectId, ref: "Machine" }],
+    required: false,
   },
 });
 

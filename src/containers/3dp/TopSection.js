@@ -18,10 +18,17 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
+// import MuiAlert from '@material-ui/lab/Alert';
+// import Snackbar from '@material-ui/core/Snackbar';
 
 /**
  * This is Main Page
  */
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 export default function Top(props) {
   const { isLogin, authority } = useSelector(selectSession);
   const [userList, setUserList] = useState([]);
@@ -140,6 +147,7 @@ export default function Top(props) {
   // User Request
   const [userRequestOpen, setUserRequestOpen] = React.useState(false);
   const [userRequestFinish, setUserRequestFinish] = React.useState(false);
+  const [userRequestState, setUserRequestState] = React.useState(-1); // -1: no 0: waiting, 1: ready, 2: using, 3: finished
 
   // User Request End
 
@@ -264,6 +272,13 @@ export default function Top(props) {
     });
   };
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setUserRequestOpen(false);
+  };
+
   const classes = useStyles();
   return (
     <>
@@ -304,10 +319,16 @@ export default function Top(props) {
             justifyContent: "center",
             alignItems: "center",
             padding: "30px",
+            // autoHideDuration: 3000,
           }}
         >
           <h1 style={{ color: "green" }}>預約成功</h1>
         </div>
+        //   <Snackbar open={userRequestFinish} autoHideDuration={6000} onClose={handleClose}>
+        //     <Alert onClose={handleClose} severity="success">
+        //       This is a success message!
+        //     </Alert>
+        // </Snackbar>
       )}
       {authority === 0 && (
         <Element name="title">

@@ -1,6 +1,7 @@
 type Query {
   machine: [Machine!]!
   laserCutter: [LaserCutter]
+  laserCutterReservation: [LaserCutterReservation]
 }
 
 type Mutation {
@@ -8,7 +9,8 @@ type Mutation {
   updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
   deleteLaserCutter(id: ID!): String
   createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
-  cancelLaserReserve(teamId: ID!): LaserCutterReservation!
+  cancelLaserReserve(teamId: ID!): LaserCutterReservation
+  clearLaserReserve: String
   createMachine(info: CreateMachineInfo!): Machine
   clearMachine: String
   deleteMachine(info: DeleteMachineInfo!): String

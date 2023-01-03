@@ -22,7 +22,8 @@ const Text = styled.h1`
 const Members = styled.div`
   width: 80%;
   display: flex;
-  height: 150px;
+  // height: 150px;
+  height: "auto";
   /* overflow:auto; */
   flex-direction: column;
   font-size: 12px;

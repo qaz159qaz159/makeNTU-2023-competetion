@@ -77,22 +77,24 @@ export const DEL_LEICHIE_MUTATION = gql`
 
 export const CREATE_LEICHIE_RESERVE = gql`
   mutation createLaserReserve($info: ReserveLaserCutter!) {
-    createLaserReserve(info: $info)
-    teamId
-    material
-    thickness
-    reserveStatus
-    updated_at
+    createLaserReserve(info: $info) {
+      teamId
+      material
+      thickness
+      reserveStatus
+      updated_at
+    }
   }
 `;
 
 export const CANCEL_LEICHIE_RESERVE = gql`
   mutation cancelLaserReserve($teamId: ID!) {
-    cancelLaserReserve(teamId: $teamId)
-    teamId
-    material
-    thickness
-    reserveStatus
-    updated_at
+    cancelLaserReserve(teamId: $teamId) {
+      teamId
+      material
+      thickness
+      reserveStatus
+      updated_at
+    }
   }
 `;

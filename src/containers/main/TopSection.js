@@ -78,11 +78,11 @@ export default function Top() {
                 <Grid item xs={12}>
                   <Button
                     style={{
-                      width: "70%",
+                      width: "60%",
                       height: "30%",
                       display: "flex",
                       margin: "auto",
-                      marginTop: "15%",
+                      marginTop: "10%",
                       marginBottom: "3%",
                     }}
                     variant="outlined"

@@ -25,3 +25,15 @@ export const LEICHIE_QUERY = gql`
     }
   }
 `;
+
+export const LEICHIE_RESERVE_QUERY = gql`
+  query laserCutterReservation {
+    laserCutterReservation {
+      teamId
+      material
+      thickness
+      reserveStatus
+      updated_at
+    }
+  }
+`;

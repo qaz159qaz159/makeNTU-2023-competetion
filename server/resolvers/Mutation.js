@@ -1,14 +1,14 @@
 // import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
-const { PubSub } = require('graphql-subscriptions');
-const pubsub = new PubSub();
+// const { PubSub } = require("graphql-subscriptions");
+// const pubsub = new PubSub();
 
 const Mutation = {
   createMachine: async (
     parent,
     { info: { name, type, duration } },
-    { req }
+    { req, pubsub }
   ) => {
     const machine = await new Model.Machine({
       name: name,
@@ -18,60 +18,102 @@ const Mutation = {
       user: [],
       completeTime: -1,
     }).save();
+    console.log(machine);
+    pubsub.publish("machineCreated", { machineCreated: machine });
     return machine;
   },
-  clearMachine: async (parent, args, { req }) => {
+  clearMachine: async (parent, args, { pubsub }) => {
     await Model.Machine.deleteMany({});
     return "success";
   },
+  deleteMachine: async (parent, { name }, { pubsub }) => {
+    const machine = await Model.Machine.deleteOne({ name: name });
+    pubsub.publish("machineDeleted", { machine: machine });
+    return "success";
+  },
+  userReserveMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: -1 });
+    if (!machine) {
+      return "no machine";
+    } else {
+        const reserveMachine = machine[0];
+        reserveMachine.status = 0;
+        reserveMachine.user.push(name);
+        reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
+        await reserveMachine.save();
+        pubsub.publish("UserReserveMachine", { machine: reserveMachine });
+        return reserveMachine;
+    }
+  },
+  userCancelMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: 0 });
+    if (!machine) {
+        return "no machine";
+    } else {
+        const cancelMachine = machine[0];
+        cancelMachine.status = -1;
+        cancelMachine.user = [];
+        cancelMachine.completeTime = -1;
+        await cancelMachine.save();
+        pubsub.publish("UserCancelMachine", { machine: cancelMachine });
+        return cancelMachine;
+    }
+  },
   createLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } },
+    { info: { id, status, duration, user, completeTime } }
+  ) =>
     // { pubsub }
-  ) => {
-    let laserCutter = await Model.LaserCutterModel.findOne({ id });
-    if (!laserCutter){
-      console.log('LaserCutterModel不存在 -> 建立LaserCutterModel');
-      // console.log({ id, status, duration, user, completeTime });
-      laserCutter = await new Model.LaserCutterModel({ id: id, status: status, duration: duration, user: user, completeTime: completeTime }).save();
-    }
-    else{
-      console.log("Find Current LaserCutter:", laserCutter.id);
-    }
+    {
+      let laserCutter = await Model.LaserCutterModel.findOne({ id });
+      if (!laserCutter) {
+        console.log("LaserCutterModel不存在 -> 建立LaserCutterModel");
+        // console.log({ id, status, duration, user, completeTime });
+        laserCutter = await new Model.LaserCutterModel({
+          id: id,
+          status: status,
+          duration: duration,
+          user: user,
+          completeTime: completeTime,
+        }).save();
+      } else {
+        console.log("Find Current LaserCutter:", laserCutter.id);
+      }
 
-    console.log('Validation of LaserCutter:', laserCutter);
-    return laserCutter;
-  },
+      console.log("Validation of LaserCutter:", laserCutter);
+      return laserCutter;
+    },
 
   updateLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } },
+    { info: { id, status, duration, user, completeTime } }
+  ) =>
     // { pubsub }
-  ) => {
-    let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
-      { id },
-      { $set: {
-          status,
-          duration,
-          user,
-          completeTime,
-        }
-      },
-      {new: true}
-    );
+    {
+      let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
+        { id },
+        {
+          $set: {
+            status,
+            duration,
+            user,
+            completeTime,
+          },
+        },
+        { new: true }
+      );
 
-    if (!laserCutter){
-      console.log('Error LaserCutterModel不存在');
-    }
-    else{
-      console.log("Update Current LaserCutter:", laserCutter.id);
-    }
+      if (!laserCutter) {
+        console.log("Error LaserCutterModel不存在");
+      } else {
+        console.log("Update Current LaserCutter:", laserCutter.id);
+      }
 
-    console.log("Validation of LaserCutter:", laserCutter);
-    console.log(pubsub.publish('LaserCutterInfo', { newInfo: laserCutter }));
-    pubsub.publish('LaserCutterInfo', { LaserCutterInfo: laserCutter });
-    return laserCutter;
-  },
+      console.log("Validation of LaserCutter:", laserCutter);
+      console.log(pubsub.publish("LaserCutterInfo", { newInfo: laserCutter }));
+      pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
+      return laserCutter;
+    },
 
   // delete laser cutter
   deleteLaserCutter: async(

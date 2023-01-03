@@ -6,22 +6,18 @@ const model = require("./database/mongo/model");
 const cors = require("cors");
 const json = require("body-parser").json;
 const { expressMiddleware } = require("@apollo/server/express4");
-// import { ApolloServer } from '@apollo/server';
 const { ApolloServer } = require("@apollo/server");
-// import { startStandaloneServer } from '@apollo/server/standalone';
-const { startStandaloneServer } = require("@apollo/server/standalone");
-// import * as fs from "fs";
 const fs = require("fs");
 const ApolloServerPluginDrainHttpServer =
   require("@apollo/server/plugin/drainHttpServer").ApolloServerPluginDrainHttpServer;
 const http = require("http");
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');
-const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { WebSocketServer } = require("ws");
+const { useServer } = require("graphql-ws/lib/use/ws");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const Subscription = require("./resolvers/Subscription");
-const { PubSub } = require('graphql-subscriptions');
+const { PubSub } = require("graphql-subscriptions");
 
 // ========================================
 
@@ -54,26 +50,52 @@ db.once("open", async () => {
       Query,
       Mutation,
       Subscription,
-    }, 
+    },
   });
 
   const pubsub = new PubSub();
 
   const httpServer = http.createServer(app);
-  // Creating the WebSocket server
   const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
     server: httpServer,
-    // Pass a different path here if app.use
-    // serves expressMiddleware at a different path
-    path: '/graphql',
+    path: "/graphql",
   });
 
-  // Hand in the schema we just created and have the
-  // WebSocketServer start listening.
-  const serverCleanup = useServer({
-    schema, 
-    context: {pubsub} 
+  const serverCleanup = useServer(
+    {
+      schema,
+      context: {
+        pubsub,
+        // execute: (args) => args.rootValue.execute(args),
+        // subscribe: (args) => args.rootValue.subscribe(args),
+        // onSubscribe: async (ctx, msg) => {
+        //   const {
+        //     schema,
+        //     execute,
+        //     subscribe,
+        //     contextFactory,
+        //     parse,
+        //     validate,
+        //   } = yoga.getEnveloped({
+        //     ...ctx,
+        //     req: ctx.extra.request,
+        //     socket: ctx.extra.socket,
+        //     params: msg.payload,
+        //   });
+        //
+        //   const args = {
+        //     schema,
+        //     operationName: msg.payload.operationName,
+        //     document: parse(msg.payload.query),
+        //     variableValues: msg.payload.variables,
+        //     contextValue: await contextFactory(),
+        //     rootValue: {
+        //       execute,
+        //       subscribe,
+        //     },
+        //   };
+        // },
+      },
     },
     wsServer
   );
@@ -92,13 +114,7 @@ db.once("open", async () => {
         },
       },
     ],
-    context: async (input) => {
-      // console.log("input = ", input);
-      const req = input.req.headers;
-      return { req, pubsub };
-    },
   });
-
 
   await server.start();
 
@@ -106,7 +122,13 @@ db.once("open", async () => {
   app.use(express.static("build"));
 
   app.use("/api", apiRouter);
-  app.use("/graphql", cors(), json(), expressMiddleware(server));
+  app.use("/graphql", cors(), json(), expressMiddleware(server, {
+    context: async (input) => {
+      // console.log("input = ", input);
+      const req = input.req.headers;
+      return { req, pubsub };
+    },
+  }));
 
   // app.listen(port, () =>
   //   console.log(`App listening at http://localhost:${port}`)

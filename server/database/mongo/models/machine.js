@@ -23,7 +23,7 @@ const MachineSchema = new mongoose.Schema({
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  id: { 
+  id: {
     type: String,
     required: true,
   },
@@ -48,7 +48,6 @@ const LaserCutterSchema = new mongoose.Schema({
 });
 
 const LaserCutterModel = conn.model("LaserCutter", LaserCutterSchema);
-
 
 module.exports = {
   Machine,

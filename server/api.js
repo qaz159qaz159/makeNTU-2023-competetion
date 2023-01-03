@@ -52,36 +52,35 @@ const secret = uuid.v4();
 const RedisStore = connectRedis(session);
 
 const sessionOptions = {
-  cookie: {
-    path: "/",
-    httpOnly: true,
-    secure: false,
-    maxAge: null,
-  },
-  resave: false,
-  saveUninitialized: false,
-  secret,
-  unset: "destroy",
-  store: new RedisStore({
-    client: redisClient,
-    prefix: "ntuee-course-session:",
-  }),
+    cookie: {
+        path: "/",
+        httpOnly: true,
+        secure: false,
+        maxAge: null,
+    },
+    resave: false,
+    saveUninitialized: false,
+    secret,
+    unset: "destroy",
+    store: new RedisStore({
+        client: redisClient,
+        prefix: "ntuee-course-session:",
+    }),
 };
 
 // clear all sessions in redis
 sessionOptions.store.clear();
 
 if (process.env.NODE_ENV === "production") {
-  sessionOptions.cookie.secure = true; // Need https
-  if (!sessionOptions.cookie.secure) {
-    deprecate("Recommend to set secure cookie session if has https!\n");
-  } else {
-    console.log("Secure cookie is on");
-  }
+    sessionOptions.cookie.secure = true; // Need https
+    if (!sessionOptions.cookie.secure) {
+        deprecate("Recommend to set secure cookie session if has https!\n");
+    } else {
+        console.log("Secure cookie is on");
+    }
 }
 
 router.use(session(sessionOptions));
-
 // ========================================
 
 // ======================================== Machine API ========================================

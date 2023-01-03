@@ -9,6 +9,12 @@ import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import { Modal } from "@mui/material";
+// import { useMutation } from "@apollo/client";
+// import {
+//   DEL_LEICHIE_MUTATION,
+// } from "../../graphql";
+
+// const [deleteLeichie] = useMutation(DEL_LEICHIE_MUTATION);
 
 // 預計完成時間
 const showTime = (status, completeTime) => {
@@ -18,8 +24,8 @@ const showTime = (status, completeTime) => {
 };
 // 機台使用狀態
 const showStatus = (status) => {
-  if (status == 0) return "○ 準備中";
-  if (status == 1) return "● 運作中";
+  if (status === 0) return "○ 準備中";
+  if (status === 1) return "● 運作中";
   return "X 暫停使用"; // debug
 };
 // const [open, setOpen] = useState(false);
@@ -49,6 +55,8 @@ const cards = ({
   setLaserNumber,
   laserIdx,
   setLaserIdx,
+  deleteLeichei,
+  updatedLeichie
 }) => {
   // const [open, setOpen] = useState(false); // why 不能用！！！！！？？？？
   return (
@@ -126,7 +134,22 @@ const cards = ({
                 variant="outlined"
                 startIcon={<CheckIcon />}
 
-                // todo: onclick -> 使用完成(狀態切換為 準備中)
+                // todo: 前端按鈕顯示轉換
+                // 判斷邏輯： 運作中點擊使用完成 status: 1 -> 0
+                //          暫停使用點擊恢復使用 status: -1 -> 0
+                onClick={() => {
+                  console.log("Updating LeiChie");
+                  updatedLeichie({
+                    variables: {
+                      info: {
+                        id: leichieId,
+                        status: 0,
+                        user: null,
+                        completeTime: null,
+                      },
+                    },
+                  })
+                }}
               >
                 使用完成
               </Button>
@@ -137,10 +160,8 @@ const cards = ({
                 variant="outlined"
                 startIcon={<DeleteIcon />}
                 onClick={() => {
-                  // setOpen(!open);
                   console.log("laserNumber " + laserNumber);
-                  setLaserNumber(laserNumber - 1);
-                  setLaserIdx(laserIdx.filter((item) => item !== leichieId));
+                  deleteLeichei({ variables: { id: leichieId } });
                 }}
               >
                 移除機台

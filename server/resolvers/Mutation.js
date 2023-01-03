@@ -117,15 +117,31 @@ const Mutation = {
       console.log("Update Current LaserCutter:", laserCutter.id);
     }
     console.log("Validation of LaserCutter:", laserCutter);
-    console.log(pubsub.publish("LaserCutterInfo", { newInfo: laserCutter }));
     pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
     return laserCutter;
   },
   // delete laser cutter
   deleteLaserCutter: async (parents, { id }, { pubsub }) => {
-    await Model.LaserCutterModel.deleteOne({ id });
+    // Set status to '-1'.
+    const laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          status: '-1',
+        },
+      },
+      { new: true }
+    );
+    if (!laserCutter) {
+      console.log("Error LaserCutterModel不存在");
+    } else {
+      console.log("Delete Current LaserCutter:", laserCutter.id);
+    }
+    console.log("Validation of LaserCutter:", laserCutter);
+    pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter});
 
-    // 是不是要加pubsub?
+
+    // 是不是要加pubsub? Yes
 
     return "success"
   },

@@ -1,6 +1,6 @@
 type Query {
   machine: [Machine!]!
-  laserCutter: [LaserCutter]
+  laserCutter: [LaserCutter!]!
 }
 
 type Mutation {
@@ -62,7 +62,7 @@ input UpdateLaserInfo {
 type LaserCutter {
   id: ID!
   status: Int!
-  duration: Int!
+  duration: Int
   user: String
   completeTime: String
 }

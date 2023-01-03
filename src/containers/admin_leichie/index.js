@@ -16,10 +16,11 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MenuItem, Select } from "@mui/material";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import {
+  LASERCUTTER_UPDATE_SUBSCRIPTION,
   CREATE_LEICHIE_MUTATION,
   UPDATE_LEICHIE_MUTATION,
   LEICHIE_QUERY,
@@ -123,9 +124,62 @@ export default function LaserCutter() {
   const handleConfirm = () => {
     setOpen(false);
   };
-
+  
+  const { data, loading, subscribeToMore } = useQuery(LEICHIE_QUERY);
   const [newLeichie] = useMutation(CREATE_LEICHIE_MUTATION);
   const [updatedLeichie] = useMutation(UPDATE_LEICHIE_MUTATION);
+  const [deleteLeichie] = useMutation(DEL_LEICHIE_MUTATION);
+
+  useEffect(() => {
+    try {
+        subscribeToMore({
+            document: LASERCUTTER_UPDATE_SUBSCRIPTION,
+            variables: {},
+            updateQuery: (prev, {subscriptionData}) => {
+                if (!subscriptionData.data) {
+                  console.log("Subscription failed");
+                  return prev;
+                }
+                const newFeedItem = subscriptionData.data.LaserCutterInfo;
+                console.log("prev", prev);
+                console.log("sub data", subscriptionData.data);
+                switch(subscriptionData.data.LaserCutterInfo.status){
+                  // TODO: other cases!
+                  case -1:
+                    return Object.assign({}, prev, {
+                      // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                      laserCutter: prev.laserCutter
+                    });
+
+                  // '新增機台'或是'使用完成'
+                  case 0:
+                    if ( prev.laserCutter.find( obj => obj.id === newFeedItem.id ) ){ // 已存在，狀態：改為'使用完成'
+                      return Object.assign({}, prev, {
+                        // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                        laserCutter: prev.laserCutter
+                        
+                      });
+                    }
+                    else{ // 新增機台
+                      return Object.assign({}, prev, {
+                        laserCutter: [...prev.laserCutter, newFeedItem]
+                      });
+                    }
+                  default:
+                    console.log("Case undefined");
+                    return Object.assign({}, prev, {
+                      laserCutter: prev.laserCutter
+                    });
+                }
+                // return Object.assign({}, prev, {
+                //     // laserCutter: [...prev.laserCutter, newFeedItem],
+                //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
+                // });
+              }})
+    } catch (error) {
+        console.log(error);
+    }
+  }, [subscribeToMore]);
 
   const modalStyle = {
     position: "absolute",
@@ -139,6 +193,14 @@ export default function LaserCutter() {
     boxShadow: 24,
     p: 3,
   };
+  
+  if(loading){
+    return "Loading..."
+    // console.log("data:", data?.laserCutter);
+    // setLaserCutterInfo(data.laserCutter);
+  }
+  console.log("data:", data?.laserCutter);
+
   return (
     <Box
       sx={{
@@ -192,7 +254,7 @@ export default function LaserCutter() {
                         }
                         setLaserNo(id);
                         // send to DB
-                        newLeichie({ variables: { info: { id } } });
+                        newLeichie({ variables: { info: { id, status: 0, duration: laserTime, user: null, completeTime: null } } });
                       } else {
                         alert("請輸入整數 ID");
                         return;
@@ -245,11 +307,13 @@ export default function LaserCutter() {
       {/* ------- 雷切狀態列 ------- */}
       <Box sx={{ width: "90%", border: 1 }}>
         <LaserCutterBox
-          laserCutterInfo={laserCutterInfo}
-          laserNumber={laserNumber}
+          laserCutterInfo={data.laserCutter}
+          laserNumber={data.laserCutter.length}
           setLaserNumber={setLaserNumber}
-          laserIdx={laserIdx}
+          laserIdx={[...Array(data.laserCutter.length).keys()].map((i) => i + 1)}
           setLaserIdx={setLaserIdx}
+          deleteLeichei={deleteLeichie}
+          updatedLeichie={updatedLeichie}
         />
       </Box>
       {/* ------- 雷切工具列 ------- */}
@@ -265,7 +329,7 @@ export default function LaserCutter() {
           alignItems: "center",
         }}
       >
-        <p>雷切機數量：{laserNumber} 台</p>
+        <p>雷切機數量：{data.laserCutter.length} 台</p>
         <p>時間上限：{laserTime} mins</p>
         <Stack direction="row">
           <TextField

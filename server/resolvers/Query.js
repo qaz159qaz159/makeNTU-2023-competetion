@@ -6,8 +6,8 @@ const Query = {
     return machines;
   },
 
-  laserCutter: async (parents, __, { req }) => {
-    let laser = await Model.LaserCutterModel.find().sort({ id: 1 });
+  laserCutter: async (parents, args, { pubsub }) => {
+    const laser = await Model.LaserCutterModel.find().sort({ id: 1 });
     console.log(laser);
     return laser;
   },

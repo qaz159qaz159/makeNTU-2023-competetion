@@ -13,3 +13,15 @@ export const MACHINE_UPDATE_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const LASERCUTTER_UPDATE_SUBSCRIPTION = gql`
+  subscription LaserCutterInfo {
+    LaserCutterInfo {
+      id
+      status
+      duration
+      user
+      completeTime
+    }
+  }
+`;

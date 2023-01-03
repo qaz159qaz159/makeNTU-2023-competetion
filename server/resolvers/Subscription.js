@@ -20,7 +20,7 @@ const Subscription = {
   LaserCutterInfo: {
     subscribe: (parent, args, { pubsub }, info) => {
       // console.log(context);
-      console.log(pubsub.asyncIterator("LaserCutterInfo"));
+      // console.log(pubsub.asyncIterator("LaserCutterInfo"));
       return pubsub.asyncIterator("LaserCutterInfo");
     },
   },

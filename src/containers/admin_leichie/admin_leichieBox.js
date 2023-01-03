@@ -10,7 +10,10 @@ const LaserCutterBox = ({
   setLaserNumber,
   laserIdx,
   setLaserIdx,
-}) => (
+  deleteLeichei,
+  updatedLeichie
+}) => {
+  return(
   <Card>
     <CardContent style={{ padding: 0 }}>
       {/* Grid container for all cards */}
@@ -30,9 +33,8 @@ const LaserCutterBox = ({
             <LaserCutterCards
               key={i}
               leichieId={c.id}
-              // leichieName={c.name}
               status={c.status}
-              groupNo={c.usedBy}
+              groupNo={c.user}
               doneTime={c.completeTime}
               done={c.done}
               remove={c.remove}
@@ -40,12 +42,14 @@ const LaserCutterBox = ({
               setLaserNumber={setLaserNumber}
               laserIdx={laserIdx}
               setLaserIdx={setLaserIdx}
+              deleteLeichei={deleteLeichei}
+              updatedLeichie={updatedLeichie}
             />
           );
         })}
       </Grid>
     </CardContent>
   </Card>
-);
+)};
 
 export default LaserCutterBox;

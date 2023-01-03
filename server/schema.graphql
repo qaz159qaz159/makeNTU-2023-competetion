@@ -9,15 +9,14 @@ type Mutation {
   deleteLaserCutter(id: ID!): String
   createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
   cancelLaserReserve(teamId: ID!): LaserCutterReservation!
+  laserCutterReserve(teamId: ID!): LaserCutterReservation!
   createMachine(info: CreateMachineInfo!): Machine
   clearMachine: String
+  deleteMachine: String
+  userReserveMachine(info: ReserveMachineInfo!): MachineReservation!
+  userCancelMachine(teamId: ID!): MachineReservation!
 }
 
-input CreateMachineInfo {
-  name: String!
-  type: String!
-  duration: Int!
-}
 
 #  不是很確定要怎麼寫TT
 type Subscription {
@@ -25,6 +24,21 @@ type Subscription {
   LaserCutterReservation(teamId: ID!): LaserCutterReservation!
   machineCreated: Machine
   machineUpdated: Machine
+}
+
+input ReserveMachineInfo {
+  teamId: ID!
+}
+
+type MachineReservation {
+  teamId: ID!
+  machineId: ID!
+}
+
+input CreateMachineInfo {
+  name: String!
+  type: String!
+  duration: Int!
 }
 
 input CreateLaserInfo {

@@ -5,3 +5,11 @@ export {
   USER_RESERVE_MACHINE_MUTATION,
   USER_CANCEL_MACHINE_MUTATION,
 } from "./mutation";
+
+export {
+    MACHINE_UPDATE_SUBSCRIPTION,
+} from "./subscription";
+
+export {
+    MACHINE_QUERY,
+} from "./query";

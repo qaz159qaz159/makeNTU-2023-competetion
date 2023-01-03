@@ -20,6 +20,7 @@ const Mutation = {
     }).save();
     console.log(machine);
     pubsub.publish("machineCreated", { machineCreated: machine });
+    pubsub.publish("machineUpdated", { machineUpdated: machine });
     return machine;
   },
   clearMachine: async (parent, args, { pubsub }) => {

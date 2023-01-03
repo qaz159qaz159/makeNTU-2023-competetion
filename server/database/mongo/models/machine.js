@@ -16,7 +16,7 @@ const MachineSchema = new mongoose.Schema({
   type: { type: String, required: true },
   status: { type: Number },
   duration: { type: Number, required: true },
-  user: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  user: { type: mongoose.Types.ObjectId, ref: "User" },
   completeTime: { type: Number },
 });
 

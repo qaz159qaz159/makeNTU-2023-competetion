@@ -1,5 +1,5 @@
 type Query {
-  machine: Machine
+  machine: [Machine!]!
   laserCutter: [LaserCutter]
 }
 
@@ -76,7 +76,7 @@ type Machine {
   status: Int!
   duration: Int!
   user: String
-  completeTime: String
+  completeTime: Int
 }
 
 # ======== Resevation of laser cutter ========

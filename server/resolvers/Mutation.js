@@ -1,7 +1,7 @@
 // import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
-const { PubSub } = require('graphql-subscriptions');
+const { PubSub } = require("graphql-subscriptions");
 const pubsub = new PubSub();
 
 const Mutation = {
@@ -26,61 +26,64 @@ const Mutation = {
   },
   createLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } },
+    { info: { id, status, duration, user, completeTime } }
+  ) =>
     // { pubsub }
-  ) => {
-    let laserCutter = await Model.LaserCutterModel.findOne({ id });
-    if (!laserCutter){
-      console.log('LaserCutterModel不存在 -> 建立LaserCutterModel');
-      // console.log({ id, status, duration, user, completeTime });
-      laserCutter = await new Model.LaserCutterModel({ id: id, status: status, duration: duration, user: user, completeTime: completeTime }).save();
-    }
-    else{
-      console.log("Find Current LaserCutter:", laserCutter.id);
-    }
+    {
+      let laserCutter = await Model.LaserCutterModel.findOne({ id });
+      if (!laserCutter) {
+        console.log("LaserCutterModel不存在 -> 建立LaserCutterModel");
+        // console.log({ id, status, duration, user, completeTime });
+        laserCutter = await new Model.LaserCutterModel({
+          id: id,
+          status: status,
+          duration: duration,
+          user: user,
+          completeTime: completeTime,
+        }).save();
+      } else {
+        console.log("Find Current LaserCutter:", laserCutter.id);
+      }
 
-    console.log('Validation of LaserCutter:', laserCutter);
-    return laserCutter;
-  },
+      console.log("Validation of LaserCutter:", laserCutter);
+      return laserCutter;
+    },
 
   updateLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } },
+    { info: { id, status, duration, user, completeTime } }
+  ) =>
     // { pubsub }
-  ) => {
-    let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
-      { id },
-      { $set: {
-          status,
-          duration,
-          user,
-          completeTime,
-        }
-      },
-      {new: true}
-    );
+    {
+      let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
+        { id },
+        {
+          $set: {
+            status,
+            duration,
+            user,
+            completeTime,
+          },
+        },
+        { new: true }
+      );
 
-    if (!laserCutter){
-      console.log('Error LaserCutterModel不存在');
-    }
-    else{
-      console.log("Update Current LaserCutter:", laserCutter.id);
-    }
+      if (!laserCutter) {
+        console.log("Error LaserCutterModel不存在");
+      } else {
+        console.log("Update Current LaserCutter:", laserCutter.id);
+      }
 
-    console.log("Validation of LaserCutter:", laserCutter);
-    console.log(pubsub.publish('LaserCutterInfo', { newInfo: laserCutter }));
-    pubsub.publish('LaserCutterInfo', { LaserCutterInfo: laserCutter });
-    return laserCutter;
-  },
+      console.log("Validation of LaserCutter:", laserCutter);
+      console.log(pubsub.publish("LaserCutterInfo", { newInfo: laserCutter }));
+      pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
+      return laserCutter;
+    },
 
   // delete laser cutter
-  deleteLaserCutter: async(
-    parents,
-    { id },
-    { pubsub }
-  ) => {
+  deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     await Model.LaserCutterModel.deleteOne({ id });
-    console.log("delete laser cutter # "+id)
+    console.log("delete laser cutter # " + id);
     return "success";
   },
 

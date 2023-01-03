@@ -12,7 +12,7 @@ const Query = {
     let laser = await Model.LaserCutterModel.find().sort({ id: 1 });
     console.log(laser);
     return laser;
-    }
-  };
+  },
+};
 
 module.exports = Query;

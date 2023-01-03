@@ -18,6 +18,14 @@ import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
 import { useState } from "react";
 import { MenuItem, Select } from "@mui/material";
+import { useMutation, useLazyQuery } from "@apollo/client";
+import {
+  CREATE_LEICHIE_MUTATION,
+  UPDATE_LEICHIE_MUTATION,
+  LEICHIE_QUERY,
+} from "../../graphql";
+
+// try to connect to database
 
 // --- Table info ---
 function createData(team, order, material, thickness, arrangement) {
@@ -113,6 +121,9 @@ export default function LaserCutter() {
     setOpen(false);
   };
 
+  const [newLeichie] = useMutation(CREATE_LEICHIE_MUTATION);
+  const [updatedLeichie] = useMutation(UPDATE_LEICHIE_MUTATION);
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -177,6 +188,8 @@ export default function LaserCutter() {
                           return;
                         }
                         setLaserNo(id);
+                        // send to DB
+                        newLeichie({ variables: { info: { id: 1 } } });
                       } else {
                         alert("請輸入整數 ID");
                         return;
@@ -262,7 +275,7 @@ export default function LaserCutter() {
             variant="standard"
             color="secondary"
             onChange={(e) => {
-              setTimeChange(e.target.value);
+              setTimeChange(ParseInt(e.target.value));
             }}
             value={timeChange}
           />
@@ -364,6 +377,9 @@ export default function LaserCutter() {
 
                         console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
 
+                        // remove team from the reservation
+                        // todo useMutation
+
                         if (row.arrangement == 99)
                           alert("將隊伍 " + row.team + " 移除等候隊伍");
                         else {
@@ -377,6 +393,19 @@ export default function LaserCutter() {
 
                             laserCutterInfo[tmp].completeTime =
                               completeTime(timeChange);
+
+                            // update laser cutter info
+                            updatedLeichie({
+                              variables: {
+                                info: {
+                                  id: row.arrangement,
+                                  status: 1,
+                                  duration: timeChange,
+                                  user: row.team,
+                                  completeTime: completeTime(timeChange),
+                                },
+                              },
+                            });
                             return laserCutterInfo;
                           });
                           alert(

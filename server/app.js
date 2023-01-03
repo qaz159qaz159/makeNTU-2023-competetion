@@ -15,13 +15,13 @@ const fs = require("fs");
 const ApolloServerPluginDrainHttpServer =
   require("@apollo/server/plugin/drainHttpServer").ApolloServerPluginDrainHttpServer;
 const http = require("http");
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');
-const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { WebSocketServer } = require("ws");
+const { useServer } = require("graphql-ws/lib/use/ws");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const Subscription = require("./resolvers/Subscription");
-const { PubSub } = require('graphql-subscriptions');
+const { PubSub } = require("graphql-subscriptions");
 
 // ========================================
 
@@ -54,7 +54,7 @@ db.once("open", async () => {
       Query,
       Mutation,
       Subscription,
-    }, 
+    },
   });
 
   const pubsub = new PubSub();
@@ -66,14 +66,15 @@ db.once("open", async () => {
     server: httpServer,
     // Pass a different path here if app.use
     // serves expressMiddleware at a different path
-    path: '/graphql',
+    path: "/graphql",
   });
 
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
-  const serverCleanup = useServer({
-    schema, 
-    context: {pubsub} 
+  const serverCleanup = useServer(
+    {
+      schema,
+      context: { pubsub },
     },
     wsServer
   );
@@ -98,7 +99,6 @@ db.once("open", async () => {
       return { req, pubsub };
     },
   });
-
 
   await server.start();
 

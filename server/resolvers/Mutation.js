@@ -73,6 +73,17 @@ const Mutation = {
     return laserCutter;
   },
 
+  // delete laser cutter
+  deleteLaserCutter: async(
+    parents,
+    { id },
+    { pubsub }
+  ) => {
+    await Model.LaserCutterModel.deleteOne({ id });
+    console.log("delete laser cutter # "+id)
+    return "success";
+  },
+
   // for reserving a laser cutter
   createLaserReserve: async (
     parents,

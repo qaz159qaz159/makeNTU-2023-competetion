@@ -7,6 +7,12 @@ const Query = {
       return machine;
     });
   },
-};
+
+  laserCutter: async (parents, __, { req }) => {
+    let laser = await Model.LaserCutterModel.find().sort({ id: 1 });
+    console.log(laser);
+    return laser;
+    }
+  };
 
 module.exports = Query;

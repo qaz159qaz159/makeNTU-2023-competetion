@@ -122,13 +122,18 @@ db.once("open", async () => {
   app.use(express.static("build"));
 
   app.use("/api", apiRouter);
-  app.use("/graphql", cors(), json(), expressMiddleware(server, {
-    context: async (input) => {
-      // console.log("input = ", input);
-      const req = input.req.headers;
-      return { req, pubsub };
-    },
-  }));
+  app.use(
+    "/graphql",
+    cors(),
+    json(),
+    expressMiddleware(server, {
+      context: async (input) => {
+        // console.log("input = ", input);
+        const req = input.req.headers;
+        return { req, pubsub };
+      },
+    })
+  );
 
   // app.listen(port, () =>
   //   console.log(`App listening at http://localhost:${port}`)

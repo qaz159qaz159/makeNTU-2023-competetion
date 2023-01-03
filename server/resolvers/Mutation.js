@@ -36,27 +36,27 @@ const Mutation = {
     if (!machine) {
       return "no machine";
     } else {
-        const reserveMachine = machine[0];
-        reserveMachine.status = 0;
-        reserveMachine.user.push(name);
-        reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
-        await reserveMachine.save();
-        pubsub.publish("UserReserveMachine", { machine: reserveMachine });
-        return reserveMachine;
+      const reserveMachine = machine[0];
+      reserveMachine.status = 0;
+      reserveMachine.user.push(name);
+      reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
+      await reserveMachine.save();
+      pubsub.publish("UserReserveMachine", { machine: reserveMachine });
+      return reserveMachine;
     }
   },
   userCancelMachine: async (parent, { name, type }, { pubsub }) => {
     const machine = await Model.Machine.find({ type: type, status: 0 });
     if (!machine) {
-        return "no machine";
+      return "no machine";
     } else {
-        const cancelMachine = machine[0];
-        cancelMachine.status = -1;
-        cancelMachine.user = [];
-        cancelMachine.completeTime = -1;
-        await cancelMachine.save();
-        pubsub.publish("UserCancelMachine", { machine: cancelMachine });
-        return cancelMachine;
+      const cancelMachine = machine[0];
+      cancelMachine.status = -1;
+      cancelMachine.user = [];
+      cancelMachine.completeTime = -1;
+      await cancelMachine.save();
+      pubsub.publish("UserCancelMachine", { machine: cancelMachine });
+      return cancelMachine;
     }
   },
   createLaserCutter: async (
@@ -116,13 +116,9 @@ const Mutation = {
     },
 
   // delete laser cutter
-  deleteLaserCutter: async(
-    parents,
-    { id },
-    { pubsub }
-  ) => {
+  deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     await Model.LaserCutterModel.deleteOne({ id });
-    console.log("delete laser cutter # "+id)
+    console.log("delete laser cutter # " + id);
     return "success";
   },
 

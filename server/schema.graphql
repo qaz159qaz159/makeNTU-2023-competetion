@@ -1,77 +1,76 @@
 type Query {
-    machine: Machine
+  machine: Machine
 }
 
-type Mutation{
-    createLaserCutter(info: CreateLaserInfo!): LaserCutter
-    updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
-    createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
-    cancelLaserReserve(teamId: ID!): LaserCutterReservation!
-    createMachine(info: CreateMachineInfo!): Machine
-    clearMachine: String
+type Mutation {
+  createLaserCutter(info: CreateLaserInfo!): LaserCutter
+  updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
+  createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
+  cancelLaserReserve(teamId: ID!): LaserCutterReservation!
+  createMachine(info: CreateMachineInfo!): Machine
+  clearMachine: String
 }
 
 input CreateMachineInfo {
-    name: String!
-    type: String!
-    duration: Int!
+  name: String!
+  type: String!
+  duration: Int!
 }
 
 #  不是很確定要怎麼寫TT
 type Subscription {
-LaserCutterInfo: LaserCutter!
-LaserCutterReservation(teamId: ID!): LaserCutterReservation!
-machineCreated: Machine
-machineUpdated: Machine
+  LaserCutterInfo: LaserCutter!
+  LaserCutterReservation(teamId: ID!): LaserCutterReservation!
+  machineCreated: Machine
+  machineUpdated: Machine
 }
 
 input CreateLaserInfo {
-id: ID!
-status: Int!
-duration: Int!
-user: String
-completeTime: String
+  id: ID!
+  status: Int!
+  duration: Int!
+  user: String
+  completeTime: String
 }
 
 input UpdateLaserInfo {
-id: ID!
-status: Int!
-duration: Int
-user: String
-completeTime: String
+  id: ID!
+  status: Int!
+  duration: Int
+  user: String
+  completeTime: String
 }
 
 type LaserCutter {
-id: ID!
-status: Int!
-duration: Int!
-user: String
-completeTime: String
+  id: ID!
+  status: Int!
+  duration: Int!
+  user: String
+  completeTime: String
 }
 
 type Machine {
-id: ID
-name: String!
-type: String!
-status: Int!
-duration: Int!
-user: String
-completeTime: String
+  id: ID
+  name: String!
+  type: String!
+  status: Int!
+  duration: Int!
+  user: String
+  completeTime: String
 }
-
 
 # ======== Resevation of laser cutter ========
 
 input ReserveLaserCutter {
-teamId: ID!
-material: String!
-thickness: String!
+  teamId: ID!
+  material: String!
+  thickness: String!
 }
 
 type LaserCutterReservation {
-teamId: ID!
-material: String
-thickness: String
-reserveStatus: Int # default=1
-updated_at: String!
+  teamId: ID!
+  material: String
+  thickness: String
+  reserveStatus: Int # default=1
+  updated_at: String!
 }

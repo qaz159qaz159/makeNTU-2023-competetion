@@ -8,7 +8,7 @@ const Mutation = {
   createMachine: async (
     parent,
     { info: { name, type, duration } },
-    { req }
+    { req, pubsub }
   ) => {
     const machine = await new Model.Machine({
       name: name,
@@ -18,11 +18,47 @@ const Mutation = {
       user: [],
       completeTime: -1,
     }).save();
+    console.log(machine);
+    pubsub.publish("machineCreated", { machineCreated: machine });
+    pubsub.publish("machineUpdated", { machineUpdated: machine });
     return machine;
   },
-  clearMachine: async (parent, args, { req }) => {
+  clearMachine: async (parent, args, { pubsub }) => {
     await Model.Machine.deleteMany({});
     return "success";
+  },
+  deleteMachine: async (parent, { name }, { pubsub }) => {
+    const machine = await Model.Machine.deleteOne({ name: name });
+    pubsub.publish("machineDeleted", { machine: machine });
+    return "success";
+  },
+  userReserveMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: -1 });
+    if (!machine) {
+      return "no machine";
+    } else {
+      const reserveMachine = machine[0];
+      reserveMachine.status = 0;
+      reserveMachine.user.push(name);
+      reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
+      await reserveMachine.save();
+      pubsub.publish("UserReserveMachine", { machine: reserveMachine });
+      return reserveMachine;
+    }
+  },
+  userCancelMachine: async (parent, { name, type }, { pubsub }) => {
+    const machine = await Model.Machine.find({ type: type, status: 0 });
+    if (!machine) {
+      return "no machine";
+    } else {
+      const cancelMachine = machine[0];
+      cancelMachine.status = -1;
+      cancelMachine.user = [];
+      cancelMachine.completeTime = -1;
+      await cancelMachine.save();
+      pubsub.publish("UserCancelMachine", { machine: cancelMachine });
+      return cancelMachine;
+    }
   },
   createLaserCutter: async (
     parents,

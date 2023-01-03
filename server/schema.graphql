@@ -1,20 +1,24 @@
 type Query {
   machine: Machine
+  laserCutter: [LaserCutter]
 }
 
 type Mutation {
   createLaserCutter(info: CreateLaserInfo!): LaserCutter
   updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
+  deleteLaserCutter(id: ID!): String
   createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
   cancelLaserReserve(teamId: ID!): LaserCutterReservation!
+  laserCutterReserve(teamId: ID!): LaserCutterReservation!
   createMachine(info: CreateMachineInfo!): Machine
   clearMachine: String
+  deleteMachine(info: DeleteMachineInfo!): String
+  userReserveMachine(info: ReserveMachineInfo!): MachineReservation!
+  userCancelMachine(teamId: ID!): MachineReservation!
 }
 
-input CreateMachineInfo {
+input DeleteMachineInfo {
   name: String!
-  type: String!
-  duration: Int!
 }
 
 #  不是很確定要怎麼寫TT
@@ -25,10 +29,25 @@ type Subscription {
   machineUpdated: Machine
 }
 
+input ReserveMachineInfo {
+  teamId: ID!
+}
+
+type MachineReservation {
+  teamId: ID!
+  machineId: ID!
+}
+
+input CreateMachineInfo {
+  name: String!
+  type: String!
+  duration: Int!
+}
+
 input CreateLaserInfo {
   id: ID!
-  status: Int!
-  duration: Int!
+  status: Int # mongo已經設定default就不用強制輸入
+  duration: Int # mongo已經設定default就不用強制輸入
   user: String
   completeTime: String
 }

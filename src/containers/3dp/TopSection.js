@@ -18,16 +18,20 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
-// import MuiAlert from '@material-ui/lab/Alert';
-// import Snackbar from '@material-ui/core/Snackbar';
+import { useQuery, useMutation, useSubscription } from "@apollo/client";
+import {
+  CREATE_MACHINE_MUTATION,
+  USER_RESERVE_MACHINE_MUTATION,
+  USER_CANCEL_MACHINE_MUTATION,
+  CLEAR_MACHINE_MUTATION,
+  DELETE_MACHINE_MUTATION,
+  MACHINE_UPDATE_SUBSCRIPTION,
+  MACHINE_QUERY,
+} from "../../graphql";
 
 /**
  * This is Main Page
  */
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 export default function Top(props) {
   const { isLogin, authority } = useSelector(selectSession);
@@ -39,6 +43,31 @@ export default function Top(props) {
   const [usings, setUsings] = useState([]);
   const [finisheds, setFinisheds] = useState([]);
   const [machineList, setMachineList] = useState([]);
+
+  const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
+  const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
+  const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
+  const [userReserveMachine] = useMutation(USER_RESERVE_MACHINE_MUTATION);
+  const [userCancelMachine] = useMutation(USER_CANCEL_MACHINE_MUTATION);
+  const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
+
+  useEffect(() => {
+    try {
+      subscribeToMore({
+        document: MACHINE_UPDATE_SUBSCRIPTION,
+        variables: {},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const newFeedItem = subscriptionData.data.machineUpdated;
+          return Object.assign({}, prev, {
+            machineList: [...prev.machineList, newFeedItem],
+          });
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [subscribeToMore]);
 
   useEffect(() => {
     setWaitings([
@@ -63,62 +92,62 @@ export default function Top(props) {
     ]);
 
     // idle inuse finished
-    setMachineList([
-      {
-        id: 0,
-        name: "3D Printer 1",
-        status: "idle",
-        userId: 0,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-      {
-        id: 1,
-        name: "3D Printer 2",
-        status: "idle",
-        userId: 1,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-      {
-        id: 2,
-        name: "3D Printer 3",
-        status: "idle",
-        userId: 2,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-      {
-        id: 3,
-        name: "3D Printer 4",
-        status: "idle",
-        userId: 3,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-      {
-        id: 4,
-        name: "3D Printer 5",
-        status: "idle",
-        userId: 4,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-      {
-        id: 5,
-        name: "3D Printer 6",
-        status: "idle",
-        userId: 5,
-        active: true,
-        leftTime: 0,
-        time: 0,
-      },
-    ]);
+    // setMachineList([
+    //   {
+    //     id: 0,
+    //     name: "3D Printer 1",
+    //     status: "idle",
+    //     userId: 0,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    //   {
+    //     id: 1,
+    //     name: "3D Printer 2",
+    //     status: "idle",
+    //     userId: 1,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    //   {
+    //     id: 2,
+    //     name: "3D Printer 3",
+    //     status: "idle",
+    //     userId: 2,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    //   {
+    //     id: 3,
+    //     name: "3D Printer 4",
+    //     status: "idle",
+    //     userId: 3,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    //   {
+    //     id: 4,
+    //     name: "3D Printer 5",
+    //     status: "idle",
+    //     userId: 4,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    //   {
+    //     id: 5,
+    //     name: "3D Printer 6",
+    //     status: "idle",
+    //     userId: 5,
+    //     active: true,
+    //     leftTime: 0,
+    //     time: 0,
+    //   },
+    // ]);
 
     setUserList([
       { name: "test", id: 1, leftTime: 20, active: true },
@@ -236,6 +265,13 @@ export default function Top(props) {
 
   // User Request
   const handleUserRequest = () => {
+    userReserveMachine({
+      variables: {
+        input: {
+          teamId: 1,
+        },
+      },
+    });
     setUserRequestFinish(true);
     setUserRequestOpen(false);
   };
@@ -272,17 +308,10 @@ export default function Top(props) {
     });
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setUserRequestOpen(false);
-  };
-
   const classes = useStyles();
   return (
     <>
-      {authority === 1 && (
+      {authority === 0 && (
         <div
           style={{
             width: "100%",
@@ -310,7 +339,7 @@ export default function Top(props) {
           </Button>
         </div>
       )}
-      {authority === 1 && userRequestFinish && (
+      {authority === 0 && userRequestFinish && (
         <div
           style={{
             width: "100%",
@@ -319,18 +348,12 @@ export default function Top(props) {
             justifyContent: "center",
             alignItems: "center",
             padding: "30px",
-            // autoHideDuration: 3000,
           }}
         >
           <h1 style={{ color: "green" }}>預約成功</h1>
         </div>
-        //   <Snackbar open={userRequestFinish} autoHideDuration={6000} onClose={handleClose}>
-        //     <Alert onClose={handleClose} severity="success">
-        //       This is a success message!
-        //     </Alert>
-        // </Snackbar>
       )}
-      {authority === 0 && (
+      {authority === 1 && (
         <Element name="title">
           <div className={classes.root}>
             <Grid container spacing={2}>
@@ -453,7 +476,7 @@ export default function Top(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setArrangeMachineOpen(false)}>取消</Button>
-          <Button onClick={handleArrangeMachine}>新增</Button>
+          <Button onClick={handleArrangeMachine}>安排</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={userRequestOpen}>

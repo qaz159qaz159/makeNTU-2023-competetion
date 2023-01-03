@@ -6,11 +6,7 @@ const model = require("./database/mongo/model");
 const cors = require("cors");
 const json = require("body-parser").json;
 const { expressMiddleware } = require("@apollo/server/express4");
-// import { ApolloServer } from '@apollo/server';
 const { ApolloServer } = require("@apollo/server");
-// import { startStandaloneServer } from '@apollo/server/standalone';
-const { startStandaloneServer } = require("@apollo/server/standalone");
-// import * as fs from "fs";
 const fs = require("fs");
 const ApolloServerPluginDrainHttpServer =
   require("@apollo/server/plugin/drainHttpServer").ApolloServerPluginDrainHttpServer;
@@ -60,9 +56,7 @@ db.once("open", async () => {
   const pubsub = new PubSub();
 
   const httpServer = http.createServer(app);
-  // Creating the WebSocket server
   const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
     server: httpServer,
     // Pass a different path here if app.use
     // serves expressMiddleware at a different path

@@ -58,15 +58,17 @@ db.once("open", async () => {
   const httpServer = http.createServer(app);
   const wsServer = new WebSocketServer({
     server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
     path: "/graphql",
   });
 
+  // Hand in the schema we just created and have the
+  // WebSocketServer start listening.
   const serverCleanup = useServer(
     {
       schema,
-      context: {
-        pubsub,
-      },
+      context: { pubsub },
     },
     wsServer
   );
@@ -85,7 +87,20 @@ db.once("open", async () => {
         },
       },
     ],
+    context: async (input) => {
+      console.log("input = ", input);
+      const req = input.req.headers;
+      return { req };
+    },
   });
+
+  // const { url } = await startStandaloneServer(server, {
+  //   context: async() => {
+  //     return{
+  //       pubsub,
+  //     };
+  //   },
+  // });
 
   await server.start();
 
@@ -98,11 +113,7 @@ db.once("open", async () => {
     cors(),
     json(),
     expressMiddleware(server, {
-      context: async (input) => {
-        // console.log("input = ", input);
-        const req = input.req.headers;
-        return { req, pubsub };
-      },
+      context: async ({ req }) => ({ pubsub }),
     })
   );
 

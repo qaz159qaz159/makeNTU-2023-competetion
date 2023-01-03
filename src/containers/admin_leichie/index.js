@@ -23,6 +23,9 @@ import {
   CREATE_LEICHIE_MUTATION,
   UPDATE_LEICHIE_MUTATION,
   LEICHIE_QUERY,
+  CREATE_LEICHIE_RESERVE,
+  CANCEL_LEICHIE_RESERVE,
+  DEL_LEICHIE_MUTATION,
 } from "../../graphql";
 
 // try to connect to database
@@ -408,6 +411,7 @@ export default function LaserCutter() {
                             });
                             return laserCutterInfo;
                           });
+
                           alert(
                             "將隊伍 " +
                               row.team +

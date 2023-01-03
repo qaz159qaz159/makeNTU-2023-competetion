@@ -1,7 +1,7 @@
 // import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
-// const { PubSub } = require("graphql-subscriptions");
+// const { PubSub } = require('graphql-subscriptions');
 // const pubsub = new PubSub();
 
 const Mutation = {
@@ -12,12 +12,14 @@ const Mutation = {
     { info: { name, type, duration } },
     { req, pubsub }
   ) => {
+    // const user = await Model.UserModel.findOne({ id: req.session.userId });
+
     const machine = await new Model.Machine({
       name: name,
       type: type,
       status: -1,
       duration: duration,
-      user: [],
+      // user: user._id,
       completeTime: -1,
     }).save();
     console.log(machine);
@@ -92,41 +94,39 @@ const Mutation = {
 
   updateLaserCutter: async (
     parents,
-    { info: { id, status, duration, user, completeTime } }, { pubsub }
-  ) =>
-    
-    {
-      let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
-        { id },
-        {
-          $set: {
-            status,
-            duration,
-            user,
-            completeTime,
-          },
+    { info: { id, status, duration, user, completeTime } },
+    { pubsub }
+  ) => {
+    let laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          status,
+          duration,
+          user,
+          completeTime,
         },
-        { new: true }
-      );
+      },
+      { new: true }
+    );
 
-      if (!laserCutter) {
-        console.log("Error LaserCutterModel不存在");
-      } else {
-        console.log("Update Current LaserCutter:", laserCutter.id);
-      }
-
-      console.log("Validation of LaserCutter:", laserCutter);
-      console.log(pubsub.publish("LaserCutterInfo", { newInfo: laserCutter }));
-      pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
-      return laserCutter;
-    },
-
+    if (!laserCutter) {
+      console.log("Error LaserCutterModel不存在");
+    } else {
+      console.log("Update Current LaserCutter:", laserCutter.id);
+    }
+    console.log("Validation of LaserCutter:", laserCutter);
+    console.log(pubsub.publish("LaserCutterInfo", { newInfo: laserCutter }));
+    pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
+    return laserCutter;
+  },
   // delete laser cutter
   deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     await Model.LaserCutterModel.deleteOne({ id });
-    console.log("delete laser cutter # " + id);
 
-    return "success";
+    // 是不是要加pubsub?
+
+    return "success"
   },
 
 // ======== Reserve Laser Cutter ========
@@ -134,33 +134,35 @@ const Mutation = {
   // for reserving a laser cutter
   createLaserReserve: async (
     parents,
-    { info: { teamId, material, thickness } },
-    { pubsub }
-  ) => {
-    // 曾經預約過-> 更新reserveStatus
-    let reserveLaser = await ReserveLaserModel.findOneAndUpdate(
-      { teamId },
-      { material, thickness, reserveStatus: 1 },
-      { new: true }
-    );
-
-    // 首次預約-> 創立預約紀錄
-    if (!reserveLaser) {
-      reserveLaser = await new ReserveLaserModel({
-        teamId,
-        material,
-        thickness,
-      }).save();
-
-      console.log(
-        "Create new Reservation record of LaserCutter:",
-        reserveLaser
+    { info: { teamId, material, thickness } }
+  ) =>
+    // { pubsub }
+    {
+      // 曾經預約過-> 更新reserveStatus
+      let reserveLaser = await ReserveLaserModel.findOneAndUpdate(
+        { teamId },
+        { material, thickness, reserveStatus: 1 },
+        { new: true }
       );
-    } else console.log("Find Reservation record of LaserCutter:", reserveLaser);
 
-    // console.log("Validation of LaserCutter:", reserveLaser);
-    return reserveLaser;
-  },
+      // 首次預約-> 創立預約紀錄
+      if (!reserveLaser) {
+        reserveLaser = await new ReserveLaserModel({
+          teamId,
+          material,
+          thickness,
+        }).save();
+
+        console.log(
+          "Create new Reservation record of LaserCutter:",
+          reserveLaser
+        );
+      } else
+        console.log("Find Reservation record of LaserCutter:", reserveLaser);
+
+      // console.log("Validation of LaserCutter:", reserveLaser);
+      return reserveLaser;
+    },
 
   // for canceling a laser cutter
   cancelLaserReserve: async (parents, { teamId }, { pubsub }) => {

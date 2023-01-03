@@ -16,6 +16,8 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
+import { useMutation } from "@apollo/client";
+import { CREATE_MACHINE_MUTATION, CLEAR_MACHINE_MUTATION } from "../../graphql";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} timeout={2} {...props} />;
@@ -53,6 +55,9 @@ export default function DPCard(props) {
   const [newMachineName, setNewMachineName] = React.useState("");
   const [newMachineTime, setNewMachineTime] = React.useState(0);
   const [newMachineOpen, setNewMachineOpen] = React.useState(false);
+
+  const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
+  const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
   // New Machine End
 
   // Delete Machine
@@ -96,18 +101,14 @@ export default function DPCard(props) {
   };
 
   const handleNewMachine = () => {
-    // TODO : Add New Machine
-    setMachineList((prev) => {
-      return [
-        ...prev,
-        {
+    createMachine({
+      variables: {
+        input: {
           name: newMachineName,
-          time: newMachineTime,
-          active: false,
-          leftTime: newMachineTime,
-          status: "idle",
+          type: "3D Printer",
+          duration: newMachineTime,
         },
-      ];
+      },
     });
     setNewMachineOpen(false);
   };
@@ -124,7 +125,8 @@ export default function DPCard(props) {
 
   const handleDeleteMachines = () => {
     // TODO : 刪除所有機器
-    setMachineList([]);
+    // setMachineList([]);
+    clearMachine();
   };
 
   const handleDeleteMachine = () => {

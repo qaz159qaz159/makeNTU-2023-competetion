@@ -11,32 +11,19 @@ const conn = mongoose.createConnection(
 );
 
 const MachineSchema = new mongoose.Schema({
-  machineName: {
-    type: String,
-    required: true,
-  },
-  machineStatus: {
-    type: String,
-    required: true,
-  },
-  machineTime: {
-    type: Number,
-    required: true,
-  },
-  machineUserID: {
-    type: String,
-    required: true,
-  },
-  machineLeftTime: {
-    type: Number,
-    required: true,
-  },
+  id: { type: Number },
+  name: { type: String, required: true },
+  type: { type: String, required: true },
+  status: { type: Number },
+  duration: { type: Number, required: true },
+  user: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  completeTime: { type: Number },
 });
 
 const Machine = conn.model("Machine", MachineSchema);
 
 const LaserCutterSchema = new mongoose.Schema({
-  id: {
+  id: { 
     type: String,
     required: true,
   },
@@ -61,6 +48,7 @@ const LaserCutterSchema = new mongoose.Schema({
 });
 
 const LaserCutterModel = conn.model("LaserCutter", LaserCutterSchema);
+
 
 module.exports = {
   Machine,

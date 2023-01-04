@@ -52,7 +52,7 @@ const cards = ({
   laserIdx,
   setLaserIdx,
   deleteLeichei,
-  updatedLeichie
+  updatedLeichie,
 }) => {
   // const [open, setOpen] = useState(false); // why 不能用！！！！！？？？？
   return (
@@ -99,7 +99,7 @@ const cards = ({
                 使用組別
               </Typography>
               <Typography sx={{ fontSize: 40 }} component="div">
-                {groupNo === null ? '待命' : `#${groupNo}`}
+                {groupNo === null ? "待命" : `#${groupNo}`}
               </Typography>
             </Grid>
             <Grid item>
@@ -128,8 +128,16 @@ const cards = ({
               <Button
                 sx={{ border: 1.5 }}
                 variant="outlined"
-                startIcon={status === 1 ? <CheckIcon /> : (status === -1 ? <AddIcon/>: <FiberManualRecordIcon/>) }
-                disabled = {status === 0 ? true : false}
+                startIcon={
+                  status === 1 ? (
+                    <CheckIcon />
+                  ) : status === -1 ? (
+                    <AddIcon />
+                  ) : (
+                    <FiberManualRecordIcon />
+                  )
+                }
+                disabled={status === 0 ? true : false}
                 // 判斷邏輯： 運作中點擊使用完成 status: 1 -> 0
                 //          暫停使用點擊恢復使用 status: -1 -> 0
                 onClick={() => {
@@ -142,10 +150,14 @@ const cards = ({
                         completeTime: null,
                       },
                     },
-                  })
+                  });
                 }}
               >
-                {status === 1 ? '使用完成': (status === -1 ? '恢復使用': '待分配') }
+                {status === 1
+                  ? "使用完成"
+                  : status === -1
+                  ? "恢復使用"
+                  : "待分配"}
               </Button>
 
               <Button
@@ -165,7 +177,7 @@ const cards = ({
                         completeTime: null,
                       },
                     },
-                  })
+                  });
                 }}
               >
                 暫停使用

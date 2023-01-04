@@ -223,9 +223,7 @@ export default function Top(props) {
   };
 
   const handleFinishUser = () => {
-    const currentUser = userList.filter(
-      (user) => user.id === finishUser
-    )[0];
+    const currentUser = userList.filter((user) => user.id === finishUser)[0];
     adminUpdateUser({
       variables: {
         input: {

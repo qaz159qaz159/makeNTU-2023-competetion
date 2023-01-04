@@ -124,7 +124,7 @@ export default function LaserCutter() {
   const handleConfirm = () => {
     setOpen(false);
   };
-  
+
   const { data, loading, subscribeToMore } = useQuery(LEICHIE_QUERY);
   const [newLeichie] = useMutation(CREATE_LEICHIE_MUTATION);
   const [updatedLeichie] = useMutation(UPDATE_LEICHIE_MUTATION);
@@ -132,59 +132,60 @@ export default function LaserCutter() {
 
   useEffect(() => {
     try {
-        subscribeToMore({
-            document: LASERCUTTER_UPDATE_SUBSCRIPTION,
-            variables: {},
-            updateQuery: (prev, {subscriptionData}) => {
-                if (!subscriptionData.data) {
-                  console.log("Subscription failed");
-                  return prev;
-                }
-                const newFeedItem = subscriptionData.data.LaserCutterInfo;
-                console.log("prev", prev);
-                console.log("sub data", subscriptionData.data);
-                switch(subscriptionData.data.LaserCutterInfo.status){
-                  // TODO: other cases!
-                  case -1:
-                    return Object.assign({}, prev, {
-                      // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
-                      laserCutter: prev.laserCutter
-                    });
+      subscribeToMore({
+        document: LASERCUTTER_UPDATE_SUBSCRIPTION,
+        variables: {},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) {
+            console.log("Subscription failed");
+            return prev;
+          }
+          const newFeedItem = subscriptionData.data.LaserCutterInfo;
+          console.log("prev", prev);
+          console.log("sub data", subscriptionData.data);
+          switch (subscriptionData.data.LaserCutterInfo.status) {
+            // TODO: other cases!
+            case -1:
+              return Object.assign({}, prev, {
+                // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                laserCutter: prev.laserCutter,
+              });
 
-                  // '新增機台'或是'使用完成'
-                  case 0:
-                    if ( prev.laserCutter.find( obj => obj.id === newFeedItem.id ) ){ // 已存在，狀態：改為'使用完成'
-                      return Object.assign({}, prev, {
-                        // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
-                        laserCutter: prev.laserCutter
-                        
-                      });
-                    }
-                    else{ // 新增機台
-                      return Object.assign({}, prev, {
-                        laserCutter: [...prev.laserCutter, newFeedItem]
-                      });
-                    }
-                  default:
-                    console.log("Case undefined");
-                    return Object.assign({}, prev, {
-                      laserCutter: prev.laserCutter
-                    });
-                }
-                // return Object.assign({}, prev, {
-                //     // laserCutter: [...prev.laserCutter, newFeedItem],
-                //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
-                // });
-              }})
+            // '新增機台'或是'使用完成'
+            case 0:
+              if (prev.laserCutter.find((obj) => obj.id === newFeedItem.id)) {
+                // 已存在，狀態：改為'使用完成'
+                return Object.assign({}, prev, {
+                  // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                  laserCutter: prev.laserCutter,
+                });
+              } else {
+                // 新增機台
+                return Object.assign({}, prev, {
+                  laserCutter: [...prev.laserCutter, newFeedItem],
+                });
+              }
+            default:
+              console.log("Case undefined");
+              return Object.assign({}, prev, {
+                laserCutter: prev.laserCutter,
+              });
+          }
+          // return Object.assign({}, prev, {
+          //     // laserCutter: [...prev.laserCutter, newFeedItem],
+          //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
+          // });
+        },
+      });
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   }, [subscribeToMore]);
 
   useEffect(() => {
     setLaserNumber(data?.laserCutter.length);
     setLaserIdx([...Array(data?.laserCutter.length).keys()].map((i) => i + 1));
-    setLaserCutterInfo(data?.laserCutter);    
+    setLaserCutterInfo(data?.laserCutter);
   }, [data?.laserCutter]);
 
   const modalStyle = {
@@ -199,14 +200,14 @@ export default function LaserCutter() {
     boxShadow: 24,
     p: 3,
   };
-  
-  if(loading){
-    return "Loading..."
+
+  if (loading) {
+    return "Loading...";
     // console.log("data:", data?.laserCutter);
     // setLaserCutterInfo(data.laserCutter);
   }
   console.log("data:", data?.laserCutter);
-  
+
   return (
     <Box
       sx={{
@@ -287,7 +288,17 @@ export default function LaserCutter() {
                     // setLaserNumber(laserNumber + 1);
                     // setLaserIdx([...laserIdx, laserNumber + 1]); 如果移除再加入會有重複ID出現的可能性 已修改城下列寫法
                     // setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
-                    newLeichie({ variables: { info: { id: laserNumber + 1 , status: 0, duration: laserTime, user: null, completeTime: null } } });
+                    newLeichie({
+                      variables: {
+                        info: {
+                          id: laserNumber + 1,
+                          status: 0,
+                          duration: laserTime,
+                          user: null,
+                          completeTime: null,
+                        },
+                      },
+                    });
                     handleConfirm();
                   }}
                 >
@@ -316,7 +327,9 @@ export default function LaserCutter() {
           laserCutterInfo={data.laserCutter}
           laserNumber={data.laserCutter.length}
           setLaserNumber={setLaserNumber}
-          laserIdx={[...Array(data.laserCutter.length).keys()].map((i) => i + 1)}
+          laserIdx={[...Array(data.laserCutter.length).keys()].map(
+            (i) => i + 1
+          )}
           setLaserIdx={setLaserIdx}
           deleteLeichei={deleteLeichie}
           updatedLeichie={updatedLeichie}
@@ -427,13 +440,18 @@ export default function LaserCutter() {
                           雷切{id}
                         </MenuItem>
                       ))} */}
-                      {laserCutterInfo?.map((item) => ( 
-                        item.status === 0 ? 
-                        <MenuItem key={parseInt(item.id)} value={parseInt(item.id)}>
-                          雷切{parseInt(item.id)}
-                        </MenuItem> :
-                        ''
-                      ))}
+                      {laserCutterInfo?.map((item) =>
+                        item.status === 0 ? (
+                          <MenuItem
+                            key={parseInt(item.id)}
+                            value={parseInt(item.id)}
+                          >
+                            雷切{parseInt(item.id)}
+                          </MenuItem>
+                        ) : (
+                          ""
+                        )
+                      )}
                       <MenuItem key={99} value={99}>
                         移除
                       </MenuItem>

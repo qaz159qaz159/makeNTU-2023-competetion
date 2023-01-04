@@ -212,16 +212,14 @@ const Mutation = {
   // delete laser cutter
   deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     // Set status to '-1'.
-    const laserCutter = await Model.LaserCutterModel.findOneAndDelete(
-      { id },
-    );
+    const laserCutter = await Model.LaserCutterModel.findOneAndDelete({ id });
     if (!laserCutter) {
       console.log("Error LaserCutterModel不存在");
     } else {
       console.log("Delete Current LaserCutter:", laserCutter.id);
     }
     console.log("Validation of LaserCutter:", laserCutter);
-    pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter});
+    pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
 
     return "success";
   },

@@ -1,8 +1,6 @@
-// import { LaserCutterModel } from "../database/mongo/models/machine";
 const Model = require("../database/mongo/models/machine");
 const { ReserveLaserModel } = require("../database/mongo/models/reservation");
-// const { PubSub } = require('graphql-subscriptions');
-// const pubsub = new PubSub();
+const { Team } = require("../database/mongo/models/user");
 
 const Mutation = {
   // ======== 3DP ========
@@ -21,47 +19,140 @@ const Mutation = {
       // user: user._id,
       completeTime: -1,
     }).save();
-    console.log(machine);
-    pubsub.publish("machineCreated", { machineCreated: machine });
-    pubsub.publish("machineUpdated", { machineUpdated: machine });
+    const machines = await Model.Machine.find({});
+
+    pubsub.publish("machineUpdated", { machineUpdated: machines });
     return machine;
   },
   clearMachine: async (parent, args, { pubsub }) => {
     await Model.Machine.deleteMany({});
+    const machines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: machines });
+    await Team.updateMany({}, { $set: { status: 0 } });
+    pubsub.publish("userUpdated", { userUpdated: await Team.find({}) });
     return "success";
   },
   deleteMachine: async (parent, { name }, { pubsub }) => {
     const machine = await Model.Machine.deleteOne({ name: name });
-    pubsub.publish("machineDeleted", { machine: machine });
+    const machines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: machines });
     return "success";
   },
-  userReserveMachine: async (parent, { name, type }, { pubsub }) => {
-    const machine = await Model.Machine.find({ type: type, status: -1 });
-    if (!machine) {
-      return "no machine";
-    } else {
-      const reserveMachine = machine[0];
-      reserveMachine.status = 0;
-      reserveMachine.user.push(name);
-      reserveMachine.completeTime = Date.now() + reserveMachine.duration * 1000;
-      await reserveMachine.save();
-      pubsub.publish("UserReserveMachine", { machine: reserveMachine });
-      return reserveMachine;
+  userReserveMachine: async (parent, { info: { teamId } }, { pubsub }) => {
+    const team = await Team.findOne({ teamId: teamId });
+    if (team) {
+      return "you have already reserved a machine";
+    }
+    const user = await new Team({
+      teamId: teamId,
+      status: 0,
+      machine: "",
+    }).save();
+    const users = await Team.find({});
+    // console.log(users);
+    pubsub.publish("userUpdated", { userUpdated: users });
+    return "success";
+  },
+  userCancelMachine: async (parent, { info: teamId }, { pubsub }) => {
+    const user = await Team.findOne({ teamId: teamId });
+    console.log(teamId);
+    if (user.status === 0) {
+      await Team.deleteOne({ teamId: teamId });
+      const users = await Team.find({});
+      pubsub.publish("userUpdated", { userUpdated: users });
+      return "success";
+    } else if (user.status === 1) {
+      const machine = await Model.Machine.findOne({ user: user._id });
+      machine.status = -1;
+      machine.user = null;
+      machine.completeTime = -1;
+      await machine.save();
+      const machines = await Model.Machine.find({});
+      pubsub.publish("machineUpdated", { machineUpdated: machines });
+      await Team.deleteOne({ teamId: teamId });
+      const users = await Team.find({});
+      pubsub.publish("userUpdated", { userUpdated: users });
+      return "success";
     }
   },
-  userCancelMachine: async (parent, { name, type }, { pubsub }) => {
-    const machine = await Model.Machine.find({ type: type, status: 0 });
-    if (!machine) {
-      return "no machine";
-    } else {
-      const cancelMachine = machine[0];
-      cancelMachine.status = -1;
-      cancelMachine.user = [];
-      cancelMachine.completeTime = -1;
-      await cancelMachine.save();
-      pubsub.publish("UserCancelMachine", { machine: cancelMachine });
-      return cancelMachine;
+  adminUpdateUser: async (
+    parent,
+    { info: { teamId, status, machineName } },
+    { pubsub, timer }
+  ) => {
+    const user = await Team.findOne({ teamId: teamId });
+    user.status = status;
+    const machine = await Model.Machine.findOne({ name: machineName });
+    machine.status = 1;
+    machine.user = user._id;
+    machine.completeTime = Date.now() + machine.duration * 60 * 1000;
+    user.machine = machine.name;
+    await user.save();
+    await machine.save();
+    const machines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: machines });
+    const users = await Team.find({});
+    pubsub.publish("userUpdated", { userUpdated: users });
+    return "success";
+  },
+  adminCancelAllMachine: async (parent, args, { pubsub }) => {
+    const machines = await Model.Machine.find({});
+    for (let i = 0; i < machines.length; i++) {
+      if (machines[i].status === 1) {
+        machines[i].status = -1;
+        machines[i].user = null;
+        machines[i].completeTime = -1;
+        await machines[i].save();
+      }
     }
+    const users = await Team.find({});
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].status === 1) {
+        await Team.deleteOne({ teamId: users[i].teamId });
+      }
+    }
+    const newMachines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: newMachines });
+    return "success";
+  },
+  adminUpdateMachine: async (
+    parent,
+    { info: { name, status } },
+    { pubsub }
+  ) => {
+    const machine = await Model.Machine.findOne({ name: name });
+    machine.status = status;
+    await machine.save();
+    const machines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: machines });
+    await Team.deleteOne({ machine: name });
+    const users = await Team.find({});
+    pubsub.publish("userUpdated", { userUpdated: users });
+    return "success";
+  },
+  adminClearUser: async (parent, args, { pubsub }) => {
+    await Team.deleteMany({});
+    const users = await Team.find({});
+    pubsub.publish("userUpdated", { userUpdated: users });
+    const machines = await Model.Machine.find({});
+    for (let i = 0; i < machines.length; i++) {
+      if (machines[i].status === 1) {
+        machines[i].status = -1;
+        machines[i].user = null;
+        machines[i].completeTime = -1;
+        await machines[i].save();
+      }
+    }
+    const newMachines = await Model.Machine.find({});
+    pubsub.publish("machineUpdated", { machineUpdated: newMachines });
+    return "success";
+  },
+  updateAll: async (parent, args, { pubsub }) => {
+    pubsub.publish("userUpdated", { userUpdated: await Team.find({}) });
+    pubsub.publish("machineUpdated", {
+      machineUpdated: await Model.Machine.find({}),
+    });
+    return "success update all";
   },
 
   // ======== Laser Cutter ========

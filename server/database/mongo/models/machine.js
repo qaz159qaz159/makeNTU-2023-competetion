@@ -14,10 +14,10 @@ const MachineSchema = new mongoose.Schema({
   id: { type: Number },
   name: { type: String, required: true },
   type: { type: String, required: true },
-  status: { type: Number },
+  status: { type: Number }, // -1: idle, 0: waiting, 1: using, 2: finished
   duration: { type: Number, required: true },
   user: { type: mongoose.Types.ObjectId, ref: "User" },
-  completeTime: { type: Number },
+  completeTime: { type: Date },
 });
 
 const Machine = conn.model("Machine", MachineSchema);

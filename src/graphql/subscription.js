@@ -14,6 +14,15 @@ export const MACHINE_UPDATE_SUBSCRIPTION = gql`
   }
 `;
 
+export const USER_UPDATE_SUBSCRIPTION = gql`
+  subscription userUpdate {
+    userUpdated {
+      teamId
+      status
+    }
+  }
+`;
+
 export const LASERCUTTER_UPDATE_SUBSCRIPTION = gql`
   subscription LaserCutterInfo {
     LaserCutterInfo {

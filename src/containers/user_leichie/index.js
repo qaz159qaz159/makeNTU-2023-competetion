@@ -72,12 +72,12 @@ export default function LaserCutter() {
         laserCutterReservation.map((reserve) => {
           if (reserve.teamId == teamId) {
             // setTeamReserve(reserve);
-            setReserved(true)
+            setReserved(true);
             setWaiting(c);
             return;
           }
           c += 1;
-        })
+        });
       }
       // var n = Object.keys(laserCutterReservation ?? []).length;
       return c;

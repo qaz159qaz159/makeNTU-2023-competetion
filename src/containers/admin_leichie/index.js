@@ -29,7 +29,7 @@ import {
   CANCEL_LEICHIE_RESERVE,
   DEL_LEICHIE_MUTATION,
 } from "../../graphql";
- 
+
 // try to connect to database
 
 // --- Table info ---
@@ -108,11 +108,10 @@ var timeLim = 20;
 // ];
 // --- --- ---
 export default function LaserCutter() {
-
   // 問題：laserIdx 應該要從query回來的結果去抓機台的編號而不是直接依照機台數量去算，要不然排程中的選項會是錯的
   // 問題：要重新整理才會產生正確的機台資訊，可能要用useState才引發rerende? 不確定怎改QQ
   // 問題：預約列表同理，可以傳資料到後端但不會馬上更新畫面
-  
+
   // --- States ---
   const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
@@ -134,13 +133,16 @@ export default function LaserCutter() {
   };
 
   const { data, loading, subscribeToMore } = useQuery(LEICHIE_QUERY);
-  const { data: reserveData, loading: reserveLoading, subscribeToMore: subscribeToReserve } = useQuery(LEICHIE_RESERVE_QUERY);
+  const {
+    data: reserveData,
+    loading: reserveLoading,
+    subscribeToMore: subscribeToReserve,
+  } = useQuery(LEICHIE_RESERVE_QUERY);
 
   const [newLeichie] = useMutation(CREATE_LEICHIE_MUTATION);
   const [updatedLeichie] = useMutation(UPDATE_LEICHIE_MUTATION);
   const [deleteLeichie] = useMutation(DEL_LEICHIE_MUTATION);
-  const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE)
-
+  const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE);
 
   useEffect(() => {
     try {
@@ -208,12 +210,16 @@ export default function LaserCutter() {
   };
 
   if (loading || reserveLoading) {
-    return "Loading..."
+    return "Loading...";
     // console.log("data:", data?.laserCutter);
     // setLaserCutterInfo(data.laserCutter);
   }
-  console.log("data:", data?.laserCutter, data?.laserCutter.map((ls) => ls.id));
-  console.log("laserCutterReservation: ", reserveData.laserCutterReservation)
+  console.log(
+    "data:",
+    data?.laserCutter,
+    data?.laserCutter.map((ls) => ls.id)
+  );
+  console.log("laserCutterReservation: ", reserveData.laserCutterReservation);
   // setDataRow(reserveData.laserCutterReservation)
 
   return (
@@ -309,7 +315,17 @@ export default function LaserCutter() {
                     setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
                     // send to DB
 
-                    newLeichie({ variables: { info: { id: laserNo, status: 0, duration: laserTime, user: null, completeTime: null } } });
+                    newLeichie({
+                      variables: {
+                        info: {
+                          id: laserNo,
+                          status: 0,
+                          duration: laserTime,
+                          user: null,
+                          completeTime: null,
+                        },
+                      },
+                    });
                     handleConfirm();
                   }}
                 >
@@ -442,7 +458,7 @@ export default function LaserCutter() {
                       defaultValue=""
                       // value={}
                       onChange={(e) => {
-                        setArrange(e.target.value)
+                        setArrange(e.target.value);
                         // rows[i]["arrangement"] = e.target.value; // 更新資料庫
                         // console.log("rows[i]['arrangement']= "+ rows[i]['arrangement'])
                         setDataRow(() => rows);
@@ -475,11 +491,9 @@ export default function LaserCutter() {
 
                         console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
 
-
                         if (arrange == 99) {
                           alert("將隊伍 " + row.teamId + " 移除等候隊伍");
-                        }
-                        else {
+                        } else {
                           // setLaserCutterInfo(() => {
                           //   // let tmp = laserCutterInfo.findIndex(
                           //   //   (laser) => laser.id == row.arrangement
@@ -508,16 +522,10 @@ export default function LaserCutter() {
                           });
 
                           alert(
-                            "將隊伍 " +
-                            row.teamId +
-                            " 排入使用雷切" +
-                            arrange
+                            "將隊伍 " + row.teamId + " 排入使用雷切" + arrange
                           );
                         }
-                        cancelReserve(
-                          { variables: { teamId: row.teamId } }
-                        )
-
+                        cancelReserve({ variables: { teamId: row.teamId } });
                       }}
                     >
                       GO

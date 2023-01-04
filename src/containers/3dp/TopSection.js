@@ -339,6 +339,7 @@ export default function Top(props) {
           onClick={() => {
             setUserRequestOpen(true);
           }}
+          disabled
         >
           預約完成
         </Button>
@@ -472,7 +473,7 @@ export default function Top(props) {
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
             <div>總共有 {machineList.length} 台機台</div>
-            <div>前面有 {userList.length * 10} 個人在等待</div>
+            <div>前面有 {userList.length} 個人在等待</div>
           </DialogContentText>
         </DialogContent>
         <DialogActions

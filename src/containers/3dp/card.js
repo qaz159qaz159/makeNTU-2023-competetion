@@ -17,7 +17,11 @@ import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 import { useMutation } from "@apollo/client";
-import { CREATE_MACHINE_MUTATION, CLEAR_MACHINE_MUTATION } from "../../graphql";
+import {
+  CREATE_MACHINE_MUTATION,
+  CLEAR_MACHINE_MUTATION,
+  DELETE_MACHINE_MUTATION,
+} from "../../graphql";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} timeout={2} {...props} />;
@@ -58,6 +62,7 @@ export default function DPCard(props) {
 
   const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
   const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
+  const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
   // New Machine End
 
   // Delete Machine
@@ -131,10 +136,14 @@ export default function DPCard(props) {
 
   const handleDeleteMachine = () => {
     // TODO : 刪除單一機器
-    // console.log(e.target.value);
-    // setMachineList((prev) => {
-    //     return prev.filter((item) => item.name !== data.name);
-    // });
+    // console.log(data);
+    deleteMachine({
+      variables: {
+        input: {
+          name: data.name,
+        },
+      },
+    });
     setDeleteMachineOpen(false);
   };
   // Delete Machine End

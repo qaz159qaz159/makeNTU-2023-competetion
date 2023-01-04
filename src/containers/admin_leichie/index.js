@@ -488,7 +488,7 @@ export default function LaserCutter() {
                                 status: 1,
                                 duration: laserTime,
                                 user: row.team,
-                                completeTime: completeTime(timeChange),
+                                completeTime: completeTime(laserTime),
                               },
                             },
                           });

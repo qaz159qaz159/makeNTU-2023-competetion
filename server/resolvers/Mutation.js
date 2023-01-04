@@ -32,7 +32,7 @@ const Mutation = {
     pubsub.publish("userUpdated", { userUpdated: await Team.find({}) });
     return "success";
   },
-  deleteMachine: async (parent, { name }, { pubsub }) => {
+  deleteMachine: async (parent, { info: { name } }, { pubsub }) => {
     const machine = await Model.Machine.deleteOne({ name: name });
     const machines = await Model.Machine.find({});
     pubsub.publish("machineUpdated", { machineUpdated: machines });
@@ -81,19 +81,33 @@ const Mutation = {
     { pubsub, timer }
   ) => {
     const user = await Team.findOne({ teamId: teamId });
-    user.status = status;
-    const machine = await Model.Machine.findOne({ name: machineName });
-    machine.status = 1;
-    machine.user = user._id;
-    machine.completeTime = Date.now() + machine.duration * 60 * 1000;
-    user.machine = machine.name;
-    await user.save();
-    await machine.save();
-    const machines = await Model.Machine.find({});
-    pubsub.publish("machineUpdated", { machineUpdated: machines });
-    const users = await Team.find({});
-    pubsub.publish("userUpdated", { userUpdated: users });
-    return "success";
+    if (status === 2) {
+      const machine = await Model.Machine.findOne({ user: user._id });
+      machine.status = -1;
+      machine.user = null;
+      machine.completeTime = -1;
+      await machine.save();
+      const machines = await Model.Machine.find({});
+      pubsub.publish("machineUpdated", { machineUpdated: machines });
+      await Team.deleteOne({ teamId: teamId });
+      const users = await Team.find({});
+      pubsub.publish("userUpdated", { userUpdated: users });
+      return "success";
+    } else {
+      user.status = status;
+      const machine = await Model.Machine.findOne({ name: machineName });
+      machine.status = 1;
+      machine.user = user._id;
+      machine.completeTime = Date.now() + machine.duration * 60 * 1000;
+      user.machine = machine.name;
+      await user.save();
+      await machine.save();
+      const machines = await Model.Machine.find({});
+      pubsub.publish("machineUpdated", { machineUpdated: machines });
+      const users = await Team.find({});
+      pubsub.publish("userUpdated", { userUpdated: users });
+      return "success";
+    }
   },
   adminCancelAllMachine: async (parent, args, { pubsub }) => {
     const machines = await Model.Machine.find({});

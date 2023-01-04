@@ -86,7 +86,7 @@ export default function Top(props) {
           // setCounter(counter + 1);
           // console.log("machineUpdated", data.machine);
           return Object.assign({}, prev, {
-            machines: machines,
+            machine: machines,
           });
         },
       });
@@ -102,8 +102,9 @@ export default function Top(props) {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
           const users = subscriptionData.data.userUpdated;
-          setUserList(users);
-          return users;
+          return Object.assign({}, prev, {
+            user: users,
+          });
         },
       });
     } catch (error) {
@@ -112,12 +113,12 @@ export default function Top(props) {
   }, [userSubscribeToMore]);
 
   useEffect(() => {
-    updateAll();
-  }, []);
-
-  useEffect(() => {
-    setMachineList(data?.machine);
-    setUserList(userData?.user);
+    if (data) {
+      setMachineList(data.machine);
+    }
+    if (userData) {
+      setUserList(userData.user);
+    }
   }, [data, userData]);
 
   const history = useHistory();
@@ -228,7 +229,7 @@ export default function Top(props) {
       variables: {
         input: {
           teamId: currentUser.teamId,
-          status: 0,
+          status: 2,
         },
       },
     });
@@ -236,7 +237,6 @@ export default function Top(props) {
   };
 
   const showWaitingQueue = () => {
-    // console.log(userList);
     let waitingQueue = userList.filter((user) => user.status === 0);
     return waitingQueue.map((data, index) => (
       <Grid item xs={12}>
@@ -293,7 +293,7 @@ export default function Top(props) {
 
   return (
     <>
-      {authority === 1 && (
+      {authority === 0 && (
         <div
           style={{
             width: "100%",
@@ -430,9 +430,7 @@ export default function Top(props) {
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
             <div>總共有 {machineList.length} 台機台</div>
-            <div>
-              約需等待 {(userList.length * 10) / machineList.length} 分鐘
-            </div>
+            <div>前面有 {userList.length * 10} 個人在等待</div>
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -455,7 +453,7 @@ export default function Top(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setFinishUserOpen(false)}>取消</Button>
-          <Button onClick={handleFinishUser}>安排</Button>
+          <Button onClick={handleFinishUser}>結束</Button>
         </DialogActions>
       </Dialog>
       {/*<Alert>This is an info alert — check it out!</Alert>*/}

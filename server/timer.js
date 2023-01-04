@@ -19,19 +19,19 @@ class PoolList {
   async check() {
     const keys = Object.keys(this.poolList);
     for (let i = 0; i < keys.length; i++) {
-        if (this.poolList[keys[i]] < Date.now()) {
-          const machine = await Model.Machine.findOne({name: keys[i]});
-          machine.status = -1;
-          machine.user = null;
-          machine.completeTime = -1;
-          await machine.save();
-          delete this.poolList[keys[i]];
-          const machines = await Model.Machine.find({});
-          this.pubsub.publish("machineUpdated", {machineUpdated: machines});
-          await Team.deleteOne({machine: keys[i]});
-          const users = await Team.find({});
-          this.pubsub.publish("userUpdated", {userUpdated: users});
-        }
+      if (this.poolList[keys[i]] < Date.now()) {
+        const machine = await Model.Machine.findOne({ name: keys[i] });
+        machine.status = -1;
+        machine.user = null;
+        machine.completeTime = -1;
+        await machine.save();
+        delete this.poolList[keys[i]];
+        const machines = await Model.Machine.find({});
+        this.pubsub.publish("machineUpdated", { machineUpdated: machines });
+        await Team.deleteOne({ machine: keys[i] });
+        const users = await Team.find({});
+        this.pubsub.publish("userUpdated", { userUpdated: users });
+      }
     }
   }
 }

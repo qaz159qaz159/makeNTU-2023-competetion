@@ -15,6 +15,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import Slide from "@mui/material/Slide";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
 import { useQuery, useMutation } from "@apollo/client";
@@ -30,10 +31,11 @@ import {
   ADMIN_UPDATE_MACHINE,
   MACHINE_UPDATE_SUBSCRIPTION,
   USER_UPDATE_SUBSCRIPTION,
+  CLEAR_USER_MUTATION,
   MACHINE_QUERY,
   USER_QUERY,
 } from "../../graphql";
-// import Alert from '@mui/material/Alert';
+import TextField from "@mui/material/TextField";
 /**
  * This is Main Page
  */
@@ -51,6 +53,8 @@ export default function Top(props) {
   const [adminUpdateUser] = useMutation(ADMIN_UPDATE_USER_MUTATION);
   const [adminUpdateMachine] = useMutation(ADMIN_UPDATE_MACHINE);
   const [updateAll] = useMutation(UPDATE_ALL_MUTATION);
+  const [clearUser] = useMutation(CLEAR_USER_MUTATION);
+
 
   // Arrange Machine
   const [arrangeMachineOpen, setArrangeMachineOpen] = React.useState(false);
@@ -69,6 +73,10 @@ export default function Top(props) {
 
   const [buttonState, setButtonState] = React.useState(0);
   const [howToUseOpen, setHowToUseOpen] = React.useState(false);
+  const [deleteMachineOpen, setDeleteMachineOpen] = React.useState(false);
+  const [newMachineOpen, setNewMachineOpen] = React.useState(false);
+  const [newMachineName, setNewMachineName] = React.useState("");
+  const [newMachineTime, setNewMachineTime] = React.useState(0);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -157,8 +165,20 @@ export default function Top(props) {
     },
   }));
 
+  const handleNewMachine = () => {
+    createMachine({
+      variables: {
+        input: {
+          name: newMachineName,
+          type: "3D Printer",
+          duration: newMachineTime,
+        },
+      },
+    });
+    setNewMachineOpen(false);
+  };
+
   // Arrange Machine
-  // TODO : Arrange Machine
   const handleArrangeMachine = () => {
     const idleMachineList = machineList.filter(
       (machine) => machine.status === -1
@@ -218,6 +238,10 @@ export default function Top(props) {
     );
   };
 
+  const handleNewMachineClickOpen = () => {
+    setNewMachineOpen(true);
+  };
+
   const resetCard = (name) => {
     adminUpdateMachine({
       variables: {
@@ -237,6 +261,10 @@ export default function Top(props) {
     }
   });
 
+  const handleDeleteMachines = () => {
+    clearMachine();
+  };
+
   const handleFinishUser = () => {
     const currentUser = userList.filter((user) => user.id === finishUser)[0];
     adminUpdateUser({
@@ -248,6 +276,14 @@ export default function Top(props) {
       },
     });
     setFinishUserOpen(false);
+  };
+
+  const handleNewMachineClose = () => {
+    setNewMachineOpen(false);
+  };
+
+  const handleClearUser = () => {
+    clearUser();
   };
 
   const showWaitingQueue = () => {
@@ -413,18 +449,63 @@ export default function Top(props) {
       {authority === 1 && (
         <Element name="title">
           {/*<div className={classes.root}>*/}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <div>
               <Typography>
                 <h1>MakeNTU 3D列印機管理介面</h1>
               </Typography>
             </div>
             <div>
-              <Button onClick={() => setHowToUseOpen(true)}>
-                操作說明
-              </Button>
+              <Button onClick={() => setHowToUseOpen(true)}>操作說明</Button>
             </div>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleNewMachineClickOpen}
+                    style={{ width: "100%", height: "100px" }}
+                >
+                  新增機台
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleDeleteMachines}
+                    style={{ width: "100%", height: "100px" }}
+                >
+                  清除機台
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleClearUser}
+                    style={{ width: "100%", height: "100px" }}
+                >
+                  清除使用者
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+          <div style={{ height: "10px" }}></div>
           <Grid container spacing={2}>
             {/**/}
             <Grid item xs={10}>
@@ -557,6 +638,37 @@ export default function Top(props) {
         <DialogActions>
           <Button onClick={() => setHowToUseOpen(false)}>關閉</Button>
           {/*<Button onClick={handleFinishUser}>結束</Button>*/}
+        </DialogActions>
+      </Dialog>
+      {/*New*/}
+      <Dialog open={newMachineOpen}>
+        <DialogTitle>機台資訊</DialogTitle>
+        <DialogContent>
+          <DialogContentText>請填寫欲新增之機台資訊！</DialogContentText>
+          <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="機台名稱"
+              type="text"
+              fullWidth
+              variant="standard"
+              onChange={(e) => setNewMachineName(e.target.value)}
+          />
+          <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="使用時間(分鐘)"
+              type="number"
+              fullWidth
+              variant="standard"
+              onChange={(e) => setNewMachineTime(parseInt(e.target.value))}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleNewMachineClose}>取消</Button>
+          <Button onClick={handleNewMachine}>新增</Button>
         </DialogActions>
       </Dialog>
       {/*<Alert>This is an info alert — check it out!</Alert>*/}

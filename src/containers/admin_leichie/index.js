@@ -37,9 +37,9 @@ function createData(team, order, material, thickness, arrangement) {
 }
 
 const rows = [
-  createData("1", 1, "壓克力", 3, "1"),
-  createData("2", 2, "密集板", 5, "2"),
-  createData("3", 3, "密集板", 5, "3"),
+  createData("1", 1, "壓克力", 3, ""),
+  createData("2", 2, "密集板", 5, ""),
+  createData("3", 3, "密集板", 5, ""),
   createData("4", 4, "壓克力", 3, ""),
   createData("5", 5, "密集板", 5, ""),
 ];
@@ -181,6 +181,12 @@ export default function LaserCutter() {
     }
   }, [subscribeToMore]);
 
+  useEffect(() => {
+    setLaserNumber(data?.laserCutter.length);
+    setLaserIdx([...Array(data?.laserCutter.length).keys()].map((i) => i + 1));
+    // setLaserCutterInfo(data?.laserCutter);    
+  }, [data?.laserCutter]);
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -200,7 +206,7 @@ export default function LaserCutter() {
     // setLaserCutterInfo(data.laserCutter);
   }
   console.log("data:", data?.laserCutter);
-
+  
   return (
     <Box
       sx={{
@@ -329,7 +335,7 @@ export default function LaserCutter() {
           alignItems: "center",
         }}
       >
-        <p>雷切機數量：{data.laserCutter.length} 台</p>
+        <p>雷切機數量：{laserNumber} 台</p>
         <p>時間上限：{laserTime} mins</p>
         <Stack direction="row">
           <TextField
@@ -447,12 +453,12 @@ export default function LaserCutter() {
                         // remove team from the reservation
                         // todo useMutation
 
-                        if (row.arrangement == 99)
+                        if (row.arrangement === 99)
                           alert("將隊伍 " + row.team + " 移除等候隊伍");
                         else {
                           setLaserCutterInfo(() => {
                             let tmp = laserCutterInfo.findIndex(
-                              (laser) => laser.id == row.arrangement
+                              (laser) => laser.id === row.arrangement
                             );
                             laserCutterInfo[tmp].usedBy = row.team;
                             laserCutterInfo[tmp].status = 1;
@@ -460,6 +466,15 @@ export default function LaserCutter() {
 
                             laserCutterInfo[tmp].completeTime =
                               completeTime(timeChange);
+                            // let tmp = data?.laserCutter.findIndex(
+                            //   (laser) => laser.id === row.arrangement
+                            // );
+                            // data?.laserCutter[tmp].use = row.team;
+                            // data?.laserCutter[tmp].status = 1;
+                            // console.log(completeTime(timeChange));
+
+                            // laserCutterInfo[tmp].completeTime =
+                            //   completeTime(timeChange);
 
                             // update laser cutter info
                             updatedLeichie({

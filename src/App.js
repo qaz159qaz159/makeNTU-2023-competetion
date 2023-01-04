@@ -39,9 +39,9 @@ const Routes = () => {
       <MainRoute exact path="/">
         <Main />
       </MainRoute>
-      <AdminRoute exact path="/3dp">
+      <MainRoute exact path="/3dp">
         <DP />
-      </AdminRoute>
+      </MainRoute>
       <LoginRoute exact path="/login">
         <Login />
       </LoginRoute>

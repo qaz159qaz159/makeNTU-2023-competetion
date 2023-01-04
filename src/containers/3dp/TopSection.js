@@ -61,11 +61,12 @@ export default function Top(props) {
   // User Request
   const [userRequestOpen, setUserRequestOpen] = React.useState(false);
   const [userRequestFinish, setUserRequestFinish] = React.useState(false);
-  const [userRequestState, setUserRequestState] = React.useState(-1); // -1: no 0: waiting, 1: ready, 2: using, 3: finished
 
   // User Request End
   const [finishUserOpen, setFinishUserOpen] = React.useState(false);
   const [finishUser, setFinishUser] = React.useState(-1);
+
+  const [buttonState, setButtonState] = React.useState(0);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -223,6 +224,14 @@ export default function Top(props) {
     });
   };
 
+  useEffect(() => {
+    if (userRequestFinish) {
+      setTimeout(() => {
+        setUserRequestFinish(false);
+      }, 3000);
+    }
+  })
+
   const handleFinishUser = () => {
     const currentUser = userList.filter((user) => user.id === finishUser)[0];
     adminUpdateUser({
@@ -293,7 +302,7 @@ export default function Top(props) {
 
   return (
     <>
-      {authority === 0 && (
+      {authority === 0 && buttonState === 0 && (
         <div
           style={{
             width: "100%",

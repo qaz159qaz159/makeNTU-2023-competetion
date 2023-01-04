@@ -17,7 +17,8 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
-import { useQuery, useMutation, useSubscription } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import AddTaskIcon from "@mui/icons-material/AddTask";
 import {
   CREATE_MACHINE_MUTATION,
   USER_RESERVE_MACHINE_MUTATION,
@@ -67,6 +68,7 @@ export default function Top(props) {
   const [finishUser, setFinishUser] = React.useState(-1);
 
   const [buttonState, setButtonState] = React.useState(0);
+  const [howToUseOpen, setHowToUseOpen] = React.useState(false);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -75,8 +77,6 @@ export default function Top(props) {
     subscribeToMore: userSubscribeToMore,
   } = useQuery(USER_QUERY);
 
-  const [counter, setCounter] = useState(0);
-
   useEffect(() => {
     try {
       subscribeToMore({
@@ -84,8 +84,6 @@ export default function Top(props) {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
           const machines = subscriptionData.data.machineUpdated;
-          // setCounter(counter + 1);
-          // console.log("machineUpdated", data.machine);
           return Object.assign({}, prev, {
             machine: machines,
           });
@@ -162,6 +160,13 @@ export default function Top(props) {
   // Arrange Machine
   // TODO : Arrange Machine
   const handleArrangeMachine = () => {
+    const idleMachineList = machineList.filter(
+      (machine) => machine.status === -1
+    );
+    if (idleMachineList.length === 0) {
+      alert("目前沒有空閒的機器！");
+      return;
+    }
     const currentUser = userList.filter(
       (user) => user.id === currentArrangeUser
     )[0];
@@ -296,6 +301,74 @@ export default function Top(props) {
     ));
   };
 
+  const returnButton = () => {
+    const currentUser = userList.filter(
+      (user) => user.teamId === parseInt(teamID)
+    )[0];
+    if (currentUser !== undefined) {
+      if (currentUser.status === 0) {
+        return (
+          <Button
+            variant="contained"
+            color={"info"}
+            style={{
+              width: "250px",
+              height: "250px",
+              borderRadius: "125px",
+              fontSize: "30px",
+            }}
+            endIcon={<AddTaskIcon />}
+            onClick={() => {
+              setUserRequestOpen(true);
+            }}
+            disabled
+          >
+            預約完成
+          </Button>
+        );
+      } else if (currentUser.status === 1) {
+        return (
+          <Button
+            variant="contained"
+            color={"info"}
+            style={{
+              width: "250px",
+              height: "250px",
+              borderRadius: "125px",
+              fontSize: "30px",
+            }}
+            endIcon={<AddTaskIcon />}
+            onClick={() => {
+              setUserRequestOpen(true);
+            }}
+            disabled
+          >
+            使用中
+          </Button>
+        );
+      }
+    } else {
+      return (
+        <Button
+          variant="contained"
+          color={"success"}
+          style={{
+            width: "250px",
+            height: "250px",
+            borderRadius: "125px",
+            fontSize: "30px",
+          }}
+          endIcon={<SendIcon />}
+          onClick={() => {
+            setUserRequestOpen(true);
+          }}
+        >
+          我要預約
+        </Button>
+      );
+    }
+  };
+
   const classes = useStyles();
 
   if (loading || userLoading) return "Loading...";
@@ -303,32 +376,25 @@ export default function Top(props) {
   return (
     <>
       {authority === 0 && buttonState === 0 && (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="contained"
-            color="success"
+        <>
+          <Typography
+            style={{ alignItems: "center", justifyContent: "center" }}
+          >
+            <h1>目前有 {machineList.length} 台3D列印機可以使用</h1>
+            <h1>前方目前有 {userList.length} 位使用者</h1>
+          </Typography>
+          <div
             style={{
-              width: "250px",
-              height: "250px",
-              borderRadius: "125px",
-              fontSize: "30px",
-            }}
-            endIcon={<SendIcon />}
-            onClick={() => {
-              setUserRequestOpen(true);
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            我要預約
-          </Button>
-        </div>
+            {returnButton()}
+          </div>
+        </>
       )}
       {authority === 0 && userRequestFinish && (
         <div
@@ -347,6 +413,18 @@ export default function Top(props) {
       {authority === 1 && (
         <Element name="title">
           {/*<div className={classes.root}>*/}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div>
+              <Typography>
+                <h1>MakeNTU 3D列印機管理介面</h1>
+              </Typography>
+            </div>
+            <div>
+              <Button onClick={() => setHowToUseOpen(true)}>
+                操作說明
+              </Button>
+            </div>
+          </div>
           <Grid container spacing={2}>
             {/**/}
             <Grid item xs={10}>
@@ -382,7 +460,7 @@ export default function Top(props) {
                       style={{ color: "#F5DE83", fontSize: "1.5rem" }}
                       align={"center"}
                     >
-                      Waiting Queue
+                      等待中
                     </Typography>
                   </Paper>
                 </Grid>
@@ -399,7 +477,7 @@ export default function Top(props) {
                       style={{ color: "#F5DE83", fontSize: "1.5rem" }}
                       align={"center"}
                     >
-                      Ready Queue
+                      使用中
                     </Typography>
                   </Paper>
                 </Grid>
@@ -439,7 +517,7 @@ export default function Top(props) {
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
             <div>總共有 {machineList.length} 台機台</div>
-            <div>前面有 {userList.length * 10} 個人在等待</div>
+            <div>前面有 {userList.length} 個人在等待</div>
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -463,6 +541,22 @@ export default function Top(props) {
         <DialogActions>
           <Button onClick={() => setFinishUserOpen(false)}>取消</Button>
           <Button onClick={handleFinishUser}>結束</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={howToUseOpen}>
+        <DialogTitle>操作說明</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            <div>1. 點選新增機台，可以新增機台，請注意不要重複命名</div>
+            <div>2. 點選清除機台，可以清除所有機台</div>
+            <div>3. 點選清除使用者，可以清除所有在預約或使用中的使用者</div>
+            <div>4. 等待中下面的卡片點選後可以安排機台給參賽者</div>
+            <div>5. 使用中下面的卡片點選後可以結束使用</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setHowToUseOpen(false)}>關閉</Button>
+          {/*<Button onClick={handleFinishUser}>結束</Button>*/}
         </DialogActions>
       </Dialog>
       {/*<Alert>This is an info alert — check it out!</Alert>*/}

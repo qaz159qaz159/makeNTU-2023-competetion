@@ -21,6 +21,7 @@ import {
   CREATE_MACHINE_MUTATION,
   CLEAR_MACHINE_MUTATION,
   DELETE_MACHINE_MUTATION,
+  CLEAR_USER_MUTATION,
 } from "../../graphql";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -63,6 +64,7 @@ export default function DPCard(props) {
   const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
   const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
   const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
+  const [clearUser] = useMutation(CLEAR_USER_MUTATION);
   // New Machine End
 
   // Delete Machine
@@ -128,15 +130,15 @@ export default function DPCard(props) {
     setDeleteMachineOpen(false);
   };
 
+  const handleClearUser = () => {
+    clearUser();
+  };
+
   const handleDeleteMachines = () => {
-    // TODO : 刪除所有機器
-    // setMachineList([]);
     clearMachine();
   };
 
   const handleDeleteMachine = () => {
-    // TODO : 刪除單一機器
-    // console.log(data);
     deleteMachine({
       variables: {
         input: {
@@ -149,6 +151,7 @@ export default function DPCard(props) {
   // Delete Machine End
 
   const getCard = (_new) => {
+    console.log(data);
     if (!_new) {
       return (
         <Card className={classes.card}>
@@ -173,7 +176,7 @@ export default function DPCard(props) {
                     gutterBottom
                   >
                     組別：
-                    {data.user === null ? "無" : data.user.teamId}
+                    {data.user === null ? "無" : data.user}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -255,6 +258,16 @@ export default function DPCard(props) {
                   style={{ width: "100%", height: "100px" }}
                 >
                   清除機台
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={handleClearUser}
+                  style={{ width: "100%", height: "100px" }}
+                >
+                  清除使用者
                 </Button>
               </Grid>
             </Grid>

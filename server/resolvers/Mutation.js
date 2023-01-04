@@ -82,7 +82,7 @@ const Mutation = {
   ) => {
     const user = await Team.findOne({ teamId: teamId });
     if (status === 2) {
-      const machine = await Model.Machine.findOne({ user: user._id });
+      const machine = await Model.Machine.findOne({ user: user.teamId });
       machine.status = -1;
       machine.user = null;
       machine.completeTime = -1;
@@ -97,7 +97,7 @@ const Mutation = {
       user.status = status;
       const machine = await Model.Machine.findOne({ name: machineName });
       machine.status = 1;
-      machine.user = user._id;
+      machine.user = user.teamId;
       machine.completeTime = Date.now() + machine.duration * 60 * 1000;
       user.machine = machine.name;
       await user.save();
@@ -136,6 +136,8 @@ const Mutation = {
   ) => {
     const machine = await Model.Machine.findOne({ name: name });
     machine.status = status;
+    machine.user = null;
+    machine.completeTime = -1;
     await machine.save();
     const machines = await Model.Machine.find({});
     pubsub.publish("machineUpdated", { machineUpdated: machines });

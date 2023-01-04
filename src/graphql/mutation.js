@@ -53,6 +53,12 @@ export const UPDATE_ALL_MUTATION = gql`
   }
 `;
 
+export const CLEAR_USER_MUTATION = gql`
+  mutation clearUser {
+    adminClearUser
+  }
+`;
+
 // ====== LEICHIE INFO ======
 
 export const CREATE_LEICHIE_MUTATION = gql`

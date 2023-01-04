@@ -10,6 +10,7 @@ export {
   ADMIN_UPDATE_USER_MUTATION,
   ADMIN_UPDATE_MACHINE,
   UPDATE_ALL_MUTATION,
+  CLEAR_USER_MUTATION,
 } from "./mutation";
 
 export {

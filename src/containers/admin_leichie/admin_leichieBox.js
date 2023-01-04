@@ -27,7 +27,7 @@ const LaserCutterBox = ({
         {/* 有幾台雷切就放幾個components */}
         {/* 從資料庫叫回產生雷切的訊息框*/}
         {laserCutterInfo.map((c, i) => {
-          if (!laserIdx.includes(parseInt(c.id))) return; // skip unexisting id
+          // if (!laserIdx.includes(parseInt(c.id))) return; // skip unexisting id
           console.log("機台Id= " + c.id);
           return (
             <LaserCutterCards
@@ -36,8 +36,6 @@ const LaserCutterBox = ({
               status={c.status}
               groupNo={c.user}
               doneTime={c.completeTime}
-              done={c.done}
-              remove={c.remove}
               laserNumber={laserNumber}
               setLaserNumber={setLaserNumber}
               laserIdx={laserIdx}

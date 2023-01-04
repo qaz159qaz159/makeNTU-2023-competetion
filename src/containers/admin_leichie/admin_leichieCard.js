@@ -45,16 +45,11 @@ const modalStyle = {
 
 const cards = ({
   leichieId,
-  // leichieName,
   status,
   groupNo,
   doneTime,
-  done,
-  remove,
   laserNumber,
-  setLaserNumber,
   laserIdx,
-  setLaserIdx,
   deleteLeichei,
   updatedLeichie
 }) => {

@@ -1,6 +1,7 @@
 type Query {
   machine: [Machine!]!
   laserCutter: [LaserCutter!]!
+  laserCutterReservation: [LaserCutterReservation]
 }
 
 type Mutation {
@@ -21,7 +22,6 @@ input DeleteMachineInfo {
   name: String!
 }
 
-#  不是很確定要怎麼寫TT
 type Subscription {
   LaserCutterInfo: LaserCutter!
   LaserCutterReservation(teamId: ID!): LaserCutterReservation!

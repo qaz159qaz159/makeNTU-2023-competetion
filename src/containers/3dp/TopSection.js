@@ -68,6 +68,7 @@ export default function Top(props) {
   const [finishUser, setFinishUser] = React.useState(-1);
 
   const [buttonState, setButtonState] = React.useState(0);
+  const [howToUseOpen, setHowToUseOpen] = React.useState(false);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -76,8 +77,6 @@ export default function Top(props) {
     subscribeToMore: userSubscribeToMore,
   } = useQuery(USER_QUERY);
 
-  const [counter, setCounter] = useState(0);
-
   useEffect(() => {
     try {
       subscribeToMore({
@@ -85,8 +84,6 @@ export default function Top(props) {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
           const machines = subscriptionData.data.machineUpdated;
-          // setCounter(counter + 1);
-          // console.log("machineUpdated", data.machine);
           return Object.assign({}, prev, {
             machine: machines,
           });
@@ -416,6 +413,18 @@ export default function Top(props) {
       {authority === 1 && (
         <Element name="title">
           {/*<div className={classes.root}>*/}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div>
+              <Typography>
+                <h1>MakeNTU 3D列印機管理介面</h1>
+              </Typography>
+            </div>
+            <div>
+              <Button onClick={() => setHowToUseOpen(true)}>
+                操作說明
+              </Button>
+            </div>
+          </div>
           <Grid container spacing={2}>
             {/**/}
             <Grid item xs={10}>
@@ -532,6 +541,22 @@ export default function Top(props) {
         <DialogActions>
           <Button onClick={() => setFinishUserOpen(false)}>取消</Button>
           <Button onClick={handleFinishUser}>結束</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={howToUseOpen}>
+        <DialogTitle>操作說明</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            <div>1. 點選新增機台，可以新增機台，請注意不要重複命名</div>
+            <div>2. 點選清除機台，可以清除所有機台</div>
+            <div>3. 點選清除使用者，可以清除所有在預約或使用中的使用者</div>
+            <div>4. 等待中下面的卡片點選後可以安排機台給參賽者</div>
+            <div>5. 使用中下面的卡片點選後可以結束使用</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setHowToUseOpen(false)}>關閉</Button>
+          {/*<Button onClick={handleFinishUser}>結束</Button>*/}
         </DialogActions>
       </Dialog>
       {/*<Alert>This is an info alert — check it out!</Alert>*/}

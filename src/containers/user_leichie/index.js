@@ -34,7 +34,6 @@ import {
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
   LASERCUTTER_RESERVE_SUBSCRIPTION,
-  LASERCUTTER_RESERVE_SUBSCRIPTION,
 } from "../../graphql";
 import { useSelector } from "react-redux";
 import { selectSession } from "../../slices/sessionSlice";

@@ -266,7 +266,7 @@ const Mutation = {
         reserveLaser
       );
     } else console.log("Find Reservation record of LaserCutter:", reserveLaser);
-
+    // pubsub.publish()
     // console.log("Validation of LaserCutter:", reserveLaser);
     return reserveLaser;
   },

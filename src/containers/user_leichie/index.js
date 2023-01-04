@@ -33,7 +33,7 @@ import {
   LEICHIE_RESERVE_QUERY,
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
-  LASERCUTTER_RESERVE_SUBSCRIPTION
+  LASERCUTTER_RESERVE_SUBSCRIPTION,
 } from "../../graphql";
 import { useSelector } from "react-redux";
 import { selectSession } from "../../slices/sessionSlice";
@@ -43,7 +43,6 @@ import { selectSession } from "../../slices/sessionSlice";
 export default function LaserCutter() {
   // --- States ---
   const { isLogin, authority, teamID } = useSelector(selectSession);
-  const [laserTime, setLaserTime] = useState(20);
   const [open, setOpen] = useState(false); // 開啟預約管理
   const [reserved, setReserved] = useState(false); // 是否已預約借用
   const [material, setMaterial] = useState(""); // 預約雷切機 材料
@@ -71,18 +70,17 @@ export default function LaserCutter() {
             return prev;
           }
           const newReserveInfo = subscriptionData.data.LaserCutterReservation;
-          setTeamReserve(newReserveInfo)
+          setTeamReserve(newReserveInfo);
           console.log("prev", prev);
           console.log("sub data", subscriptionData.data);
 
-          return newReserveInfo
+          return newReserveInfo;
         },
       });
     } catch (error) {
       console.log(error);
     }
-  }, [subscribeToMore])
-
+  }, [subscribeToMore]);
 
   useEffect(() => {
     waitingNum();
@@ -93,11 +91,21 @@ export default function LaserCutter() {
   const getMaterialThickness = () => {
     getReserve().then((res) => {
       const { laserCutterReservation } = res.data;
-      console.log("res.data" , laserCutterReservation?.find(team => team.teamId == teamId)?.thickness ?? "");
-      setMaterial(laserCutterReservation?.find(team => team.teamId == teamId)?.material ?? "");
-      setThickness(laserCutterReservation?.find(team => team.teamId == teamId)?.thickness ?? "")
+      console.log(
+        "res.data",
+        laserCutterReservation?.find((team) => team.teamId == teamId)
+          ?.thickness ?? ""
+      );
+      setMaterial(
+        laserCutterReservation?.find((team) => team.teamId == teamId)
+          ?.material ?? ""
+      );
+      setThickness(
+        laserCutterReservation?.find((team) => team.teamId == teamId)
+          ?.thickness ?? ""
+      );
     });
-  }
+  };
 
   const waitingNum = () => {
     getReserve().then((res) => {
@@ -138,7 +146,7 @@ export default function LaserCutter() {
   const borrowForm = (
     <>
       <Box component="form" sx={modalStyle}>
-        <FormControl style={{minWidth: 100}}>
+        <FormControl style={{ minWidth: 100 }}>
           {/* 選取材料 */}
           <InputLabel id="demo-simple-select-label">材料</InputLabel>
           <Select
@@ -164,7 +172,7 @@ export default function LaserCutter() {
           </Select>
         </FormControl>
 
-        <FormControl style={{minWidth: 100}}>
+        <FormControl style={{ minWidth: 100 }}>
           {/* 選取厚度 */}
           <InputLabel id="demo-simple-select-label">厚度</InputLabel>
           <Select
@@ -185,8 +193,8 @@ export default function LaserCutter() {
               setThickness(e.target.value);
             }}
           >
-            <MenuItem value={'5'}>5 mm</MenuItem>
-            <MenuItem value={'3'}>3 mm</MenuItem>
+            <MenuItem value={"5"}>5 mm</MenuItem>
+            <MenuItem value={"3"}>3 mm</MenuItem>
           </Select>
         </FormControl>
       </Box>

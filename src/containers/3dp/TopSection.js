@@ -230,7 +230,7 @@ export default function Top(props) {
         setUserRequestFinish(false);
       }, 3000);
     }
-  })
+  });
 
   const handleFinishUser = () => {
     const currentUser = userList.filter((user) => user.id === finishUser)[0];

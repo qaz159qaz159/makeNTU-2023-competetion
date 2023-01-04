@@ -112,7 +112,7 @@ export default function LaserCutter() {
   // --- States ---
   const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
-  const [timeChange, setTimeChange] = useState(20);
+  const [timeChange, setTimeChange] = useState();
   const [removeId, setRemoveId] = useState();
   const [laserIdx, setLaserIdx] = useState(
     [...Array(laserNumber).keys()].map((i) => i + 1)
@@ -222,7 +222,6 @@ export default function LaserCutter() {
   }
   if (reserveLoading) {
     return "Loading...";
-
   }
   console.log(
     "data:",
@@ -386,6 +385,7 @@ export default function LaserCutter() {
             color="secondary"
             onChange={(e) => {
               setTimeChange(e.target.value);
+              setLaserTime(e.target.value);
             }}
             value={timeChange}
           />
@@ -456,7 +456,7 @@ export default function LaserCutter() {
                       onChange={(e) => {
                         setArrange(e.target.value);
                         console.log(e.target.value);
-                        console.log('arrange:', arrange);
+                        console.log("arrange:", arrange);
                       }}
                     >
                       {laserCutterInfo?.map((item) => {
@@ -467,10 +467,10 @@ export default function LaserCutter() {
                               value={parseInt(item.id)}
                             >
                               雷切{parseInt(item.id)}
-                            </MenuItem>)
+                            </MenuItem>
+                          );
                         }
-                      }
-                      )}
+                      })}
                       <MenuItem key={99} value={99}>
                         移除
                       </MenuItem>
@@ -506,10 +506,10 @@ export default function LaserCutter() {
                           });
                           alert(
                             "已將隊伍 " +
-                            row.teamId +
-                            " 排入使用：雷切" +
-                            arrange +
-                            "，請按下 '確定' 以完成分發。"
+                              row.teamId +
+                              " 排入使用：雷切" +
+                              arrange +
+                              "，請按下 '確定' 以完成分發。"
                           );
                         }
                         cancelReserve({ variables: { teamId: row.teamId } });

@@ -8,13 +8,9 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
+import AddIcon from "@mui/icons-material/Add";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { Modal } from "@mui/material";
-// import { useMutation } from "@apollo/client";
-// import {
-//   DEL_LEICHIE_MUTATION,
-// } from "../../graphql";
-
-// const [deleteLeichie] = useMutation(DEL_LEICHIE_MUTATION);
 
 // 預計完成時間
 const showTime = (status, completeTime) => {
@@ -98,7 +94,7 @@ const cards = ({
                 使用組別
               </Typography>
               <Typography sx={{ fontSize: 40 }} component="div">
-                {`# ${groupNo}`}
+                {groupNo === null ? "待命" : `#${groupNo}`}
               </Typography>
             </Grid>
             <Grid item>
@@ -127,12 +123,19 @@ const cards = ({
               <Button
                 sx={{ border: 1.5 }}
                 variant="outlined"
-                startIcon={<CheckIcon />}
-                // todo: 前端按鈕顯示轉換
+                startIcon={
+                  status === 1 ? (
+                    <CheckIcon />
+                  ) : status === -1 ? (
+                    <AddIcon />
+                  ) : (
+                    <FiberManualRecordIcon />
+                  )
+                }
+                disabled={status === 0 ? true : false}
                 // 判斷邏輯： 運作中點擊使用完成 status: 1 -> 0
                 //          暫停使用點擊恢復使用 status: -1 -> 0
                 onClick={() => {
-                  console.log("Updating LeiChie");
                   updatedLeichie({
                     variables: {
                       info: {
@@ -145,20 +148,34 @@ const cards = ({
                   });
                 }}
               >
-                使用完成
+                {status === 1
+                  ? "使用完成"
+                  : status === -1
+                  ? "恢復使用"
+                  : "待分配"}
               </Button>
 
               <Button
                 sx={{ border: 1.5 }}
-                disabled={status == 1} // 需判斷若在使用中則不能按移除，必須先按使用完成才可以
+                disabled={status === 1 ? true : status === -1 ? true : false} // 需判斷若在使用中則不能按移除，必須先按使用完成才可以
                 variant="outlined"
                 startIcon={<DeleteIcon />}
                 onClick={() => {
                   console.log("laserNumber " + laserNumber);
-                  deleteLeichei({ variables: { id: leichieId } });
+                  // deleteLeichei({ variables: { id: leichieId } });
+                  updatedLeichie({
+                    variables: {
+                      info: {
+                        id: leichieId,
+                        status: -1,
+                        user: null,
+                        completeTime: null,
+                      },
+                    },
+                  });
                 }}
               >
-                移除機台
+                暫停使用
               </Button>
 
               {/* 原本有做個確認框.....但useState過不了 所以先刪掉 */}

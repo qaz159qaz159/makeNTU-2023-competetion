@@ -38,9 +38,9 @@ function createData(team, order, material, thickness, arrangement) {
 }
 
 const rows = [
-  createData("1", 1, "壓克力", 3, "1"),
-  createData("2", 2, "密集板", 5, "2"),
-  createData("3", 3, "密集板", 5, "3"),
+  createData("1", 1, "壓克力", 3, ""),
+  createData("2", 2, "密集板", 5, ""),
+  createData("3", 3, "密集板", 5, ""),
   createData("4", 4, "壓克力", 3, ""),
   createData("5", 5, "密集板", 5, ""),
 ];
@@ -196,6 +196,16 @@ export default function LaserCutter() {
     }
   }, [subscribeToMore]);
 
+  useEffect(() => {
+    setLaserNumber(data?.laserCutter.length);
+    setLaserIdx([...Array(data?.laserCutter.length).keys()].map((i) => i + 1));
+    setLaserCutterInfo(data?.laserCutter);
+  }, [data?.laserCutter]);
+
+  useEffect(() => {
+    console.log("arrange:", arrange);
+  }, [arrange]);
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -209,10 +219,14 @@ export default function LaserCutter() {
     p: 3,
   };
 
-  if (loading || reserveLoading) {
+  if (loading) {
     return "Loading...";
     // console.log("data:", data?.laserCutter);
     // setLaserCutterInfo(data.laserCutter);
+  }
+  if(reserveLoading){
+    return "Loading...";
+
   }
   console.log(
     "data:",
@@ -265,40 +279,29 @@ export default function LaserCutter() {
                   required
                   label="機台ID"
                   variant="standard"
-                  onChange={(e) => {
-                    if (e.target.value.trim()) {
-                      let id = parseInt(e.target.value.trim());
-                      if (Number.isInteger(id)) {
-                        if (laserIdx.includes(id)) {
-                          // alert("ID: " + e.target.value.trim() + " 已存在");
-                          // return;
-                        }
-                        setLaserNo(id);
-                        // send to DB
-                        newLeichie({
-                          variables: {
-                            info: {
-                              id,
-                              status: 0,
-                              duration: laserTime,
-                              user: null,
-                              completeTime: null,
-                            },
-                          },
-                        });
-                      } else {
-                        alert("請輸入整數 ID");
-                        return;
-                      }
-                    }
+                  // onChange={(e) => {
+                  //   if (e.target.value.trim()) {
+                  //     let id = parseInt(e.target.value.trim());
+                  //     if (Number.isInteger(id)) {
+                  //       if (laserIdx.includes(id)) {
+                  //         alert("ID: " + e.target.value.trim() + " 已存在");
+                  //         return;
+                  //       }
+                  //       setLaserNo(id);
+                  //       // send to DB
+                  //       newLeichie({ variables: { info: { id, status: 0, duration: laserTime, user: null, completeTime: null } } });
+                  //     } else {
+                  //       alert("請輸入整數 ID");
+                  //       return;
+                  //     }
+                  //   }
 
-                    setLaserNo(e.target.value.trim());
-                  }}
-                  value={laserNo}
-                  helperText={laserNo ? "" : "必填"}
+                  //   setLaserNo(e.target.value.trim());
+                  // }}
+                  value={`雷切${laserNumber + 1}`}
+                  helperText={laserNo ? "" : "不可更改ID"}
                 />
                 <Button
-                  disabled={!laserNo}
                   variant="contained"
                   size="small"
                   sx={{
@@ -307,18 +310,16 @@ export default function LaserCutter() {
                     borderRadius: 10,
                   }}
                   onClick={() => {
-                    console.log(
-                      "laserNo " + JSON.stringify(laserIdx) + laserNo
-                    );
+                    // console.log(
+                    //   "laserNo " + JSON.stringify(laserIdx) + laserNo
+                    // );
                     // setLaserNumber(laserNumber + 1);
                     // setLaserIdx([...laserIdx, laserNumber + 1]); 如果移除再加入會有重複ID出現的可能性 已修改城下列寫法
-                    setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
-                    // send to DB
-
+                    // setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
                     newLeichie({
                       variables: {
                         info: {
-                          id: laserNo,
+                          id: laserNumber + 1,
                           status: 0,
                           duration: laserTime,
                           user: null,
@@ -375,7 +376,7 @@ export default function LaserCutter() {
           alignItems: "center",
         }}
       >
-        <p>雷切機數量：{data.laserCutter.length} 台</p>
+        <p>雷切機數量：{laserNumber} 台</p>
         <p>時間上限：{laserTime} mins</p>
         <Stack direction="row">
           <TextField
@@ -388,7 +389,7 @@ export default function LaserCutter() {
             variant="standard"
             color="secondary"
             onChange={(e) => {
-              setTimeChange(parseInt(e.target.value));
+              setTimeChange(e.target.value);
             }}
             value={timeChange}
           />
@@ -405,7 +406,6 @@ export default function LaserCutter() {
             }}
             disabled={!timeChange}
             onClick={() => {
-              // console.log(timeChange);
               setLaserTime(timeChange);
               setTimeChange("");
             }}
@@ -428,7 +428,7 @@ export default function LaserCutter() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {reserveData.laserCutterReservation.map((row, i) => (
+              {reserveData?.laserCutterReservation.map((row, i) => (
                 <TableRow
                   key={row.teamId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -461,14 +461,24 @@ export default function LaserCutter() {
                         setArrange(e.target.value);
                         // rows[i]["arrangement"] = e.target.value; // 更新資料庫
                         // console.log("rows[i]['arrangement']= "+ rows[i]['arrangement'])
-                        setDataRow(() => rows);
+                        // setDataRow(() => rows);
+                        console.log(e.target.value);
+                        console.log('arrange:', arrange);
+
                       }}
                     >
-                      {laserIdx.map((id) => (
-                        <MenuItem key={id} value={id}>
-                          雷切{id}
-                        </MenuItem>
-                      ))}
+                      {laserCutterInfo?.map((item) =>
+                        item.status === 0 ? (
+                          <MenuItem
+                            key={parseInt(item.id)}
+                            value={parseInt(item.id)}
+                          >
+                            雷切{parseInt(item.id)}
+                          </MenuItem>
+                        ) : (
+                          ""
+                        )
+                      )}
                       <MenuItem key={99} value={99}>
                         移除
                       </MenuItem>
@@ -491,38 +501,31 @@ export default function LaserCutter() {
 
                         console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
 
-                        if (arrange == 99) {
+                  
+                        if (arrange === 99) {
                           alert("將隊伍 " + row.teamId + " 移除等候隊伍");
                         } else {
-                          // setLaserCutterInfo(() => {
-                          //   // let tmp = laserCutterInfo.findIndex(
-                          //   //   (laser) => laser.id == row.arrangement
-                          //   // );
-                          //   // laserCutterInfo[tmp].usedBy = row.team;
-                          //   // laserCutterInfo[tmp].status = 1;
-                          //   // console.log(completeTime(timeChange));
-
-                          //   // laserCutterInfo[tmp].completeTime =
-                          //   //   completeTime(timeChange);
-
-                          //   // update laser cutter info
-
-                          //   return laserCutterInfo;
-                          // });
+                          // update laser cutter info
+                          let laserCutterID = String(arrange);
+                          console.log("laserCutterID: ", laserCutterID);
+                          
                           updatedLeichie({
                             variables: {
                               info: {
-                                id: arrange,
+                                id: laserCutterID,
                                 status: 1,
-                                duration: timeChange,
+                                duration: laserTime,
                                 user: row.teamId,
-                                completeTime: completeTime(timeChange),
+                                completeTime: completeTime(laserTime),
                               },
                             },
                           });
-
                           alert(
-                            "將隊伍 " + row.teamId + " 排入使用雷切" + arrange
+                            "已將隊伍 " +
+                              row.teamId +
+                              " 排入使用：雷切" +
+                              arrange +
+                              "，請按下 '確定' 以完成分發。"
                           );
                         }
                         cancelReserve({ variables: { teamId: row.teamId } });

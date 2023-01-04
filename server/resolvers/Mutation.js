@@ -192,7 +192,7 @@ const Mutation = {
 
     console.log("Validation of LaserCutter:", laserCutter);
 
-    pubsub.publish("CreateLaserCutter", { laserCutter: laserCutter });
+    pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
     return laserCutter;
   },
 
@@ -226,15 +226,7 @@ const Mutation = {
   // delete laser cutter
   deleteLaserCutter: async (parents, { id }, { pubsub }) => {
     // Set status to '-1'.
-    const laserCutter = await Model.LaserCutterModel.findOneAndUpdate(
-      { id },
-      {
-        $set: {
-          status: "-1",
-        },
-      },
-      { new: true }
-    );
+    const laserCutter = await Model.LaserCutterModel.findOneAndDelete({ id });
     if (!laserCutter) {
       console.log("Error LaserCutterModel不存在");
     } else {
@@ -242,8 +234,6 @@ const Mutation = {
     }
     console.log("Validation of LaserCutter:", laserCutter);
     pubsub.publish("LaserCutterInfo", { LaserCutterInfo: laserCutter });
-
-    // 是不是要加pubsub? Yes
 
     return "success";
   },

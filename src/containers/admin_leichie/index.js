@@ -37,13 +37,13 @@ function createData(team, order, material, thickness, arrangement) {
   return { team, order, material, thickness, arrangement };
 }
 
-const rows = [
-  createData("1", 1, "壓克力", 3, ""),
-  createData("2", 2, "密集板", 5, ""),
-  createData("3", 3, "密集板", 5, ""),
-  createData("4", 4, "壓克力", 3, ""),
-  createData("5", 5, "密集板", 5, ""),
-];
+// const rows = [
+//   createData("1", 1, "壓克力", 3, ""),
+//   createData("2", 2, "密集板", 5, ""),
+//   createData("3", 3, "密集板", 5, ""),
+//   createData("4", 4, "壓克力", 3, ""),
+//   createData("5", 5, "密集板", 5, ""),
+// ];
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -57,14 +57,13 @@ const rows = [
 // 預估完成時間
 var completeTime = (timeLim) => {
   var time = new Date();
-  time.setTime(time.getTime() + timeLim * 60 * 1000);
+  time.setTime(time.getTime() + parseInt(timeLim) * 60 * 1000);
   return time.toLocaleTimeString("zh-Hans-CN", {
     hour12: false,
     hour: "numeric",
     minute: "numeric",
   });
 };
-var timeLim = 20;
 
 // fake 先假裝是從資料庫get資料回來QQ
 // const fakelaserCutterInfo = [
@@ -108,9 +107,7 @@ var timeLim = 20;
 // ];
 // --- --- ---
 export default function LaserCutter() {
-  // 問題：laserIdx 應該要從query回來的結果去抓機台的編號而不是直接依照機台數量去算，要不然排程中的選項會是錯的
-  // 問題：要重新整理才會產生正確的機台資訊，可能要用useState才引發rerende? 不確定怎改QQ
-  // 問題：預約列表同理，可以傳資料到後端但不會馬上更新畫面
+  // 問題：預約列表變更不會馬上更新畫面
 
   // --- States ---
   const [laserNumber, setLaserNumber] = useState(2);
@@ -122,7 +119,6 @@ export default function LaserCutter() {
   ); // 雷切機陣列 預設1,2號機台(初始時根據總數自動生成id)
   const [laserNo, setLaserNo] = useState(""); // 雷切機編號
   const [open, setOpen] = useState(false); // 新增雷切機
-  const [dataRow, setDataRow] = useState(rows);
   const [laserCutterInfo, setLaserCutterInfo] = useState([]);
   const [arrange, setArrange] = useState();
 
@@ -224,7 +220,7 @@ export default function LaserCutter() {
     // console.log("data:", data?.laserCutter);
     // setLaserCutterInfo(data.laserCutter);
   }
-  if(reserveLoading){
+  if (reserveLoading) {
     return "Loading...";
 
   }
@@ -455,29 +451,25 @@ export default function LaserCutter() {
                       }}
                       variant="standard"
                       size="small"
-                      defaultValue=""
-                      // value={}
+                      defaultValue={""}
+                      value={arrange}
                       onChange={(e) => {
                         setArrange(e.target.value);
-                        // rows[i]["arrangement"] = e.target.value; // 更新資料庫
-                        // console.log("rows[i]['arrangement']= "+ rows[i]['arrangement'])
-                        // setDataRow(() => rows);
                         console.log(e.target.value);
                         console.log('arrange:', arrange);
-
                       }}
                     >
-                      {laserCutterInfo?.map((item) =>
-                        item.status === 0 ? (
-                          <MenuItem
-                            key={parseInt(item.id)}
-                            value={parseInt(item.id)}
-                          >
-                            雷切{parseInt(item.id)}
-                          </MenuItem>
-                        ) : (
-                          ""
-                        )
+                      {laserCutterInfo?.map((item) => {
+                        if (item.status === 0) {
+                          return (
+                            <MenuItem
+                              key={parseInt(item.id)}
+                              value={parseInt(item.id)}
+                            >
+                              雷切{parseInt(item.id)}
+                            </MenuItem>)
+                        }
+                      }
                       )}
                       <MenuItem key={99} value={99}>
                         移除
@@ -488,33 +480,25 @@ export default function LaserCutter() {
                       sx={{ color: "rgba(255,255,255, 0.8)" }}
                       endIcon={<SendIcon />}
                       value={row.teamId} // 第幾組
-                      // disabled={!rows[i]['arrangement']}
                       onClick={(e) => {
                         if (!arrange) return alert("請選擇排程項目");
                         setRemoveId(row.teamId);
                         console.log("del row = " + i);
                         console.log("del team = " + row.teamId);
 
-                        // setDataRow(() =>
-                        //   dataRow.filter((data) => data.team != row.team)
-                        // );
-
-                        console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
-
-                  
                         if (arrange === 99) {
                           alert("將隊伍 " + row.teamId + " 移除等候隊伍");
                         } else {
                           // update laser cutter info
                           let laserCutterID = String(arrange);
                           console.log("laserCutterID: ", laserCutterID);
-                          
+
                           updatedLeichie({
                             variables: {
                               info: {
                                 id: laserCutterID,
                                 status: 1,
-                                duration: laserTime,
+                                duration: parseInt(laserTime),
                                 user: row.teamId,
                                 completeTime: completeTime(laserTime),
                               },
@@ -522,10 +506,10 @@ export default function LaserCutter() {
                           });
                           alert(
                             "已將隊伍 " +
-                              row.teamId +
-                              " 排入使用：雷切" +
-                              arrange +
-                              "，請按下 '確定' 以完成分發。"
+                            row.teamId +
+                            " 排入使用：雷切" +
+                            arrange +
+                            "，請按下 '確定' 以完成分發。"
                           );
                         }
                         cancelReserve({ variables: { teamId: row.teamId } });

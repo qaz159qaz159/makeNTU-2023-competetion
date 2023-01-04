@@ -24,6 +24,7 @@ import {
   CREATE_LEICHIE_MUTATION,
   UPDATE_LEICHIE_MUTATION,
   LEICHIE_QUERY,
+  LASERCUTTER_RESERVE_SUBSCRIPTION,
   LEICHIE_RESERVE_QUERY,
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
@@ -193,6 +194,68 @@ export default function LaserCutter() {
   }, [subscribeToMore]);
 
   useEffect(() => {
+    try {
+      subscribeToReserve({
+        document: LASERCUTTER_RESERVE_SUBSCRIPTION,
+        variables: {},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) {
+            console.log("Reservation Subscription failed");
+            return prev;
+          }
+          const newFeedItem = subscriptionData.data.LaserCutterReservation;
+          console.log("Reservation prev", prev);
+          console.log("Reservation sub data", subscriptionData.data);
+          switch (subscriptionData.data.LaserCutterReservation.reserveStatus) {
+            // TODO: other cases!
+            // case -1:
+            //   return Object.assign({}, prev, {
+            //     // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+            //     laserCutter: prev.laserCutter,
+            //   });
+
+            // '新增機台'或是'使用完成'
+            case 0:
+              if (
+                prev.laserCutterReservation.find(
+                  (obj) => obj.teamId === newFeedItem.teamId
+                )
+              ) {
+                // 已存在，狀態：改為'使用完成'
+                console.log("Reservation Case Existed and Cancel");
+                return Object.assign({}, prev, {
+                  // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                  laserCutterReservation: prev.laserCutterReservation.filter(
+                    (reserve) => reserve.teamId !== newFeedItem.teamId
+                  ),
+                });
+              } else {
+                // 新增機台
+                return Object.assign({}, prev, {
+                  laserCutterReservation: [
+                    ...prev.laserCutterReservation,
+                    newFeedItem,
+                  ],
+                });
+              }
+            default:
+              console.log("Reservation Case undefined");
+              return Object.assign({}, prev, {
+                laserCutterReservation: prev.laserCutterReservation,
+              });
+          }
+          // return Object.assign({}, prev, {
+          //     // laserCutter: [...prev.laserCutter, newFeedItem],
+          //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
+          // });
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [subscribeToReserve]);
+
+  useEffect(() => {
     setLaserNumber(data?.laserCutter.length);
     setLaserIdx([...Array(data?.laserCutter.length).keys()].map((i) => i + 1));
     setLaserCutterInfo(data?.laserCutter);
@@ -225,8 +288,8 @@ export default function LaserCutter() {
   }
   console.log(
     "data:",
-    data?.laserCutter,
-    data?.laserCutter.map((ls) => ls.id)
+    data?.laserCutter
+    // data?.laserCutter.map((ls) => ls.id)
   );
   console.log("laserCutterReservation: ", reserveData.laserCutterReservation);
   // setDataRow(reserveData.laserCutterReservation)
@@ -424,7 +487,7 @@ export default function LaserCutter() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {reserveData?.laserCutterReservation.map((row, i) => (
+              {reserveData.laserCutterReservation.map((row, i) => (
                 <TableRow
                   key={row.teamId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -460,7 +523,7 @@ export default function LaserCutter() {
                       }}
                     >
                       {laserCutterInfo?.map((item) => {
-                        if (item.status === 0) {
+                        if (item.status === 0)
                           return (
                             <MenuItem
                               key={parseInt(item.id)}
@@ -469,7 +532,6 @@ export default function LaserCutter() {
                               雷切{parseInt(item.id)}
                             </MenuItem>
                           );
-                        }
                       })}
                       <MenuItem key={99} value={99}>
                         移除

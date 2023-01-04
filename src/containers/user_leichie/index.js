@@ -38,8 +38,6 @@ import {
 import { useSelector } from "react-redux";
 import { selectSession } from "../../slices/sessionSlice";
 // --- --- ---
-// 問題：等候組數只能F5刷新 QQ
-
 export default function LaserCutter() {
   // --- States ---
   const { isLogin, authority, teamID } = useSelector(selectSession);
@@ -47,20 +45,20 @@ export default function LaserCutter() {
   const [reserved, setReserved] = useState(false); // 是否已預約借用
   const [material, setMaterial] = useState(""); // 預約雷切機 材料
   const [thickness, setThickness] = useState(""); // 預約雷切機 厚度
-  const [waiting, setWaiting] = useState();
+  const [waiting, setWaiting] = useState(0);
   const [teamId, setTeamId] = useState(!authority ? teamID : 0);
-  const handleOpen = () => setOpen(true); // 開啟預約雷切機
-  const handleClose = () => setOpen(false); // 關閉預約雷切機
-  const [teamReserve, setTeamReserve] = useState([]);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  // const [teamReserve, setTeamReserve] = useState([]);
   const [newReserve] = useMutation(CREATE_LEICHIE_RESERVE);
   const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE);
-  // const [allReserve] = useLazyQuery(LEICHIE_RESERVE_QUERY);
   const [getReserve, { loading, data, subscribeToMore }] = useLazyQuery(
     LEICHIE_RESERVE_QUERY
   );
 
   useEffect(() => {
     try {
+      console.log("data ", data);
       subscribeToMore({
         document: LASERCUTTER_RESERVE_SUBSCRIPTION,
         variables: {},
@@ -70,11 +68,68 @@ export default function LaserCutter() {
             return prev;
           }
           const newReserveInfo = subscriptionData.data.LaserCutterReservation;
-          setTeamReserve(newReserveInfo);
-          console.log("prev", prev);
+          // setTeamReserve(newReserveInfo);
+          console.log(
+            "prev.laserCutterReservation",
+            prev.laserCutterReservation
+          );
           console.log("sub data", subscriptionData.data);
+          if (newReserveInfo.teamId == teamId) {
+            switch (newReserveInfo.reserveStatus) {
+              case 0:
+                // cancel
+                setReserved(false);
+                return Object.assign({}, prev, {
+                  laserCutterReservation: prev.laserCutterReservation.filter(
+                    (reserve) => reserve.teamId !== newReserveInfo.teamId
+                  ),
+                });
 
-          return newReserveInfo;
+              case 1:
+                // create
+                return Object.assign({}, prev, {
+                  laserCutterReservation: [
+                    ...prev.laserCutterReservation,
+                    newReserve,
+                  ],
+                });
+              default:
+                console.log(
+                  "Reservation Case undefined, return original data."
+                );
+                return Object.assign({}, prev, {
+                  laserCutterReservation: prev.laserCutterReservation,
+                });
+            }
+          } else {
+            switch (newReserveInfo.reserveStatus) {
+              case 0:
+                // cancel
+                // waitingNum();
+                return Object.assign({}, prev, {
+                  laserCutterReservation: prev.laserCutterReservation.filter(
+                    (reserve) => reserve.teamId !== newReserveInfo.teamId
+                  ),
+                });
+
+              case 1:
+                // create
+                // waitingNum();
+                return Object.assign({}, prev, {
+                  laserCutterReservation: [
+                    ...prev.laserCutterReservation,
+                    newReserve,
+                  ],
+                });
+              default:
+                console.log(
+                  "Reservation Case undefined, return original data."
+                );
+                return Object.assign({}, prev, {
+                  laserCutterReservation: prev.laserCutterReservation,
+                });
+            }
+          }
         },
       });
     } catch (error) {
@@ -82,17 +137,18 @@ export default function LaserCutter() {
     }
   }, [subscribeToMore]);
 
+ 
   useEffect(() => {
     waitingNum();
     getMaterialThickness();
-  }, [waiting, teamReserve]);
+  }, [data]);
 
   // failed
   const getMaterialThickness = () => {
     getReserve().then((res) => {
       const { laserCutterReservation } = res.data;
       console.log(
-        "res.data",
+        "res.thickness",
         laserCutterReservation?.find((team) => team.teamId == teamId)
           ?.thickness ?? ""
       );
@@ -111,19 +167,19 @@ export default function LaserCutter() {
     getReserve().then((res) => {
       const { laserCutterReservation } = res.data;
       var c = 0;
+
       if (laserCutterReservation) {
-        laserCutterReservation.map((reserve) => {
+        setWaiting(laserCutterReservation.length);
+        laserCutterReservation.map((reserve, i) => {
+          console.log(i, "reserve", reserve);
           if (reserve.teamId == teamId) {
             setReserved(true);
-            setWaiting(c);
-            return;
+            setWaiting(i);
+            console.log(c, "count", waiting);
           }
-          c += 1;
+          // setWaiting(laserCutterReservation.length);
         });
       }
-      setWaiting(c);
-      // var n = Object.keys(laserCutterReservation ?? []).length;
-      return c;
     });
   };
 
@@ -225,6 +281,8 @@ export default function LaserCutter() {
     </>
   );
   return (
+    
+    
     <Box
       sx={{
         width: "100%",
@@ -233,6 +291,7 @@ export default function LaserCutter() {
         alignItems: "center",
       }}
     >
+      {loading? "loading": ""}
       <Box
         sx={{
           height: "auto",
@@ -299,8 +358,8 @@ export default function LaserCutter() {
         >
           刷新
         </Button> */}
-        <p style={{ fontSize: "20px" }}>等候組數：{waiting}</p>
-        <p style={{ fontSize: "20px" }}>請重新整理畫面更新訊息</p>
+        <p style={{ fontSize: "20px" }}>需等候組數：{waiting}</p>
+        {/* <p style={{ fontSize: "20px" }}>請重新整理畫面更新訊息</p> */}
       </Box>
 
       <Stack

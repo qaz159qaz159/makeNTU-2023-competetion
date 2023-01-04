@@ -268,7 +268,9 @@ const Mutation = {
         reserveLaser
       );
     } else console.log("Find Reservation record of LaserCutter:", reserveLaser);
-    pubsub.publish("LaserCutterReservation", { LaserCutterReservation: reserveLaser });
+    pubsub.publish("LaserCutterReservation", {
+      LaserCutterReservation: reserveLaser,
+    });
     // console.log("Validation of LaserCutter:", reserveLaser);
     return reserveLaser;
   },
@@ -285,7 +287,9 @@ const Mutation = {
     if (!cancelLaser)
       console.log(`teamId ${teamId} didnt reserve a laser cutter!`);
     else console.log("Validation of cancelLaser:", cancelLaser);
-    pubsub.publish("LaserCutterReservation", { LaserCutterReservation: cancelLaser });
+    pubsub.publish("LaserCutterReservation", {
+      LaserCutterReservation: cancelLaser,
+    });
     return cancelLaser;
     // console.log("Validation of LaserCutter:", reserveLaser);
   },

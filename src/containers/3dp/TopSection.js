@@ -18,7 +18,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
 import { useQuery, useMutation } from "@apollo/client";
-import AddTaskIcon from '@mui/icons-material/AddTask';
+import AddTaskIcon from "@mui/icons-material/AddTask";
 import {
   CREATE_MACHINE_MUTATION,
   USER_RESERVE_MACHINE_MUTATION,
@@ -305,7 +305,52 @@ export default function Top(props) {
   };
 
   const returnButton = () => {
-    if (!userRequestFinish) {
+    const currentUser = userList.filter(
+      (user) => user.teamId === parseInt(teamID)
+    )[0];
+    if (currentUser !== undefined) {
+      if (currentUser.status === 0) {
+        return (
+          <Button
+            variant="contained"
+            color={"info"}
+            style={{
+              width: "250px",
+              height: "250px",
+              borderRadius: "125px",
+              fontSize: "30px",
+            }}
+            endIcon={<AddTaskIcon />}
+            onClick={() => {
+              setUserRequestOpen(true);
+            }}
+            disabled
+          >
+            預約完成
+          </Button>
+        );
+      } else if (currentUser.status === 1) {
+        return (
+          <Button
+            variant="contained"
+            color={"info"}
+            style={{
+              width: "250px",
+              height: "250px",
+              borderRadius: "125px",
+              fontSize: "30px",
+            }}
+            endIcon={<AddTaskIcon />}
+            onClick={() => {
+              setUserRequestOpen(true);
+            }}
+            disabled
+          >
+            使用中
+          </Button>
+        );
+      }
+    } else {
       return (
         <Button
           variant="contained"
@@ -324,26 +369,6 @@ export default function Top(props) {
           我要預約
         </Button>
       );
-    } else {
-      return (
-        <Button
-          variant="contained"
-          color={"info"}
-          style={{
-            width: "250px",
-            height: "250px",
-            borderRadius: "125px",
-            fontSize: "30px",
-          }}
-          endIcon={<AddTaskIcon />}
-          onClick={() => {
-            setUserRequestOpen(true);
-          }}
-          disabled
-        >
-          預約完成
-        </Button>
-      );
     }
   };
 
@@ -354,15 +379,25 @@ export default function Top(props) {
   return (
     <>
       {authority === 0 && buttonState === 0 && (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >{returnButton()}</div>
+        <>
+          <Typography
+            style={{ alignItems: "center", justifyContent: "center" }}
+          >
+            <h1>目前有 {machineList.length} 台3D列印機可以使用</h1>
+            <h1>前方目前有 {userList.length} 位使用者</h1>
+          </Typography>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {returnButton()}
+          </div>
+        </>
       )}
       {authority === 0 && userRequestFinish && (
         <div

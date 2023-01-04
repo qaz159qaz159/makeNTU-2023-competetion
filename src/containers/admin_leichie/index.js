@@ -142,18 +142,27 @@ export default function LaserCutter() {
           switch (subscriptionData.data.LaserCutterReservation.reserveStatus) {
             // TODO: other cases!
             case 0:
-              if (prev.laserCutterReservation.find((obj) => obj.teamId === newFeedItem.teamId)) {
+              if (
+                prev.laserCutterReservation.find(
+                  (obj) => obj.teamId === newFeedItem.teamId
+                )
+              ) {
                 // 已存在，狀態：改為'使用完成'
-                console.log("Reservation Case Existed and Cancel")
+                console.log("Reservation Case Existed and Cancel");
                 return Object.assign({}, prev, {
-                  laserCutterReservation: prev.laserCutterReservation.filter((reserve) => reserve.teamId !== newFeedItem.teamId),
+                  laserCutterReservation: prev.laserCutterReservation.filter(
+                    (reserve) => reserve.teamId !== newFeedItem.teamId
+                  ),
                 });
               }
               break;
             case 1:
               console.log("Receive New Reservation");
               return Object.assign({}, prev, {
-                laserCutterReservation: [...prev.laserCutterReservation, newFeedItem],
+                laserCutterReservation: [
+                  ...prev.laserCutterReservation,
+                  newFeedItem,
+                ],
               });
 
             default:
@@ -199,11 +208,10 @@ export default function LaserCutter() {
   }
   if (reserveLoading) {
     return "Loading...";
-
   }
   console.log(
     "data:",
-    data?.laserCutter,
+    data?.laserCutter
     // data?.laserCutter.map((ls) => ls.id)
   );
   console.log("laserCutterReservation: ", reserveData.laserCutterReservation);
@@ -235,7 +243,7 @@ export default function LaserCutter() {
           startIcon={<AddCircleIcon />}
           onClick={handleOpen}
         >
-        新增雷切機
+          新增雷切機
         </Button>
         {/* 新增雷切機的視窗 */}
         <Modal
@@ -278,7 +286,7 @@ export default function LaserCutter() {
                     handleConfirm();
                   }}
                 >
-                確認
+                  確認
                 </Button>
                 <Button
                   variant="contained"
@@ -290,7 +298,7 @@ export default function LaserCutter() {
                   }}
                   onClick={handleClose}
                 >
-                取消
+                  取消
                 </Button>
               </Stack>
             </Stack>
@@ -358,7 +366,7 @@ export default function LaserCutter() {
               setTimeChange("");
             }}
           >
-          修改
+            修改
           </Button>
         </Stack>
       </Stack>
@@ -376,8 +384,7 @@ export default function LaserCutter() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {
-              reserveData.laserCutterReservation.map((row, i) => (
+              {reserveData.laserCutterReservation.map((row, i) => (
                 <TableRow
                   key={row.teamId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -409,23 +416,22 @@ export default function LaserCutter() {
                       onChange={(e) => {
                         setArrange(e.target.value);
                         console.log(e.target.value);
-                        console.log('arrange:', arrange);
+                        console.log("arrange:", arrange);
                       }}
                     >
-                      {laserCutterInfo?.map((item) =>{
-                          if(item.status === 0) 
-                          return(
+                      {laserCutterInfo?.map((item) => {
+                        if (item.status === 0)
+                          return (
                             <MenuItem
                               key={parseInt(item.id)}
                               value={parseInt(item.id)}
                             >
-                            雷切{parseInt(item.id)}
+                              雷切{parseInt(item.id)}
                             </MenuItem>
-                          ) 
-                          })
-                      }
+                          );
+                      })}
                       <MenuItem key={99} value={99}>
-                      移除
+                        移除
                       </MenuItem>
                     </Select>
                     <Button
@@ -458,16 +464,16 @@ export default function LaserCutter() {
                           });
                           alert(
                             "已將隊伍 " +
-                            row.teamId +
-                            " 排入使用：雷切" +
-                            arrange +
-                            "，請按下 '確定' 以完成分發。"
+                              row.teamId +
+                              " 排入使用：雷切" +
+                              arrange +
+                              "，請按下 '確定' 以完成分發。"
                           );
                         }
                         cancelReserve({ variables: { teamId: row.teamId } });
                       }}
                     >
-                    GO
+                      GO
                     </Button>
                   </TableCell>
                 </TableRow>

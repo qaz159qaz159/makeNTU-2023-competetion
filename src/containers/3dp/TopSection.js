@@ -115,6 +115,11 @@ export default function Top(props) {
     updateAll();
   }, []);
 
+  useEffect(() => {
+    setMachineList(data?.machine);
+    setUserList(userData?.user);
+  }, [data, userData]);
+
   const history = useHistory();
   const useStyles = makeStyles(() => ({
     root: {
@@ -155,7 +160,7 @@ export default function Top(props) {
   // Arrange Machine
   // TODO : Arrange Machine
   const handleArrangeMachine = () => {
-    const currentUser = userData.user.filter(
+    const currentUser = userList.filter(
       (user) => user.id === currentArrangeUser
     )[0];
 
@@ -191,7 +196,7 @@ export default function Top(props) {
   // User Request End
 
   const showMachineList = () => {
-    let idleMachineList = data.machine.filter(
+    let idleMachineList = machineList.filter(
       (machine) => machine.status === -1
     );
     return idleMachineList.map((machine) => {
@@ -218,7 +223,7 @@ export default function Top(props) {
   };
 
   const handleFinishUser = () => {
-    const currentUser = userData.user.filter(
+    const currentUser = userList.filter(
       (user) => user.id === finishUser
     )[0];
     adminUpdateUser({
@@ -234,7 +239,7 @@ export default function Top(props) {
 
   const showWaitingQueue = () => {
     // console.log(userList);
-    let waitingQueue = userData.user.filter((user) => user.status === 0);
+    let waitingQueue = userList.filter((user) => user.status === 0);
     return waitingQueue.map((data, index) => (
       <Grid item xs={12}>
         <Typography
@@ -259,7 +264,7 @@ export default function Top(props) {
     ));
   };
   const showReadyQueue = () => {
-    let readyQueue = userData.user.filter((user) => user.status === 1);
+    let readyQueue = userList.filter((user) => user.status === 1);
     return readyQueue.map((data, index) => (
       <Grid item xs={12}>
         <Typography
@@ -339,7 +344,7 @@ export default function Top(props) {
             {/**/}
             <Grid item xs={10}>
               <Grid container spacing={2}>
-                {data.machine.map((data, index) => (
+                {machineList.map((data, index) => (
                   <Grid item xs={2}>
                     <DPCard
                       data={data}
@@ -426,9 +431,9 @@ export default function Top(props) {
         <DialogTitle>預約機台</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
-            <div>總共有 {data.machine.length} 台機台</div>
+            <div>總共有 {machineList.length} 台機台</div>
             <div>
-              約需等待 {(userData.user.length * 10) / data.machine.length} 分鐘
+              約需等待 {(userList.length * 10) / machineList.length} 分鐘
             </div>
           </DialogContentText>
         </DialogContent>

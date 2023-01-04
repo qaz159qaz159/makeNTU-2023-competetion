@@ -15,44 +15,6 @@ class PoolList {
   addUser(username, endtime) {
     this.poolList[username] = endtime;
   }
-  addPlayerMatch(key, playerData) {
-    if ("id" in playerData) {
-      if (!(key in this.poolList)) {
-        this.poolList[key] = new Map();
-      }
-      if (this.poolList[key].has(playerData.id)) {
-        this.poolList[key].delete(playerData.id);
-      }
-      this.poolList[key].set(playerData.id, {
-        ...playerData,
-        time: Date.now(),
-      });
-      this.userMap.set(playerData.id, key);
-    }
-  }
-
-  deletePlayerMatch(key, id) {
-    if (key in this.poolList) {
-      this.poolList[key].delete(id);
-      this.userMap.delete(id);
-    }
-    if (this.poolList[key].size === 0) {
-      delete this.poolList[key];
-    }
-  }
-
-  deletePlayer(id) {
-    if (this.userMap.has(id)) {
-      const key = this.userMap.get(id);
-      this.userMap.delete(id);
-      if (key in this.poolList) {
-        this.poolList[key].delete(id);
-        if (this.poolList[key].size === 0) {
-          delete this.poolList[key];
-        }
-      }
-    }
-  }
 
   async check() {
     const keys = Object.keys(this.poolList);
@@ -80,4 +42,4 @@ const isMatch = (p1, p2) => {
 
 const pool = new PoolList();
 
-export default pool;
+module.exports = pool;

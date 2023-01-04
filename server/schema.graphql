@@ -2,6 +2,7 @@ type Query {
   machine: [Machine!]!
   user: [User!]!
   laserCutter: [LaserCutter]
+    laserCutterReservation: [LaserCutterReservation]
 }
 
 type Mutation {
@@ -11,6 +12,7 @@ type Mutation {
   createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
   cancelLaserReserve(teamId: ID!): LaserCutterReservation!
   laserCutterReserve(teamId: ID!): LaserCutterReservation!
+  clearLaserReserve(teamId: ID!): LaserCutterReservation!
   createMachine(info: CreateMachineInfo!): Machine!
   clearMachine: String!
   deleteMachine(info: DeleteMachineInfo!): String!

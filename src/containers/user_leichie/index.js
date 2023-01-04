@@ -71,11 +71,28 @@ export default function LaserCutter() {
             return prev;
           }
           const newReserveInfo = subscriptionData.data.LaserCutterReservation;
-          setTeamReserve(newReserveInfo)
+          // setTeamReserve(newReserveInfo)
           console.log("prev", prev);
           console.log("sub data", subscriptionData.data);
+          switch (subscriptionData.data.LaserCutterReservation.reserveStatus) {
+            // TODO: other cases!
+            case 0:
+              console.log("One Reservation has been Cancelled or finished");
+              return Object.assign({}, prev, {
+                laserCutterReservation: prev.laserCutterReservation.filter((reserve) => reserve.teamId !== newReserveInfo.teamId),
+              });
+            case 1:
+              console.log("Receive New Reservation")
+              return Object.assign({}, prev, {
+                laserCutterReservation: [...prev.laserCutterReservation, newReserveInfo],
+              });
 
-          return newReserveInfo
+            default:
+              console.log("Reservation Case undefined, return original data.");
+              return Object.assign({}, prev, {
+                laserCutterReservation: prev.laserCutterReservation,
+              });
+          }
         },
       });
     } catch (error) {
@@ -84,10 +101,10 @@ export default function LaserCutter() {
   }, [subscribeToMore])
 
 
-  useEffect(() => {
-    waitingNum();
-    getMaterialThickness();
-  }, [waiting, teamReserve]);
+  // useEffect(() => {
+  //   waitingNum();
+  //   getMaterialThickness();
+  // }, [waiting, teamReserve]);
 
   // failed
   const getMaterialThickness = () => {

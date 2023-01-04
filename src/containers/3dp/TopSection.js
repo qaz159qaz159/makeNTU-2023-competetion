@@ -293,7 +293,7 @@ export default function Top(props) {
 
   return (
     <>
-      {authority === 1 && (
+      {authority === 0 && (
         <div
           style={{
             width: "100%",

@@ -166,11 +166,11 @@ const Drawer = ({ children }) => {
             to: "/studentdata",
             icon: <PeopleIcon />,
           },
-          { text: "3dp", to: "/3dp", icon: <PeopleIcon /> },
+          { text: "3dp", to: "/3dp", icon: <PostAddIcon /> },
         ],
         0: [
           { text: "Main", to: "/", icon: <HomeIcon /> },
-          { text: "3dp", to: "/3dp", icon: <PeopleIcon /> },
+          { text: "3dp", to: "/3dp", icon: <PostAddIcon /> },
           { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
         ],
       }[authority];

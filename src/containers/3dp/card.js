@@ -151,7 +151,7 @@ export default function DPCard(props) {
   const getCard = (_new) => {
     if (!_new) {
       return (
-        <Card sx={{ minWidth: 200 }} className={classes.card}>
+        <Card className={classes.card}>
           {getState()}
           <CardMedia component="img" image={dpImg} alt="3DP" />
           <CardContent>
@@ -184,7 +184,7 @@ export default function DPCard(props) {
                   >
                     {data.userId === "-1"
                       ? `時間：${data.time} 分鐘`
-                      : `預計完成時間：${data.duration} 分鐘`}
+                      : `時間：${data.duration} 分鐘`}
                   </Typography>
                 </Grid>
               </Grid>
@@ -228,24 +228,13 @@ export default function DPCard(props) {
                   </Button>
                 </Grid>
               )}
-              {/*{authority === 1 && (*/}
-              {/*  <Grid item xs={4}>*/}
-              {/*    <Button*/}
-              {/*      size="small"*/}
-              {/*      variant="contained"*/}
-              {/*      className={classes.root}*/}
-              {/*    >*/}
-              {/*      安排*/}
-              {/*    </Button>*/}
-              {/*  </Grid>*/}
-              {/*)}*/}
             </Grid>
           </CardActions>
         </Card>
       );
     } else if (authority === 1) {
       return (
-        <Card sx={{}}>
+        <Card className={classes.card}>
           <CardActions>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -255,7 +244,7 @@ export default function DPCard(props) {
                   onClick={handleNewMachineClickOpen}
                   style={{ width: "100%", height: "100px" }}
                 >
-                  新增機台(SIGUSR1)
+                  新增機台
                 </Button>
               </Grid>
               <Grid item xs={12}>
@@ -265,7 +254,7 @@ export default function DPCard(props) {
                   onClick={handleDeleteMachines}
                   style={{ width: "100%", height: "100px" }}
                 >
-                  清除機台(SIGUSR2)
+                  清除機台
                 </Button>
               </Grid>
             </Grid>

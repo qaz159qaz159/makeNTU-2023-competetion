@@ -11,7 +11,7 @@ import { selectSession } from "../../slices/sessionSlice";
  */
 export default function Top() {
   const history = useHistory();
-
+  const { authority, teamID } = useSelector(selectSession);
   const useStyles = makeStyles(() => ({
     root: {
       flexGrow: 1,
@@ -131,7 +131,7 @@ export default function Top() {
                     }}
                     variant="contained"
                     color="primary"
-                    onClick={() => history.push("/adminlasercutter")}
+                    onClick={() => history.push(`/${authority? "adminlasercutter": "lasercutter"}`)}
                   >
                     <Link
                       style={{ textDecoration: "none", color: "white" }}

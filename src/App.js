@@ -42,6 +42,9 @@ const Routes = () => {
       <MainRoute exact path="/3dp">
         <DP />
       </MainRoute>
+      <MainRoute exact path="/lasercutter">
+        <LaserCutter />
+      </MainRoute>
       <LoginRoute exact path="/login">
         <Login />
       </LoginRoute>

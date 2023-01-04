@@ -24,6 +24,7 @@ import {
   CREATE_LEICHIE_MUTATION,
   UPDATE_LEICHIE_MUTATION,
   LEICHIE_QUERY,
+  LASERCUTTER_RESERVE_SUBSCRIPTION,
   LEICHIE_RESERVE_QUERY,
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
@@ -197,6 +198,59 @@ export default function LaserCutter() {
   }, [subscribeToMore]);
 
   useEffect(() => {
+    try {
+      subscribeToReserve({
+        document: LASERCUTTER_RESERVE_SUBSCRIPTION,
+        variables: {},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) {
+            console.log("Reservation Subscription failed");
+            return prev;
+          }
+          const newFeedItem = subscriptionData.data.LaserCutterReservation;
+          console.log("Reservation prev", prev);
+          console.log("Reservation sub data", subscriptionData.data);
+          switch (subscriptionData.data.LaserCutterReservation.reserveStatus) {
+            // TODO: other cases!
+            // case -1:
+            //   return Object.assign({}, prev, {
+            //     // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+            //     laserCutter: prev.laserCutter,
+            //   });
+
+            // '新增機台'或是'使用完成'
+            case 0:
+              if (prev.laserCutterReservation.find((obj) => obj.teamId === newFeedItem.teamId)) {
+                // 已存在，狀態：改為'使用完成'
+                console.log("Reservation Case Existed and Cancel")
+                return Object.assign({}, prev, {
+                  // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
+                  laserCutterReservation: prev.laserCutterReservation.filter((reserve) => reserve.teamId !== newFeedItem.teamId),
+                });
+              } else {
+                // 新增機台
+                return Object.assign({}, prev, {
+                  laserCutterReservation: [...prev.laserCutterReservation, newFeedItem],
+                });
+              }
+            default:
+              console.log("Reservation Case undefined");
+              return Object.assign({}, prev, {
+                laserCutterReservation: prev.laserCutterReservation,
+              });
+          }
+          // return Object.assign({}, prev, {
+          //     // laserCutter: [...prev.laserCutter, newFeedItem],
+          //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
+          // });
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [subscribeToReserve]);
+
+  useEffect(() => {
     setLaserNumber(data?.laserCutter.length);
     setLaserIdx([...Array(data?.laserCutter.length).keys()].map((i) => i + 1));
     setLaserCutterInfo(data?.laserCutter);
@@ -231,7 +285,7 @@ export default function LaserCutter() {
   console.log(
     "data:",
     data?.laserCutter,
-    data?.laserCutter.map((ls) => ls.id)
+    // data?.laserCutter.map((ls) => ls.id)
   );
   console.log("laserCutterReservation: ", reserveData.laserCutterReservation);
   // setDataRow(reserveData.laserCutterReservation)
@@ -262,7 +316,7 @@ export default function LaserCutter() {
           startIcon={<AddCircleIcon />}
           onClick={handleOpen}
         >
-          新增雷切機
+        新增雷切機
         </Button>
         {/* 新增雷切機的視窗 */}
         <Modal
@@ -330,7 +384,7 @@ export default function LaserCutter() {
                     handleConfirm();
                   }}
                 >
-                  確認
+                確認
                 </Button>
                 <Button
                   variant="contained"
@@ -342,7 +396,7 @@ export default function LaserCutter() {
                   }}
                   onClick={handleClose}
                 >
-                  取消
+                取消
                 </Button>
               </Stack>
             </Stack>
@@ -410,7 +464,7 @@ export default function LaserCutter() {
               setTimeChange("");
             }}
           >
-            修改
+          修改
           </Button>
         </Stack>
       </Stack>
@@ -428,7 +482,8 @@ export default function LaserCutter() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {reserveData?.laserCutterReservation.map((row, i) => (
+              {
+              reserveData.laserCutterReservation.map((row, i) => (
                 <TableRow
                   key={row.teamId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -467,20 +522,20 @@ export default function LaserCutter() {
 
                       }}
                     >
-                      {laserCutterInfo?.map((item) =>
-                        item.status === 0 ? (
-                          <MenuItem
-                            key={parseInt(item.id)}
-                            value={parseInt(item.id)}
-                          >
+                      {laserCutterInfo?.map((item) =>{
+                          if(item.status === 0) 
+                          return(
+                            <MenuItem
+                              key={parseInt(item.id)}
+                              value={parseInt(item.id)}
+                            >
                             雷切{parseInt(item.id)}
-                          </MenuItem>
-                        ) : (
-                          ""
-                        )
-                      )}
+                            </MenuItem>
+                          ) 
+                          })
+                      }
                       <MenuItem key={99} value={99}>
-                        移除
+                      移除
                       </MenuItem>
                     </Select>
                     <Button
@@ -514,7 +569,7 @@ export default function LaserCutter() {
                               info: {
                                 id: laserCutterID,
                                 status: 1,
-                                duration: laserTime,
+                                duration: parseInt(laserTime),
                                 user: row.teamId,
                                 completeTime: completeTime(laserTime),
                               },
@@ -531,7 +586,7 @@ export default function LaserCutter() {
                         cancelReserve({ variables: { teamId: row.teamId } });
                       }}
                     >
-                      GO
+                    GO
                     </Button>
                   </TableCell>
                 </TableRow>

@@ -283,6 +283,7 @@ const Mutation = {
     if (!cancelLaser)
       console.log(`teamId ${teamId} didnt reserve a laser cutter!`);
     else console.log("Validation of cancelLaser:", cancelLaser);
+    pubsub.publish("LaserCutterReservation", { LaserCutterReservation: cancelLaser });
     return cancelLaser;
     // console.log("Validation of LaserCutter:", reserveLaser);
   },

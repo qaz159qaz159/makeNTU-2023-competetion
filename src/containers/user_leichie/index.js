@@ -37,8 +37,8 @@ import {
 import { useSelector } from "react-redux";
 import { selectSession } from "../../slices/sessionSlice";
 // --- --- ---
-// 問題：沒有取得使用者組別，變成要自行輸入＋F5後會重置
-// 問題：還沒寫subscribe導致等候組數只能F5刷新 QQ
+// 問題：重新整理後 借用的useState會重置QQ 從後端抓資料我又搞不好TT
+// 問題：等候組數只能F5刷新 QQ
 
 export default function LaserCutter() {
   // --- States ---
@@ -49,7 +49,7 @@ export default function LaserCutter() {
   const [material, setMaterial] = useState(1); // 預約雷切機 材料
   const [thickness, setThickness] = useState(1); // 預約雷切機 厚度
   const [waiting, setWaiting] = useState();
-  const [teamId, setTeamId] = useState(!authority ? teamID : 1);
+  const [teamId, setTeamId] = useState(!authority ? teamID : 0);
   const handleOpen = () => setOpen(true); // 開啟預約雷切機
   const handleClose = () => setOpen(false); // 關閉預約雷切機
   const [teamReserve, setTeamReserve] = useState([]);

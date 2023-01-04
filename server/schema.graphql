@@ -1,5 +1,6 @@
 type Query {
   machine: [Machine!]!
+  user: [User!]!
   laserCutter: [LaserCutter!]!
   laserCutterReservation: [LaserCutterReservation]
 }
@@ -9,13 +10,30 @@ type Mutation {
   updateLaserCutter(info: UpdateLaserInfo!): LaserCutter
   deleteLaserCutter(id: ID!): String
   createLaserReserve(info: ReserveLaserCutter!): LaserCutterReservation!
-  cancelLaserReserve(teamId: ID!): LaserCutterReservation
-  clearLaserReserve: String
-  createMachine(info: CreateMachineInfo!): Machine
-  clearMachine: String
-  deleteMachine(info: DeleteMachineInfo!): String
-  userReserveMachine(info: ReserveMachineInfo!): MachineReservation!
-  userCancelMachine(teamId: ID!): MachineReservation!
+  cancelLaserReserve(teamId: ID!): LaserCutterReservation!
+  laserCutterReserve(teamId: ID!): LaserCutterReservation!
+  clearLaserReserve(teamId: ID!): LaserCutterReservation!
+  createMachine(info: CreateMachineInfo!): Machine!
+  clearMachine: String!
+  deleteMachine(info: DeleteMachineInfo!): String!
+  userReserveMachine(info: ReserveMachineInfo!): String!
+  userCancelMachine(info: Int!): String!
+  adminCancelAllMachine: String!
+  adminUpdateUser(info: UpdateUserInfo!): String!
+  adminClearUser: String!
+  adminUpdateMachine(info: UpdateMachineInfo!): String!
+  updateAll: String!
+}
+
+input UpdateMachineInfo {
+  name: String!
+  status: Int!
+}
+
+input UpdateUserInfo {
+  teamId: Int!
+  status: Int!
+  machineName: String
 }
 
 input DeleteMachineInfo {
@@ -25,17 +43,22 @@ input DeleteMachineInfo {
 type Subscription {
   LaserCutterInfo: LaserCutter!
   LaserCutterReservation(teamId: ID!): LaserCutterReservation!
-  machineCreated: Machine
-  machineUpdated: Machine
+  machineUpdated: [Machine!]!
+  userUpdated: [User!]!
+}
+
+type User {
+  teamId: Int!
+  status: Int!
+  machine: String
 }
 
 input ReserveMachineInfo {
-  teamId: ID!
+  teamId: Int!
 }
 
 type MachineReservation {
-  teamId: ID!
-  machineId: ID!
+  mutation: String!
 }
 
 input CreateMachineInfo {
@@ -63,7 +86,7 @@ input UpdateLaserInfo {
 type LaserCutter {
   id: ID!
   status: Int!
-  duration: Int
+  duration: Int!
   user: String
   completeTime: String
 }
@@ -75,7 +98,7 @@ type Machine {
   status: Int!
   duration: Int!
   user: String
-  completeTime: Int
+  completeTime: String
 }
 
 # ======== Resevation of laser cutter ========

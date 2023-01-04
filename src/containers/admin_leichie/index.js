@@ -160,36 +160,35 @@ export default function LaserCutter() {
             case -1:
               return Object.assign({}, prev, {
                 // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
-                laserCutter: prev.laserCutter
-                // setLasrnum
+                laserCutter: prev.laserCutter,
               });
 
             // '新增機台'或是'使用完成'
             case 0:
-              if (prev.laserCutter.find(obj => obj.id === newFeedItem.id)) { // 已存在，狀態：改為'使用完成'
+              if (prev.laserCutter.find((obj) => obj.id === newFeedItem.id)) {
+                // 已存在，狀態：改為'使用完成'
                 return Object.assign({}, prev, {
                   // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
-                  laserCutter: prev.laserCutter
-                  // update stauts and enable 移除
+                  laserCutter: prev.laserCutter,
                 });
-              }
-              else { // 新增機台
+              } else {
+                // 新增機台
                 return Object.assign({}, prev, {
-                  laserCutter: [...prev.laserCutter, newFeedItem]
+                  laserCutter: [...prev.laserCutter, newFeedItem],
                 });
               }
             default:
               console.log("Case undefined");
               return Object.assign({}, prev, {
-                laserCutter: prev.laserCutter
+                laserCutter: prev.laserCutter,
               });
           }
           // return Object.assign({}, prev, {
           //     // laserCutter: [...prev.laserCutter, newFeedItem],
           //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
           // });
-        }
-      })
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -269,7 +268,18 @@ export default function LaserCutter() {
                           // return;
                         }
                         setLaserNo(id);
-
+                        // send to DB
+                        newLeichie({
+                          variables: {
+                            info: {
+                              id,
+                              status: 0,
+                              duration: laserTime,
+                              user: null,
+                              completeTime: null,
+                            },
+                          },
+                        });
                       } else {
                         alert("請輸入整數 ID");
                         return;
@@ -328,9 +338,9 @@ export default function LaserCutter() {
           laserCutterInfo={data.laserCutter}
           laserNumber={data.laserCutter.length}
           setLaserNumber={setLaserNumber}
-          // laserIdx應該要抓data中的id，要不然排程中的選項會是錯的
-          laserIdx={[...Array(data.laserCutter.length).keys()].map((i) => i + 1)}
-          // laserIdx={laserIdx}
+          laserIdx={[...Array(data.laserCutter.length).keys()].map(
+            (i) => i + 1
+          )}
           setLaserIdx={setLaserIdx}
           deleteLeichei={deleteLeichie}
           updatedLeichie={updatedLeichie}

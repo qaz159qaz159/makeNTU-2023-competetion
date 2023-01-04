@@ -17,7 +17,11 @@ import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 import { useMutation } from "@apollo/client";
-import { CREATE_MACHINE_MUTATION, CLEAR_MACHINE_MUTATION } from "../../graphql";
+import {
+  CREATE_MACHINE_MUTATION,
+  CLEAR_MACHINE_MUTATION,
+  DELETE_MACHINE_MUTATION,
+} from "../../graphql";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} timeout={2} {...props} />;
@@ -58,6 +62,7 @@ export default function DPCard(props) {
 
   const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
   const [clearMachine] = useMutation(CLEAR_MACHINE_MUTATION);
+  const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
   // New Machine End
 
   // Delete Machine
@@ -67,14 +72,14 @@ export default function DPCard(props) {
   const classes = useStyles();
 
   const getState = () => {
-    if (data.leftTime > 0 && data.active) {
+    if (data.status === 1) {
       return (
         <CardHeader
           title={"In Progress"}
           style={{ color: "white", backgroundColor: "red" }}
         />
       );
-    } else if (data.leftTime <= 0 && data.active) {
+    } else if (data.status === 2) {
       return (
         <CardHeader
           title={"Finished"}
@@ -131,10 +136,14 @@ export default function DPCard(props) {
 
   const handleDeleteMachine = () => {
     // TODO : 刪除單一機器
-    // console.log(e.target.value);
-    // setMachineList((prev) => {
-    //     return prev.filter((item) => item.name !== data.name);
-    // });
+    // console.log(data);
+    deleteMachine({
+      variables: {
+        input: {
+          name: data.name,
+        },
+      },
+    });
     setDeleteMachineOpen(false);
   };
   // Delete Machine End
@@ -164,7 +173,7 @@ export default function DPCard(props) {
                     gutterBottom
                   >
                     組別：
-                    {data.userId === "-1" ? "無" : data.userId}
+                    {data.user === null ? "無" : data.user.teamId}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -175,12 +184,12 @@ export default function DPCard(props) {
                   >
                     {data.userId === "-1"
                       ? `時間：${data.time} 分鐘`
-                      : `剩餘時間：${data.leftTime} 分鐘`}
+                      : `預計完成時間：${data.duration} 分鐘`}
                   </Typography>
                 </Grid>
               </Grid>
             </Grid>
-            <LinearBuffer></LinearBuffer>
+            {/*<LinearBuffer></LinearBuffer>*/}
           </CardContent>
           <CardActions>
             <Grid container spacing={2}>
@@ -201,7 +210,7 @@ export default function DPCard(props) {
                   <Button
                     size="small"
                     variant="contained"
-                    onClick={() => resetCard(data.id)}
+                    onClick={() => resetCard(data.name)}
                     className={classes.root}
                   >
                     結束
@@ -219,17 +228,17 @@ export default function DPCard(props) {
                   </Button>
                 </Grid>
               )}
-              {authority === 1 && (
-                <Grid item xs={4}>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    className={classes.root}
-                  >
-                    安排
-                  </Button>
-                </Grid>
-              )}
+              {/*{authority === 1 && (*/}
+              {/*  <Grid item xs={4}>*/}
+              {/*    <Button*/}
+              {/*      size="small"*/}
+              {/*      variant="contained"*/}
+              {/*      className={classes.root}*/}
+              {/*    >*/}
+              {/*      安排*/}
+              {/*    </Button>*/}
+              {/*  </Grid>*/}
+              {/*)}*/}
             </Grid>
           </CardActions>
         </Card>
@@ -285,13 +294,11 @@ export default function DPCard(props) {
         }}
       >
         <DialogTitle>
-          <Typography variant={"h3"} align={"center"}>
-            WARNING
-          </Typography>
+          <Typography align={"center"}>WARNING</Typography>
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            <Typography variant={"h6"} align={"center"}>
+            <Typography align={"center"}>
               將機台刪除可能會造成需要重新手動匯入。
             </Typography>
           </DialogContentText>

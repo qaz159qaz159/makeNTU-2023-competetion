@@ -51,7 +51,7 @@ const cards = ({
   laserNumber,
   laserIdx,
   deleteLeichei,
-  updatedLeichie
+  updatedLeichie,
 }) => {
   // const [open, setOpen] = useState(false); // why 不能用！！！！！？？？？
   return (
@@ -128,7 +128,6 @@ const cards = ({
                 sx={{ border: 1.5 }}
                 variant="outlined"
                 startIcon={<CheckIcon />}
-
                 // todo: 前端按鈕顯示轉換
                 // 判斷邏輯： 運作中點擊使用完成 status: 1 -> 0
                 //          暫停使用點擊恢復使用 status: -1 -> 0
@@ -143,7 +142,7 @@ const cards = ({
                         completeTime: null,
                       },
                     },
-                  })
+                  });
                 }}
               >
                 使用完成

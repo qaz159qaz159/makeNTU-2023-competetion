@@ -33,11 +33,11 @@ import {
   LEICHIE_RESERVE_QUERY,
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
+  LASERCUTTER_RESERVE_SUBSCRIPTION
 } from "../../graphql";
 import { useSelector } from "react-redux";
 import { selectSession } from "../../slices/sessionSlice";
 // --- --- ---
-// 問題：重新整理後 借用的useState會重置QQ 從後端抓資料我又搞不好TT
 // 問題：等候組數只能F5刷新 QQ
 
 export default function LaserCutter() {
@@ -46,8 +46,8 @@ export default function LaserCutter() {
   const [laserTime, setLaserTime] = useState(20);
   const [open, setOpen] = useState(false); // 開啟預約管理
   const [reserved, setReserved] = useState(false); // 是否已預約借用
-  const [material, setMaterial] = useState(1); // 預約雷切機 材料
-  const [thickness, setThickness] = useState(1); // 預約雷切機 厚度
+  const [material, setMaterial] = useState(""); // 預約雷切機 材料
+  const [thickness, setThickness] = useState(""); // 預約雷切機 厚度
   const [waiting, setWaiting] = useState();
   const [teamId, setTeamId] = useState(!authority ? teamID : 0);
   const handleOpen = () => setOpen(true); // 開啟預約雷切機
@@ -61,8 +61,43 @@ export default function LaserCutter() {
   );
 
   useEffect(() => {
+    try {
+      subscribeToMore({
+        document: LASERCUTTER_RESERVE_SUBSCRIPTION,
+        variables: {},
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) {
+            console.log("Subscription failed");
+            return prev;
+          }
+          const newReserveInfo = subscriptionData.data.LaserCutterReservation;
+          setTeamReserve(newReserveInfo)
+          console.log("prev", prev);
+          console.log("sub data", subscriptionData.data);
+
+          return newReserveInfo
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [subscribeToMore])
+
+
+  useEffect(() => {
     waitingNum();
-  }, [waiting]);
+    getMaterialThickness();
+  }, [waiting, teamReserve]);
+
+  // failed
+  const getMaterialThickness = () => {
+    getReserve().then((res) => {
+      const { laserCutterReservation } = res.data;
+      console.log("res.data" , laserCutterReservation?.find(team => team.teamId == teamId)?.thickness ?? "");
+      setMaterial(laserCutterReservation?.find(team => team.teamId == teamId)?.material ?? "");
+      setThickness(laserCutterReservation?.find(team => team.teamId == teamId)?.thickness ?? "")
+    });
+  }
 
   const waitingNum = () => {
     getReserve().then((res) => {
@@ -71,7 +106,6 @@ export default function LaserCutter() {
       if (laserCutterReservation) {
         laserCutterReservation.map((reserve) => {
           if (reserve.teamId == teamId) {
-            // setTeamReserve(reserve);
             setReserved(true);
             setWaiting(c);
             return;
@@ -79,6 +113,7 @@ export default function LaserCutter() {
           c += 1;
         });
       }
+      setWaiting(c);
       // var n = Object.keys(laserCutterReservation ?? []).length;
       return c;
     });
@@ -103,17 +138,7 @@ export default function LaserCutter() {
   const borrowForm = (
     <>
       <Box component="form" sx={modalStyle}>
-        {/* <TextField
-          required
-          id="standard-basic"
-          label="Enter Team ID"
-          variant="standard"
-          value={teamId}
-          onChange={(e) => setTeamId(e.target.value.trim())}
-          helperText={teamId ? "" : "必填"}
-        /> */}
-
-        <FormControl>
+        <FormControl style={{minWidth: 100}}>
           {/* 選取材料 */}
           <InputLabel id="demo-simple-select-label">材料</InputLabel>
           <Select
@@ -129,17 +154,17 @@ export default function LaserCutter() {
             variant="standard"
             value={material}
             label="材料"
-            defaultValue="1"
+            defaultValue="壓克力"
             onChange={(e) => {
               setMaterial(e.target.value);
             }}
           >
-            <MenuItem value={1}>壓克力</MenuItem>
-            <MenuItem value={2}>密集板</MenuItem>
+            <MenuItem value={"壓克力"}>壓克力</MenuItem>
+            <MenuItem value={"密集板"}>密集板</MenuItem>
           </Select>
         </FormControl>
 
-        <FormControl>
+        <FormControl style={{minWidth: 100}}>
           {/* 選取厚度 */}
           <InputLabel id="demo-simple-select-label">厚度</InputLabel>
           <Select
@@ -155,19 +180,20 @@ export default function LaserCutter() {
             variant="standard"
             value={thickness}
             label="厚度"
-            defaultValue="1"
+            // defaultValue="5"
             onChange={(e) => {
               setThickness(e.target.value);
             }}
           >
-            <MenuItem value={1}>5 mm</MenuItem>
-            <MenuItem value={2}>3 mm</MenuItem>
+            <MenuItem value={'5'}>5 mm</MenuItem>
+            <MenuItem value={'3'}>3 mm</MenuItem>
           </Select>
         </FormControl>
       </Box>
       <DialogActions sx={{ bgcolor: "rgba(0,0,0)" }}>
         <Button onClick={handleClose}>離開</Button>
         <Button
+          disabled={!material || !thickness}
           onClick={() => {
             setReserved(true); // 使用完成後要設定為false
             setOpen(!open);
@@ -178,8 +204,8 @@ export default function LaserCutter() {
               variables: {
                 info: {
                   teamId,
-                  material: materialString(material),
-                  thickness: thicknessString(thickness),
+                  material: material,
+                  thickness: thickness,
                 },
               },
             });
@@ -213,17 +239,14 @@ export default function LaserCutter() {
       </Box>
 
       <Box sx={{ width: "90%", border: 0, fontSize: 28, padding: 1 }}>
-        {/* <LaserCutterBox /> */}
-        {/* {cancelFrom} */}
-        {/* {cancelFrom} */}
         <p>
           {reserved
             ? `Team #${teamId} 已登記借用：
-            ${materialString(material)}（${thicknessString(thickness)} mm）`
+            ${material}（${thickness} mm）`
             : `Team #${teamId} 未預約`}
         </p>
 
-        <Stack direction="row" spacing={2} sx={{ width: "40%" }}>
+        <Stack direction="row" spacing={2} sx={{ width: "50%" }}>
           <Button
             size="large"
             sx={{ color: "rgba(255,255,255)", border: 1 }}
@@ -269,6 +292,7 @@ export default function LaserCutter() {
           刷新
         </Button> */}
         <p style={{ fontSize: "20px" }}>等候組數：{waiting}</p>
+        <p style={{ fontSize: "20px" }}>請重新整理畫面更新訊息</p>
       </Box>
 
       <Stack

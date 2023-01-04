@@ -34,3 +34,15 @@ export const LASERCUTTER_UPDATE_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const LASERCUTTER_RESERVE_SUBSCRIPTION = gql`
+  subscription LaserCutterReservation {
+    LaserCutterReservation {
+      teamId
+      material
+      thickness
+      reserveStatus
+      updated_at
+    }
+  }
+`;

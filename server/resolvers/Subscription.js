@@ -21,11 +21,11 @@ const Subscription = {
     },
   },
 
-  // LaserCutterReservation: {
-  //   subscribe(parent, teamId, { pubsub }) {
-  //     return pubsub.subscribe(`LaserCutterReservation_team${teamId}`);
-  //   },
-  // },
+  LaserCutterReservation: {
+    subscribe(parent, args, { pubsub }) {
+      return pubsub.asyncIterator(`LaserCutterReservation`);
+    },
+  },
 };
 
 module.exports = Subscription;

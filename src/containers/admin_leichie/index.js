@@ -24,6 +24,7 @@ import {
   CREATE_LEICHIE_MUTATION,
   UPDATE_LEICHIE_MUTATION,
   LEICHIE_QUERY,
+  LEICHIE_RESERVE_QUERY,
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
   DEL_LEICHIE_MUTATION,
@@ -44,14 +45,14 @@ const rows = [
   createData("5", 5, "密集板", 5, ""),
 ];
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-  // height: '200px',
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: "center",
+//   color: theme.palette.text.secondary,
+//   // height: '200px',
+// }));
 
 // 預估完成時間
 var completeTime = (timeLim) => {
@@ -66,47 +67,51 @@ var completeTime = (timeLim) => {
 var timeLim = 20;
 
 // fake 先假裝是從資料庫get資料回來QQ
-const fakelaserCutterInfo = [
-  {
-    id: 1,
-    // name: "一",
-    status: "99",
-    usedBy: "",
-    completeTime: "",
-    done: true, // ?
-    remove: true, // ?
-  },
+// const fakelaserCutterInfo = [
+//   {
+//     id: 1,
+//     // name: "一",
+//     status: "99",
+//     usedBy: "",
+//     completeTime: "",
+//     done: true, // ?
+//     remove: true, // ?
+//   },
 
-  {
-    id: 2,
-    // name: "二",
-    status: "0",
-    usedBy: "",
-    completeTime: "",
-    done: true,
-    remove: false,
-  },
-  {
-    id: 3,
-    // name: "三",
-    status: "1",
-    usedBy: "1",
-    completeTime: completeTime(timeLim),
-    done: false,
-    remove: false,
-  },
-  {
-    id: 4,
-    // name: "四",
-    status: "1",
-    usedBy: "2",
-    completeTime: completeTime(timeLim),
-    done: false,
-    remove: false,
-  },
-];
+//   {
+//     id: 2,
+//     // name: "二",
+//     status: "0",
+//     usedBy: "",
+//     completeTime: "",
+//     done: true,
+//     remove: false,
+//   },
+//   // {
+//   //   id: 3,
+//   //   // name: "三",
+//   //   status: "1",
+//   //   usedBy: "1",
+//   //   completeTime: completeTime(timeLim),
+//   //   done: false,
+//   //   remove: false,
+//   // },
+//   // {
+//   //   id: 4,
+//   //   // name: "四",
+//   //   status: "1",
+//   //   usedBy: "2",
+//   //   completeTime: completeTime(timeLim),
+//   //   done: false,
+//   //   remove: false,
+//   // },
+// ];
 // --- --- ---
 export default function LaserCutter() {
+  // 問題：laserIdx 應該要從query回來的結果去抓機台的編號而不是直接依照機台數量去算，要不然排程中的選項會是錯的
+  // 問題：要重新整理才會產生正確的機台資訊，可能要用useState才引發rerende? 不確定怎改QQ
+  // 問題：預約列表同理，可以傳資料到後端但不會馬上更新畫面
+
   // --- States ---
   const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
@@ -118,7 +123,9 @@ export default function LaserCutter() {
   const [laserNo, setLaserNo] = useState(""); // 雷切機編號
   const [open, setOpen] = useState(false); // 新增雷切機
   const [dataRow, setDataRow] = useState(rows);
-  const [laserCutterInfo, setLaserCutterInfo] = useState(fakelaserCutterInfo);
+  const [laserCutterInfo, setLaserCutterInfo] = useState([]);
+  const [arrange, setArrange] = useState();
+
   const handleOpen = () => setOpen(true); // 開啟新增雷切機
   const handleClose = () => setOpen(false); // 關閉新增雷切機
   const handleConfirm = () => {
@@ -126,9 +133,16 @@ export default function LaserCutter() {
   };
 
   const { data, loading, subscribeToMore } = useQuery(LEICHIE_QUERY);
+  const {
+    data: reserveData,
+    loading: reserveLoading,
+    subscribeToMore: subscribeToReserve,
+  } = useQuery(LEICHIE_RESERVE_QUERY);
+
   const [newLeichie] = useMutation(CREATE_LEICHIE_MUTATION);
   const [updatedLeichie] = useMutation(UPDATE_LEICHIE_MUTATION);
   const [deleteLeichie] = useMutation(DEL_LEICHIE_MUTATION);
+  const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE);
 
   useEffect(() => {
     try {
@@ -188,6 +202,10 @@ export default function LaserCutter() {
     setLaserCutterInfo(data?.laserCutter);
   }, [data?.laserCutter]);
 
+  useEffect(() => {
+    console.log("arrange:", arrange);
+  }, [arrange]);
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -206,7 +224,17 @@ export default function LaserCutter() {
     // console.log("data:", data?.laserCutter);
     // setLaserCutterInfo(data.laserCutter);
   }
-  console.log("data:", data?.laserCutter);
+  if(reserveLoading){
+    return "Loading...";
+
+  }
+  console.log(
+    "data:",
+    data?.laserCutter,
+    data?.laserCutter.map((ls) => ls.id)
+  );
+  console.log("laserCutterReservation: ", reserveData.laserCutterReservation);
+  // setDataRow(reserveData.laserCutterReservation)
 
   return (
     <Box
@@ -361,7 +389,7 @@ export default function LaserCutter() {
             variant="standard"
             color="secondary"
             onChange={(e) => {
-              setTimeChange(parseInt(e.target.value));
+              setTimeChange(e.target.value);
             }}
             value={timeChange}
           />
@@ -400,13 +428,13 @@ export default function LaserCutter() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {dataRow.map((row, i) => (
+              {reserveData?.laserCutterReservation.map((row, i) => (
                 <TableRow
-                  key={row.team}
+                  key={row.teamId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row" align="center">
-                    {`Team ${row.team}`}
+                    {`Team ${row.teamId}`}
                   </TableCell>
                   {/* <TableCell align="center">{row.order}</TableCell> */}
                   <TableCell align="center">{i + 1}</TableCell>{" "}
@@ -427,19 +455,18 @@ export default function LaserCutter() {
                       }}
                       variant="standard"
                       size="small"
-                      defaultValue={row.arrangement}
+                      defaultValue=""
                       // value={}
                       onChange={(e) => {
-                        rows[i]["arrangement"] = e.target.value; // 更新資料庫
+                        setArrange(e.target.value);
+                        // rows[i]["arrangement"] = e.target.value; // 更新資料庫
                         // console.log("rows[i]['arrangement']= "+ rows[i]['arrangement'])
-                        setDataRow(() => rows);
+                        // setDataRow(() => rows);
+                        console.log(e.target.value);
+                        console.log('arrange:', arrange);
+
                       }}
                     >
-                      {/* {laserIdx.map((id) => (
-                        <MenuItem key={id} value={id}>
-                          雷切{id}
-                        </MenuItem>
-                      ))} */}
                       {laserCutterInfo?.map((item) =>
                         item.status === 0 ? (
                           <MenuItem
@@ -460,46 +487,48 @@ export default function LaserCutter() {
                       size="small"
                       sx={{ color: "rgba(255,255,255, 0.8)" }}
                       endIcon={<SendIcon />}
-                      value={row.team} // 第幾組
+                      value={row.teamId} // 第幾組
                       // disabled={!rows[i]['arrangement']}
                       onClick={(e) => {
-                        if (!row.arrangement) return alert("請選擇排程項目");
-                        setRemoveId(row.team);
+                        if (!arrange) return alert("請選擇排程項目");
+                        setRemoveId(row.teamId);
                         console.log("del row = " + i);
-                        console.log("del team = " + row.team);
+                        console.log("del team = " + row.teamId);
 
-                        setDataRow(() =>
-                          dataRow.filter((data) => data.team != row.team)
-                        );
+                        // setDataRow(() =>
+                        //   dataRow.filter((data) => data.team != row.team)
+                        // );
 
                         console.log(JSON.stringify(rows.splice(i, 1))); // for debug, remove the row after GO
 
-                        // remove team from the reservation
-                        // todo useMutation
-
-                        if (row.arrangement === 99)
-                          alert("將隊伍 " + row.team + " 移除等候隊伍");
-                        else {
+                  
+                        if (arrange === 99) {
+                          alert("將隊伍 " + row.teamId + " 移除等候隊伍");
+                        } else {
                           // update laser cutter info
+                          let laserCutterID = String(arrange);
+                          console.log("laserCutterID: ", laserCutterID);
+                          
                           updatedLeichie({
                             variables: {
                               info: {
-                                id: row.arrangement,
+                                id: laserCutterID,
                                 status: 1,
                                 duration: laserTime,
-                                user: row.team,
+                                user: row.teamId,
                                 completeTime: completeTime(laserTime),
                               },
                             },
                           });
                           alert(
                             "已將隊伍 " +
-                              row.team +
+                              row.teamId +
                               " 排入使用：雷切" +
-                              row.arrangement +
+                              arrange +
                               "，請按下 '確定' 以完成分發。"
                           );
                         }
+                        cancelReserve({ variables: { teamId: row.teamId } });
                       }}
                     >
                       GO

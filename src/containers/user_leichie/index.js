@@ -34,23 +34,25 @@ import {
   CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
 } from "../../graphql";
-
+import { useSelector } from "react-redux";
+import { selectSession } from "../../slices/sessionSlice";
 // --- --- ---
-// 問題：沒有取得使用者組別，變成要自行輸入＋F5後會重置
-// 問題：還沒寫subscribe導致等候組數只能F5刷新 QQ
+// 問題：重新整理後 借用的useState會重置QQ 從後端抓資料我又搞不好TT
+// 問題：等候組數只能F5刷新 QQ
 
 export default function LaserCutter() {
   // --- States ---
+  const { isLogin, authority, teamID } = useSelector(selectSession);
   const [laserTime, setLaserTime] = useState(20);
   const [open, setOpen] = useState(false); // 開啟預約管理
   const [reserved, setReserved] = useState(false); // 是否已預約借用
   const [material, setMaterial] = useState(1); // 預約雷切機 材料
   const [thickness, setThickness] = useState(1); // 預約雷切機 厚度
   const [waiting, setWaiting] = useState();
-  const [teamId, setTeamId] = useState();
+  const [teamId, setTeamId] = useState(!authority ? teamID : 0);
   const handleOpen = () => setOpen(true); // 開啟預約雷切機
   const handleClose = () => setOpen(false); // 關閉預約雷切機
-
+  const [teamReserve, setTeamReserve] = useState([]);
   const [newReserve] = useMutation(CREATE_LEICHIE_RESERVE);
   const [cancelReserve] = useMutation(CANCEL_LEICHIE_RESERVE);
   // const [allReserve] = useLazyQuery(LEICHIE_RESERVE_QUERY);
@@ -65,15 +67,21 @@ export default function LaserCutter() {
   const waitingNum = () => {
     getReserve().then((res) => {
       const { laserCutterReservation } = res.data;
-      var n = Object.keys(laserCutterReservation ?? []).length;
-      console.log("等候組數：", n);
-      setWaiting(n);
-      return n;
+      var c = 0;
+      if (laserCutterReservation) {
+        laserCutterReservation.map((reserve) => {
+          if (reserve.teamId == teamId) {
+            // setTeamReserve(reserve);
+            setReserved(true);
+            setWaiting(c);
+            return;
+          }
+          c += 1;
+        });
+      }
+      // var n = Object.keys(laserCutterReservation ?? []).length;
+      return c;
     });
-
-    // console.log("等候組數：" , n);
-
-    return 0;
   };
 
   const materialString = (material) => {
@@ -95,9 +103,7 @@ export default function LaserCutter() {
   const borrowForm = (
     <>
       <Box component="form" sx={modalStyle}>
-        {/* team id? */}
-
-        <TextField
+        {/* <TextField
           required
           id="standard-basic"
           label="Enter Team ID"
@@ -105,7 +111,7 @@ export default function LaserCutter() {
           value={teamId}
           onChange={(e) => setTeamId(e.target.value.trim())}
           helperText={teamId ? "" : "必填"}
-        />
+        /> */}
 
         <FormControl>
           {/* 選取材料 */}
@@ -162,7 +168,6 @@ export default function LaserCutter() {
       <DialogActions sx={{ bgcolor: "rgba(0,0,0)" }}>
         <Button onClick={handleClose}>離開</Button>
         <Button
-          disabled={!teamId}
           onClick={() => {
             setReserved(true); // 使用完成後要設定為false
             setOpen(!open);
@@ -213,10 +218,9 @@ export default function LaserCutter() {
         {/* {cancelFrom} */}
         <p>
           {reserved
-            ? `Team #${teamId} 已登記借用：${materialString(
-                material
-              )}（${thicknessString(thickness)} mm）`
-            : "未預約"}
+            ? `Team #${teamId} 已登記借用：
+            ${materialString(material)}（${thicknessString(thickness)} mm）`
+            : `Team #${teamId} 未預約`}
         </p>
 
         <Stack direction="row" spacing={2} sx={{ width: "40%" }}>

@@ -1,7 +1,6 @@
 import LaserCutterBox from "./admin_leichieBox";
 import React from "react";
 import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -18,7 +17,7 @@ import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
 import { useState, useEffect } from "react";
 import { MenuItem, Select } from "@mui/material";
-import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   LASERCUTTER_UPDATE_SUBSCRIPTION,
   CREATE_LEICHIE_MUTATION,
@@ -26,7 +25,6 @@ import {
   LEICHIE_QUERY,
   LASERCUTTER_RESERVE_SUBSCRIPTION,
   LEICHIE_RESERVE_QUERY,
-  CREATE_LEICHIE_RESERVE,
   CANCEL_LEICHIE_RESERVE,
   DEL_LEICHIE_MUTATION,
 } from "../../graphql";
@@ -37,23 +35,6 @@ import {
 function createData(team, order, material, thickness, arrangement) {
   return { team, order, material, thickness, arrangement };
 }
-
-// const rows = [
-//   createData("1", 1, "壓克力", 3, ""),
-//   createData("2", 2, "密集板", 5, ""),
-//   createData("3", 3, "密集板", 5, ""),
-//   createData("4", 4, "壓克力", 3, ""),
-//   createData("5", 5, "密集板", 5, ""),
-// ];
-
-// const Item = styled(Paper)(({ theme }) => ({
-//   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-//   ...theme.typography.body2,
-//   padding: theme.spacing(1),
-//   textAlign: "center",
-//   color: theme.palette.text.secondary,
-//   // height: '200px',
-// }));
 
 // 預估完成時間
 var completeTime = (timeLim) => {
@@ -66,50 +47,8 @@ var completeTime = (timeLim) => {
   });
 };
 
-// fake 先假裝是從資料庫get資料回來QQ
-// const fakelaserCutterInfo = [
-//   {
-//     id: 1,
-//     // name: "一",
-//     status: "99",
-//     usedBy: "",
-//     completeTime: "",
-//     done: true, // ?
-//     remove: true, // ?
-//   },
-
-//   {
-//     id: 2,
-//     // name: "二",
-//     status: "0",
-//     usedBy: "",
-//     completeTime: "",
-//     done: true,
-//     remove: false,
-//   },
-//   // {
-//   //   id: 3,
-//   //   // name: "三",
-//   //   status: "1",
-//   //   usedBy: "1",
-//   //   completeTime: completeTime(timeLim),
-//   //   done: false,
-//   //   remove: false,
-//   // },
-//   // {
-//   //   id: 4,
-//   //   // name: "四",
-//   //   status: "1",
-//   //   usedBy: "2",
-//   //   completeTime: completeTime(timeLim),
-//   //   done: false,
-//   //   remove: false,
-//   // },
-// ];
 // --- --- ---
 export default function LaserCutter() {
-  // 問題：預約列表變更不會馬上更新畫面
-
   // --- States ---
   const [laserNumber, setLaserNumber] = useState(2);
   const [laserTime, setLaserTime] = useState(20);
@@ -158,7 +97,6 @@ export default function LaserCutter() {
             // TODO: other cases!
             case -1:
               return Object.assign({}, prev, {
-                // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
                 laserCutter: prev.laserCutter,
               });
 
@@ -167,7 +105,6 @@ export default function LaserCutter() {
               if (prev.laserCutter.find((obj) => obj.id === newFeedItem.id)) {
                 // 已存在，狀態：改為'使用完成'
                 return Object.assign({}, prev, {
-                  // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
                   laserCutter: prev.laserCutter,
                 });
               } else {
@@ -182,10 +119,6 @@ export default function LaserCutter() {
                 laserCutter: prev.laserCutter,
               });
           }
-          // return Object.assign({}, prev, {
-          //     // laserCutter: [...prev.laserCutter, newFeedItem],
-          //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
-          // });
         },
       });
     } catch (error) {
@@ -208,37 +141,27 @@ export default function LaserCutter() {
           console.log("Reservation sub data", subscriptionData.data);
           switch (subscriptionData.data.LaserCutterReservation.reserveStatus) {
             // TODO: other cases!
-            // case -1:
-            //   return Object.assign({}, prev, {
-            //     // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
-            //     laserCutter: prev.laserCutter,
-            //   });
-
-            // '新增機台'或是'使用完成'
             case 0:
               if (prev.laserCutterReservation.find((obj) => obj.teamId === newFeedItem.teamId)) {
                 // 已存在，狀態：改為'使用完成'
                 console.log("Reservation Case Existed and Cancel")
                 return Object.assign({}, prev, {
-                  // laserCutter: [...prev.laserCutter.filter((item) => item.id !== newFeedItem.id), newFeedItem]
                   laserCutterReservation: prev.laserCutterReservation.filter((reserve) => reserve.teamId !== newFeedItem.teamId),
                 });
-              } else {
-                // 新增機台
-                return Object.assign({}, prev, {
-                  laserCutterReservation: [...prev.laserCutterReservation, newFeedItem],
-                });
               }
+              break;
+            case 1:
+              console.log("Receive New Reservation");
+              return Object.assign({}, prev, {
+                laserCutterReservation: [...prev.laserCutterReservation, newFeedItem],
+              });
+
             default:
               console.log("Reservation Case undefined");
               return Object.assign({}, prev, {
                 laserCutterReservation: prev.laserCutterReservation,
               });
           }
-          // return Object.assign({}, prev, {
-          //     // laserCutter: [...prev.laserCutter, newFeedItem],
-          //     laserCutter: prev.laserCutter.filter((item) => item.id !== newFeedItem.id)
-          // });
         },
       });
     } catch (error) {
@@ -329,25 +252,6 @@ export default function LaserCutter() {
                   required
                   label="機台ID"
                   variant="standard"
-                  // onChange={(e) => {
-                  //   if (e.target.value.trim()) {
-                  //     let id = parseInt(e.target.value.trim());
-                  //     if (Number.isInteger(id)) {
-                  //       if (laserIdx.includes(id)) {
-                  //         alert("ID: " + e.target.value.trim() + " 已存在");
-                  //         return;
-                  //       }
-                  //       setLaserNo(id);
-                  //       // send to DB
-                  //       newLeichie({ variables: { info: { id, status: 0, duration: laserTime, user: null, completeTime: null } } });
-                  //     } else {
-                  //       alert("請輸入整數 ID");
-                  //       return;
-                  //     }
-                  //   }
-
-                  //   setLaserNo(e.target.value.trim());
-                  // }}
                   value={`雷切${laserNumber + 1}`}
                   helperText={laserNo ? "" : "不可更改ID"}
                 />
@@ -360,12 +264,6 @@ export default function LaserCutter() {
                     borderRadius: 10,
                   }}
                   onClick={() => {
-                    // console.log(
-                    //   "laserNo " + JSON.stringify(laserIdx) + laserNo
-                    // );
-                    // setLaserNumber(laserNumber + 1);
-                    // setLaserIdx([...laserIdx, laserNumber + 1]); 如果移除再加入會有重複ID出現的可能性 已修改城下列寫法
-                    // setLaserIdx(() => [...laserIdx, parseInt(laserNo)]); // input is string
                     newLeichie({
                       variables: {
                         info: {
@@ -547,7 +445,6 @@ export default function LaserCutter() {
                           // update laser cutter info
                           let laserCutterID = String(arrange);
                           console.log("laserCutterID: ", laserCutterID);
-
                           updatedLeichie({
                             variables: {
                               info: {

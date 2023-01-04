@@ -8,7 +8,6 @@ import Grid from "@mui/material/Grid";
 import { CardHeader, CardMedia } from "@mui/material";
 import dpImg from "../../assets/images/3dp.jpg";
 import { makeStyles } from "@mui/styles";
-import LinearBuffer from "./linearProgress";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -235,46 +234,47 @@ export default function DPCard(props) {
           </CardActions>
         </Card>
       );
-    } else if (authority === 1) {
-      return (
-        <Card className={classes.card}>
-          <CardActions>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={handleNewMachineClickOpen}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  新增機台
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={handleDeleteMachines}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  清除機台
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={handleClearUser}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  清除使用者
-                </Button>
-              </Grid>
-            </Grid>
-          </CardActions>
-        </Card>
-      );
     }
+    // else if (authority === 1) {
+    //   return (
+    //     <Card className={classes.card}>
+    //       <CardActions>
+    //         <Grid container spacing={2}>
+    //           <Grid item xs={12}>
+    //             <Button
+    //               size="small"
+    //               variant="contained"
+    //               onClick={handleNewMachineClickOpen}
+    //               style={{ width: "100%", height: "100px" }}
+    //             >
+    //               新增機台
+    //             </Button>
+    //           </Grid>
+    //           <Grid item xs={12}>
+    //             <Button
+    //               size="small"
+    //               variant="contained"
+    //               onClick={handleDeleteMachines}
+    //               style={{ width: "100%", height: "100px" }}
+    //             >
+    //               清除機台
+    //             </Button>
+    //           </Grid>
+    //           <Grid item xs={12}>
+    //             <Button
+    //               size="small"
+    //               variant="contained"
+    //               onClick={handleClearUser}
+    //               style={{ width: "100%", height: "100px" }}
+    //             >
+    //               清除使用者
+    //             </Button>
+    //           </Grid>
+    //         </Grid>
+    //       </CardActions>
+    //     </Card>
+    //   );
+    // }
   };
 
   return (

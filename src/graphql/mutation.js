@@ -25,19 +25,31 @@ export const DELETE_MACHINE_MUTATION = gql`
 
 export const USER_RESERVE_MACHINE_MUTATION = gql`
   mutation userReserveMachine($input: ReserveMachineInfo!) {
-    userReserveMachine(info: $input) {
-      teamId
-      machineId
-    }
+    userReserveMachine(info: $input)
   }
 `;
 
 export const USER_CANCEL_MACHINE_MUTATION = gql`
-  mutation userCancelMachine($input: ID!) {
-    userCancelMachine(teamId: $input) {
-      teamId
-      machineId
-    }
+  mutation userCancelMachine($input: Int!) {
+    userCancelMachine(info: $input)
+  }
+`;
+
+export const ADMIN_UPDATE_USER_MUTATION = gql`
+  mutation adminUpdateUser($input: UpdateUserInfo!) {
+    adminUpdateUser(info: $input)
+  }
+`;
+
+export const ADMIN_UPDATE_MACHINE = gql`
+  mutation adminUpdateMachine($input: UpdateMachineInfo!) {
+    adminUpdateMachine(info: $input)
+  }
+`;
+
+export const UPDATE_ALL_MUTATION = gql`
+  mutation updateAll {
+    updateAll
   }
 `;
 

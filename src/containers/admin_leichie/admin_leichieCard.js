@@ -155,10 +155,20 @@ const cards = ({
                 startIcon={<DeleteIcon />}
                 onClick={() => {
                   console.log("laserNumber " + laserNumber);
-                  deleteLeichei({ variables: { id: leichieId } });
+                  // deleteLeichei({ variables: { id: leichieId } });
+                  updatedLeichie({
+                    variables: {
+                      info: {
+                        id: leichieId,
+                        status: -1,
+                        user: null,
+                        completeTime: null,
+                      },
+                    },
+                  })
                 }}
               >
-                移除機台
+                暫停使用
               </Button>
 
               {/* 原本有做個確認框.....但useState過不了 所以先刪掉 */}

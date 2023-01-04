@@ -14,6 +14,16 @@ export const MACHINE_QUERY = gql`
   }
 `;
 
+export const USER_QUERY = gql`
+  query user {
+    user {
+      teamId
+      status
+      machine
+    }
+  }
+`;
+
 export const LEICHIE_QUERY = gql`
   query laserCutter {
     laserCutter {

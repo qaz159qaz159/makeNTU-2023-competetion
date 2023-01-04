@@ -10,23 +10,18 @@ const conn = mongoose.createConnection(
 );
 
 const teamSchema = new mongoose.Schema({
-  teamID: {
-    type: String,
+  teamId: {
+    type: Number,
     required: true,
     immutable: true,
   },
-  teamName: {
-    type: String,
-    required: true,
-    immutable: false,
-  },
   status: {
-    // 0: idle, 1: using, 2: finished
+    // -1: idle, 0: waiting, 1: using, 2: finished
     type: Number,
     required: true,
   },
   machine: {
-    type: [{ type: mongoose.Types.ObjectId, ref: "Machine" }],
+    type: String,
     required: false,
   },
 });

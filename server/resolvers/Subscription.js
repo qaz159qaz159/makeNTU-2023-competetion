@@ -2,15 +2,14 @@
 // const pubsub = new PubSub();
 
 const Subscription = {
-  machineCreated: {
-    subscribe: (parent, args, { pubsub }) => {
-      return pubsub.asyncIterator("machineCreated");
-    },
-  },
-
   machineUpdated: {
     subscribe: (parent, args, { pubsub }) => {
       return pubsub.asyncIterator("machineUpdated");
+    },
+  },
+  userUpdated: {
+    subscribe: (parent, args, { pubsub }) => {
+      return pubsub.asyncIterator("userUpdated");
     },
   },
 

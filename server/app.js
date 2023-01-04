@@ -17,8 +17,9 @@ const { makeExecutableSchema } = require("@graphql-tools/schema");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const Subscription = require("./resolvers/Subscription");
-const { PubSub } = require("graphql-subscriptions");
-
+// const { PubSub } = require("graphql-subscriptions");
+const pubsub = require("./pubsub");
+const timer = require("./timer");
 // ========================================
 
 const port = process.env.PORT || 8000;
@@ -53,7 +54,7 @@ db.once("open", async () => {
     },
   });
 
-  const pubsub = new PubSub();
+  // const pubsub = new PubSub();
 
   const httpServer = http.createServer(app);
   const wsServer = new WebSocketServer({
@@ -68,7 +69,7 @@ db.once("open", async () => {
   const serverCleanup = useServer(
     {
       schema,
-      context: { pubsub },
+      context: { pubsub, timer },
     },
     wsServer
   );
@@ -113,7 +114,7 @@ db.once("open", async () => {
     cors(),
     json(),
     expressMiddleware(server, {
-      context: async ({ req }) => ({ pubsub }),
+      context: async ({ req }) => ({ pubsub, timer }),
     })
   );
 

@@ -6,7 +6,6 @@ import { Grid, Paper, Typography } from "@mui/material/";
 import { useHistory } from "react-router-dom";
 import { selectSession } from "../../slices/sessionSlice";
 import DPCard from "./card";
-import { MachineAPI } from "../../api";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -25,23 +24,22 @@ import {
   USER_CANCEL_MACHINE_MUTATION,
   CLEAR_MACHINE_MUTATION,
   DELETE_MACHINE_MUTATION,
+  ADMIN_UPDATE_USER_MUTATION,
+  UPDATE_ALL_MUTATION,
+  ADMIN_UPDATE_MACHINE,
   MACHINE_UPDATE_SUBSCRIPTION,
+  USER_UPDATE_SUBSCRIPTION,
   MACHINE_QUERY,
+  USER_QUERY,
 } from "../../graphql";
-
+// import Alert from '@mui/material/Alert';
 /**
  * This is Main Page
  */
 
 export default function Top(props) {
-  const { isLogin, authority } = useSelector(selectSession);
+  const { isLogin, authority, teamID } = useSelector(selectSession);
   const [userList, setUserList] = useState([]);
-
-  const [waitings, setWaitings] = useState([]);
-  const [readys, setReadys] = useState([]);
-
-  const [usings, setUsings] = useState([]);
-  const [finisheds, setFinisheds] = useState([]);
   const [machineList, setMachineList] = useState([]);
 
   const [createMachine] = useMutation(CREATE_MACHINE_MUTATION);
@@ -49,123 +47,9 @@ export default function Top(props) {
   const [deleteMachine] = useMutation(DELETE_MACHINE_MUTATION);
   const [userReserveMachine] = useMutation(USER_RESERVE_MACHINE_MUTATION);
   const [userCancelMachine] = useMutation(USER_CANCEL_MACHINE_MUTATION);
-  const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
-
-  useEffect(() => {
-    try {
-      subscribeToMore({
-        document: MACHINE_UPDATE_SUBSCRIPTION,
-        variables: {},
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) return prev;
-          const newFeedItem = subscriptionData.data.machineUpdated;
-          console.log("prev", prev);
-          return Object.assign({}, prev, {
-            machine: [...prev.machine, newFeedItem],
-          });
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, [subscribeToMore]);
-
-  useEffect(() => {
-    setWaitings([
-      { name: "test", id: 1, leftTime: 20, active: true },
-      { name: "test2", id: 2, leftTime: 2, active: true },
-      { name: "test2", id: 3, leftTime: 10, active: true },
-      { name: "test2", id: 4, leftTime: 200, active: true },
-    ]);
-
-    setReadys([
-      { name: "test", id: 1, leftTime: 20, active: true },
-      { name: "test2", id: 2, leftTime: 2, active: true },
-      { name: "test2", id: 3, leftTime: 10, active: true },
-      { name: "test2", id: 4, leftTime: 200, active: true },
-    ]);
-
-    setFinisheds([
-      { name: "test", id: 1, leftTime: 20, active: true },
-      { name: "test2", id: 2, leftTime: 2, active: true },
-      { name: "test2", id: 3, leftTime: 10, active: true },
-      { name: "test2", id: 4, leftTime: 200, active: true },
-    ]);
-
-    // idle inuse finished
-    // setMachineList([
-    //   {
-    //     id: 0,
-    //     name: "3D Printer 1",
-    //     status: "idle",
-    //     userId: 0,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    //   {
-    //     id: 1,
-    //     name: "3D Printer 2",
-    //     status: "idle",
-    //     userId: 1,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    //   {
-    //     id: 2,
-    //     name: "3D Printer 3",
-    //     status: "idle",
-    //     userId: 2,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    //   {
-    //     id: 3,
-    //     name: "3D Printer 4",
-    //     status: "idle",
-    //     userId: 3,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    //   {
-    //     id: 4,
-    //     name: "3D Printer 5",
-    //     status: "idle",
-    //     userId: 4,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    //   {
-    //     id: 5,
-    //     name: "3D Printer 6",
-    //     status: "idle",
-    //     userId: 5,
-    //     active: true,
-    //     leftTime: 0,
-    //     time: 0,
-    //   },
-    // ]);
-
-    setUserList([
-      { name: "test", id: 1, leftTime: 20, active: true },
-      { name: "test2", id: 2, leftTime: 2, active: true },
-      { name: "test2", id: 3, leftTime: 10, active: true },
-      { name: "test2", id: 4, leftTime: 200, active: true },
-      { name: "test2", id: 5, leftTime: 200, active: true },
-      { name: "test2", id: 6, leftTime: 200, active: true },
-      { name: "test2", id: 7, leftTime: 200, active: true },
-      { name: "test2", id: 8, leftTime: 200, active: true },
-      { name: "test2", id: 0, leftTime: 200, active: true },
-    ]);
-
-    MachineAPI.getMachines().then((res) => {
-      setMachineList(res.data);
-    });
-  }, []);
+  const [adminUpdateUser] = useMutation(ADMIN_UPDATE_USER_MUTATION);
+  const [adminUpdateMachine] = useMutation(ADMIN_UPDATE_MACHINE);
+  const [updateAll] = useMutation(UPDATE_ALL_MUTATION);
 
   // Arrange Machine
   const [arrangeMachineOpen, setArrangeMachineOpen] = React.useState(false);
@@ -180,6 +64,61 @@ export default function Top(props) {
   const [userRequestState, setUserRequestState] = React.useState(-1); // -1: no 0: waiting, 1: ready, 2: using, 3: finished
 
   // User Request End
+  const [finishUserOpen, setFinishUserOpen] = React.useState(false);
+  const [finishUser, setFinishUser] = React.useState(-1);
+
+  const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
+  const {
+    data: userData,
+    loading: userLoading,
+    subscribeToMore: userSubscribeToMore,
+  } = useQuery(USER_QUERY);
+
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    try {
+      subscribeToMore({
+        document: MACHINE_UPDATE_SUBSCRIPTION,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const machines = subscriptionData.data.machineUpdated;
+          // setCounter(counter + 1);
+          // console.log("machineUpdated", data.machine);
+          return Object.assign({}, prev, {
+            machines: machines,
+          });
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [subscribeToMore]);
+
+  useEffect(() => {
+    try {
+      userSubscribeToMore({
+        document: USER_UPDATE_SUBSCRIPTION,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const users = subscriptionData.data.userUpdated;
+          setUserList(users);
+          return users;
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [userSubscribeToMore]);
+
+  useEffect(() => {
+    updateAll();
+  }, []);
+
+  useEffect(() => {
+    setMachineList(data?.machine);
+    setUserList(userData?.user);
+  }, [data, userData]);
 
   const history = useHistory();
   const useStyles = makeStyles(() => ({
@@ -221,42 +160,18 @@ export default function Top(props) {
   // Arrange Machine
   // TODO : Arrange Machine
   const handleArrangeMachine = () => {
-    const currentUser = waitings.filter(
+    const currentUser = userList.filter(
       (user) => user.id === currentArrangeUser
     )[0];
-    setReadys([...readys, currentUser]);
-    setWaitings((waitings) => {
-      return waitings.filter((waiting) => {
-        return waiting.id !== currentUser.id;
-      });
-    });
-    const machineTime = machineList.filter(
-      (machine) => machine.name === arrangeMachineName
-    )[0].time;
-    setUserList((userList) => {
-      let newUserList = userList;
-      newUserList.map((user) => {
-        if (user.id === currentUser.id) {
-          user.active = true;
-          user.leftTime = machineTime;
-        }
-        return user;
-      });
-      return newUserList;
-    });
 
-    setMachineList((machineList) => {
-      let newMachineList = machineList;
-      newMachineList.map((machine) => {
-        if (machine.name === arrangeMachineName) {
-          machine.status = "inuse";
-          machine.userId = currentUser.id;
-          machine.leftTime = machine.time;
-          machine.active = true;
-        }
-        return machine;
-      });
-      return newMachineList;
+    adminUpdateUser({
+      variables: {
+        input: {
+          teamId: currentUser.teamId,
+          status: 1,
+          machineName: arrangeMachineName,
+        },
+      },
     });
 
     setCurrentArrangeUser(-1);
@@ -266,10 +181,11 @@ export default function Top(props) {
 
   // User Request
   const handleUserRequest = () => {
+    console.log(parseInt(teamID));
     userReserveMachine({
       variables: {
         input: {
-          teamId: 1,
+          teamId: parseInt(teamID),
         },
       },
     });
@@ -280,8 +196,8 @@ export default function Top(props) {
   // User Request End
 
   const showMachineList = () => {
-    let idleMachineList = data.machine.filter(
-      (machine) => machine.status === "idle"
+    let idleMachineList = machineList.filter(
+      (machine) => machine.status === -1
     );
     return idleMachineList.map((machine) => {
       return <MenuItem value={machine.name}>{machine.name}</MenuItem>;
@@ -295,24 +211,91 @@ export default function Top(props) {
     );
   };
 
-  const resetCard = (id) => {
-    setMachineList((machineList) => {
-      let newMachineList = machineList;
-      newMachineList.map((machine) => {
-        if (machine.id === id) {
-          machine.active = false;
-          machine.leftTime = machine.time;
-        }
-        return machine;
-      });
-      return newMachineList;
+  const resetCard = (name) => {
+    adminUpdateMachine({
+      variables: {
+        input: {
+          name: name,
+          status: -1,
+        },
+      },
     });
   };
 
+  const handleFinishUser = () => {
+    const currentUser = userList.filter(
+      (user) => user.id === finishUser
+    )[0];
+    adminUpdateUser({
+      variables: {
+        input: {
+          teamId: currentUser.teamId,
+          status: 0,
+        },
+      },
+    });
+    setFinishUserOpen(false);
+  };
+
+  const showWaitingQueue = () => {
+    // console.log(userList);
+    let waitingQueue = userList.filter((user) => user.status === 0);
+    return waitingQueue.map((data, index) => (
+      <Grid item xs={12}>
+        <Typography
+          variant="body1"
+          style={{
+            color: "black",
+            backgroundColor: "white",
+            fontSize: "1rem",
+            borderRadius: "5px",
+            height: "100%",
+          }}
+          align={"center"}
+          onClick={() => {
+            setArrangeMachineOpen(true);
+            setCurrentArrangeUser(data.id);
+          }}
+        >
+          <p>順序：{index}</p>
+          <p>隊伍：{data.teamId}</p>
+        </Typography>
+      </Grid>
+    ));
+  };
+  const showReadyQueue = () => {
+    let readyQueue = userList.filter((user) => user.status === 1);
+    return readyQueue.map((data, index) => (
+      <Grid item xs={12}>
+        <Typography
+          variant="body1"
+          style={{
+            color: "black",
+            backgroundColor: "white",
+            fontSize: "1rem",
+            borderRadius: "5px",
+            height: "100%",
+          }}
+          align={"center"}
+          onClick={() => {
+            setFinishUserOpen(true);
+            setFinishUser(data.id);
+          }}
+        >
+          <p>順序：{index}</p>
+          <p>隊伍：{data.teamId}</p>
+        </Typography>
+      </Grid>
+    ));
+  };
+
   const classes = useStyles();
+
+  if (loading || userLoading) return "Loading...";
+
   return (
     <>
-      {authority === 0 && (
+      {authority === 1 && (
         <div
           style={{
             width: "100%",
@@ -356,111 +339,75 @@ export default function Top(props) {
       )}
       {authority === 1 && (
         <Element name="title">
-          <div className={classes.root}>
-            <Grid container spacing={2}>
-              {/**/}
-              <Grid item xs={10}>
-                <Grid container spacing={2}>
-                  {machineList.map((data, index) => (
-                    <Grid item xs={2}>
-                      <DPCard
-                        data={data}
-                        deleteCard={deleteCard}
-                        _new={false}
-                        authority={authority}
-                        setUserList={setUserList}
-                        resetCard={resetCard}
-                      />
-                    </Grid>
-                  ))}
-                  <Grid item xs={3}>
+          {/*<div className={classes.root}>*/}
+          <Grid container spacing={2}>
+            {/**/}
+            <Grid item xs={10}>
+              <Grid container spacing={2}>
+                {machineList.map((data, index) => (
+                  <Grid item xs={2}>
                     <DPCard
-                      _new={true}
+                      data={data}
+                      deleteCard={deleteCard}
+                      _new={false}
                       authority={authority}
-                      setMachineList={setMachineList}
+                      setUserList={setUserList}
+                      resetCard={resetCard}
                     />
                   </Grid>
-                </Grid>
-              </Grid>
-              {/*waiting queue*/}
-              <Grid item xs={1}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Paper className={classes.waitingQueueHeader}>
-                      <Typography
-                        variant="h6"
-                        style={{ color: "#F5DE83", fontSize: "1.5rem" }}
-                        align={"center"}
-                      >
-                        Waiting Queue
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  {waitings.map((data, index) => (
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="body1"
-                        style={{
-                          color: "black",
-                          backgroundColor: "white",
-                          fontSize: "1.5rem",
-                          borderRadius: "5px",
-                          height: "100%",
-                        }}
-                        align={"center"}
-                        onClick={() => {
-                          setArrangeMachineOpen(true);
-                          setCurrentArrangeUser(data.id);
-                        }}
-                      >
-                        {`${index} ${data.id}`}
-                      </Typography>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Grid>
-              {/*ready queue*/}
-              <Grid item xs={1}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Paper className={classes.waitingQueueHeader}>
-                      <Typography
-                        variant="h6"
-                        style={{ color: "#F5DE83", fontSize: "1.5rem" }}
-                        align={"center"}
-                      >
-                        Ready Queue
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  {readys.map((data, index) => (
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="body1"
-                        style={{
-                          color: "black",
-                          backgroundColor: "white",
-                          fontSize: "1.5rem",
-                          borderRadius: "5px",
-                          height: "100%",
-                        }}
-                        align={"center"}
-                      >
-                        {`${index} ${data.id}`}
-                      </Typography>
-                    </Grid>
-                  ))}
+                ))}
+                <Grid item xs={3}>
+                  <DPCard
+                    _new={true}
+                    authority={authority}
+                    setMachineList={setMachineList}
+                  />
                 </Grid>
               </Grid>
             </Grid>
-          </div>
+            {/*waiting queue*/}
+            <Grid item xs={1}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Paper className={classes.waitingQueueHeader}>
+                    <Typography
+                      // variant="h6"
+                      style={{ color: "#F5DE83", fontSize: "1.5rem" }}
+                      align={"center"}
+                    >
+                      Waiting Queue
+                    </Typography>
+                  </Paper>
+                </Grid>
+                {showWaitingQueue()}
+              </Grid>
+            </Grid>
+            {/*ready queue*/}
+            <Grid item xs={1}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Paper className={classes.waitingQueueHeader}>
+                    <Typography
+                      // variant="h6"
+                      style={{ color: "#F5DE83", fontSize: "1.5rem" }}
+                      align={"center"}
+                    >
+                      Ready Queue
+                    </Typography>
+                  </Paper>
+                </Grid>
+                {showReadyQueue()}
+              </Grid>
+            </Grid>
+          </Grid>
+          {/*</div>*/}
         </Element>
       )}
       <Dialog open={arrangeMachineOpen}>
         <DialogTitle>安排機台</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
-            請填寫欲新增之機台資訊！
+            請安排機台！
           </DialogContentText>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">選擇機台</InputLabel>
@@ -484,8 +431,10 @@ export default function Top(props) {
         <DialogTitle>預約機台</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
-            <div>總共有 {waitings.length + readys.length} 台機台</div>
-            <div>約需等待 {(waitings.length + readys.length) * 10} 分鐘</div>
+            <div>總共有 {machineList.length} 台機台</div>
+            <div>
+              約需等待 {(userList.length * 10) / machineList.length} 分鐘
+            </div>
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -499,6 +448,19 @@ export default function Top(props) {
           <Button onClick={handleUserRequest}>預約</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={finishUserOpen}>
+        <DialogTitle>結束</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            請結束機台！
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setFinishUserOpen(false)}>取消</Button>
+          <Button onClick={handleFinishUser}>安排</Button>
+        </DialogActions>
+      </Dialog>
+      {/*<Alert>This is an info alert — check it out!</Alert>*/}
     </>
   );
 }

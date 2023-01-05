@@ -7,11 +7,13 @@
 組員： R09521260 林和毅、R10227105 王雅茵
 
 ## 網站服務連結
-
-[MakeNTU網站](http://140.112.174.222:7777)
+[MakeNTU網站](https://machine.ntuee.org/)
 
 ## Demo 影片連結
 [MakeNTU Demo影片](https://youtu.be/Fu-NFM0y6Qc)
+
+## Open Source Github Link
+[開源程式碼repo](https://github.com/qaz159qaz159/makeNTU-2023-competetion)
 
 ## 網頁服務內容
 - 主旨：提供MakeNTU創客松競賽之網站服務，提供機台預約及管理。
@@ -65,7 +67,7 @@ $ yarn install
 
 ### Run database
 ```
-# ./makeNTU-2023-competition/server
+# ./makeNTU-2023-competition
 $ cd server
 $ docker-compose up -d
 ```
@@ -80,7 +82,6 @@ $ yarn database reset
 ### Run backend
 ```
 # ./makeNTU-2023-competition
-$ cd ../../..
 $ yarn dev-server
 ```
 
@@ -91,6 +92,22 @@ $ yarn start
 ```
 
 Goto `http://localhost:3000` to see the website.
+
+## 負責項目
+### 徐明晧
+- 3D列印機管理系統
+  - 後端：後端設計、資料庫設計(schema)、GraphQL設計(mutation、query、subscription的schema與resolver)、建立Apollo Server框架、前後端接口對接
+  - 前端：利用React、Material-UI進行排版與各種功能實現、管理介面設計、一般用戶介面設計、建立Apollo Client框架
+
+### 林和毅
+- 雷射切割機管理系統
+  - 後端：後端部屬、資料傳輸、邏輯規劃、預約排程管理、GraphQL(schema, resolver)撰寫
+  - 前端：雷切機台管理頁面UI/UX、管理功能實現
+
+### 王雅茵
+- 雷射切割機管理系統
+  - 後端：schema跟resolver等等
+  - 前端：負責切版以及function，以及前後端資料的接收
 
 ## Demo畫面
 

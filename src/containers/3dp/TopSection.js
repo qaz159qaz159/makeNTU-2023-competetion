@@ -301,6 +301,9 @@ export default function Top(props) {
             fontSize: "1rem",
             borderRadius: "5px",
             height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           align={"center"}
           onClick={() => {
@@ -308,8 +311,8 @@ export default function Top(props) {
             setCurrentArrangeUser(data.id);
           }}
         >
-          <p>順序：{index}</p>
-          <p>隊伍：{data.teamId}</p>
+          <p style={{ width: "100%" }}>順序：{index}</p>
+          <p style={{ width: "100%" }}>隊伍：{data.teamId}</p>
         </Typography>
       </Grid>
     ));

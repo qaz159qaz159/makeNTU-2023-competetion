@@ -75,6 +75,8 @@ export default function Top(props) {
   const [newMachineOpen, setNewMachineOpen] = React.useState(false);
   const [newMachineName, setNewMachineName] = React.useState("");
   const [newMachineTime, setNewMachineTime] = React.useState(0);
+  const [clearMachineOpen, setClearMachineOpen] = React.useState(false);
+  const [clearUserOpen, setClearUserOpen] = React.useState(false);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -261,6 +263,7 @@ export default function Top(props) {
 
   const handleDeleteMachines = () => {
     clearMachine();
+    setClearMachineOpen(false);
   };
 
   const handleFinishUser = () => {
@@ -282,6 +285,7 @@ export default function Top(props) {
 
   const handleClearUser = () => {
     clearUser();
+    setClearUserOpen(false);
   };
 
   const showWaitingQueue = () => {
@@ -504,7 +508,7 @@ export default function Top(props) {
                 <Button
                   size="small"
                   variant="outlined"
-                  onClick={handleDeleteMachines}
+                  onClick={() => setClearMachineOpen(true)}
                   style={{ width: "100%", height: "100px" }}
                 >
                   清除機台
@@ -514,7 +518,7 @@ export default function Top(props) {
                 <Button
                   size="small"
                   variant="outlined"
-                  onClick={handleClearUser}
+                  onClick={() => setClearUserOpen(true)}
                   style={{ width: "100%", height: "100px" }}
                 >
                   清除使用者
@@ -655,6 +659,30 @@ export default function Top(props) {
         <DialogActions>
           <Button onClick={() => setHowToUseOpen(false)}>關閉</Button>
           {/*<Button onClick={handleFinishUser}>結束</Button>*/}
+        </DialogActions>
+      </Dialog>
+      <Dialog open={clearMachineOpen}>
+        <DialogTitle>刪除所有機台</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            <div>請注意：此操作將刪除所有機台</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setClearMachineOpen(false)}>關閉</Button>
+          <Button onClick={handleDeleteMachines}>刪除</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={clearUserOpen}>
+        <DialogTitle>刪除所有使用者</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            <div>請注意：此操作將刪除所有使用者</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setClearUserOpen(false)}>關閉</Button>
+          <Button onClick={handleClearUser}>刪除</Button>
         </DialogActions>
       </Dialog>
       {/*New*/}

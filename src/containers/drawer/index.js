@@ -163,7 +163,7 @@ const Drawer = ({ children }) => {
           { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
           { text: "3D列印機", to: "/3dp", icon: <PostAddIcon /> },
           {
-            text: "Student Data",
+            text: "各組資料",
             to: "/studentdata",
             icon: <PeopleIcon />,
           },

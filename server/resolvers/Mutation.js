@@ -35,7 +35,15 @@ const Mutation = {
   deleteMachine: async (parent, { info: { name } }, { pubsub }) => {
     const machine = await Model.Machine.deleteOne({ name: name });
     const machines = await Model.Machine.find({});
+    const user = await Team.findOne({ machine: name });
+    if (user) {
+        user.machine = "";
+        user.status = 0;
+        await user.save();
+    }
     pubsub.publish("machineUpdated", { machineUpdated: machines });
+    const users = await Team.find({});
+    pubsub.publish("userUpdated", { userUpdated: users });
     return "success";
   },
   userReserveMachine: async (parent, { info: { teamId } }, { pubsub }) => {

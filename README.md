@@ -11,7 +11,7 @@
 [MakeNTU網站](http://140.112.174.222:7777)
 
 ## Demo 影片連結
-[暫不提供](https://)
+[MakeNTU Demo影片](https://youtu.be/Fu-NFM0y6Qc)
 
 ## 網頁服務內容
 - 主旨：提供MakeNTU創客松競賽之網站服務，提供機台預約及管理。

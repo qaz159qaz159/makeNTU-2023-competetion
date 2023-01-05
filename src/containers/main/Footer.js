@@ -56,7 +56,7 @@ export default function Footer() {
     <FooterContainer>
       <Text>Developers</Text>
       <Members>
-        <p> 徐明晧 </p>
+        <p> 徐明晧 林和毅 王雅茵 </p>
       </Members>
     </FooterContainer>
   );

@@ -156,12 +156,12 @@ const Drawer = ({ children }) => {
         1: [
           { text: "Main", to: "/", icon: <HomeIcon /> },
           {
-            text: "Admin雷切",
+            text: "雷射切割機管理",
             to: "/adminlasercutter",
             icon: <AdminPanelSettingsIcon />,
           },
-          { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
-          { text: "3D列印機", to: "/3dp", icon: <PostAddIcon /> },
+          // { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
+          { text: "3D列印機管理", to: "/3dp", icon: <AdminPanelSettingsIcon /> },
           {
             text: "各組資料",
             to: "/studentdata",
@@ -170,8 +170,8 @@ const Drawer = ({ children }) => {
         ],
         0: [
           { text: "Main", to: "/", icon: <HomeIcon /> },
-          { text: "3D列印機", to: "/3dp", icon: <PostAddIcon /> },
-          { text: "雷切借用", to: "/lasercutter", icon: <PostAddIcon /> },
+          { text: "3D列印機借用", to: "/3dp", icon: <PostAddIcon /> },
+          { text: "雷射切割機借用", to: "/lasercutter", icon: <PostAddIcon /> },
         ],
       }[authority];
 

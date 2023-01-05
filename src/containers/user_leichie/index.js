@@ -137,7 +137,6 @@ export default function LaserCutter() {
     }
   }, [subscribeToMore]);
 
- 
   useEffect(() => {
     waitingNum();
     getMaterialThickness();
@@ -281,8 +280,6 @@ export default function LaserCutter() {
     </>
   );
   return (
-    
-    
     <Box
       sx={{
         width: "100%",
@@ -291,7 +288,7 @@ export default function LaserCutter() {
         alignItems: "center",
       }}
     >
-      {loading? "loading": ""}
+      {loading ? "loading" : ""}
       <Box
         sx={{
           height: "auto",

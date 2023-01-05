@@ -131,7 +131,11 @@ export default function Top() {
                     }}
                     variant="contained"
                     color="primary"
-                    onClick={() => history.push(`/${authority? "adminlasercutter": "lasercutter"}`)}
+                    onClick={() =>
+                      history.push(
+                        `/${authority ? "adminlasercutter" : "lasercutter"}`
+                      )
+                    }
                   >
                     <Link
                       style={{ textDecoration: "none", color: "white" }}

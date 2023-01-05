@@ -15,7 +15,6 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Slide from "@mui/material/Slide";
 import Dialog from "@mui/material/Dialog";
 import SendIcon from "@mui/icons-material/Send";
 import { useQuery, useMutation } from "@apollo/client";
@@ -54,7 +53,6 @@ export default function Top(props) {
   const [adminUpdateMachine] = useMutation(ADMIN_UPDATE_MACHINE);
   const [updateAll] = useMutation(UPDATE_ALL_MUTATION);
   const [clearUser] = useMutation(CLEAR_USER_MUTATION);
-
 
   // Arrange Machine
   const [arrangeMachineOpen, setArrangeMachineOpen] = React.useState(false);
@@ -363,24 +361,43 @@ export default function Top(props) {
           </Button>
         );
       } else if (currentUser.status === 1) {
+        const myMachine = machineList.filter((machine) => {
+          return machine.name === currentUser.machine;
+        })[0];
         return (
-          <Button
-            variant="contained"
-            color={"info"}
+          <div
             style={{
-              width: "250px",
-              height: "250px",
-              borderRadius: "125px",
-              fontSize: "30px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-            endIcon={<AddTaskIcon />}
-            onClick={() => {
-              setUserRequestOpen(true);
-            }}
-            disabled
           >
-            使用中
-          </Button>
+            <div style={{ width: "100%" }}>
+              <Button
+                variant="contained"
+                color={"info"}
+                style={{
+                  width: "250px",
+                  height: "250px",
+                  borderRadius: "125px",
+                  fontSize: "30px",
+                }}
+                endIcon={<AddTaskIcon />}
+                onClick={() => {
+                  setUserRequestOpen(true);
+                }}
+                disabled
+              >
+                使用中
+              </Button>
+            </div>
+            <div>
+              <Typography>
+                <p>可使用機台：{myMachine.name}</p>
+                <p>預計使用時間：{myMachine.duration}分鐘</p>
+              </Typography>
+            </div>
+          </div>
         );
       }
     } else {
@@ -475,30 +492,30 @@ export default function Top(props) {
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={handleNewMachineClickOpen}
-                    style={{ width: "100%", height: "100px" }}
+                  size="small"
+                  variant="outlined"
+                  onClick={handleNewMachineClickOpen}
+                  style={{ width: "100%", height: "100px" }}
                 >
                   新增機台
                 </Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={handleDeleteMachines}
-                    style={{ width: "100%", height: "100px" }}
+                  size="small"
+                  variant="outlined"
+                  onClick={handleDeleteMachines}
+                  style={{ width: "100%", height: "100px" }}
                 >
                   清除機台
                 </Button>
               </Grid>
               <Grid item xs={4}>
                 <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={handleClearUser}
-                    style={{ width: "100%", height: "100px" }}
+                  size="small"
+                  variant="outlined"
+                  onClick={handleClearUser}
+                  style={{ width: "100%", height: "100px" }}
                 >
                   清除使用者
                 </Button>
@@ -646,24 +663,24 @@ export default function Top(props) {
         <DialogContent>
           <DialogContentText>請填寫欲新增之機台資訊！</DialogContentText>
           <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="機台名稱"
-              type="text"
-              fullWidth
-              variant="standard"
-              onChange={(e) => setNewMachineName(e.target.value)}
+            autoFocus
+            margin="dense"
+            id="name"
+            label="機台名稱"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={(e) => setNewMachineName(e.target.value)}
           />
           <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="使用時間(分鐘)"
-              type="number"
-              fullWidth
-              variant="standard"
-              onChange={(e) => setNewMachineTime(parseInt(e.target.value))}
+            autoFocus
+            margin="dense"
+            id="name"
+            label="使用時間(分鐘)"
+            type="number"
+            fullWidth
+            variant="standard"
+            onChange={(e) => setNewMachineTime(parseInt(e.target.value))}
           />
         </DialogContent>
         <DialogActions>

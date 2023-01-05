@@ -59,7 +59,15 @@ export default function Top() {
         >
           {/*<Paper className={classes.paper}>*/}
           <Grid container spacing={2} style={{ marginTop: "10%" }}>
-            <Grid item xs={12} style={{ width: "100%", display: "flex", justifyContent: "center"}}>
+            <Grid
+              item
+              xs={12}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <img src={makeNTU_big} style={{ borderRadius: "2%" }} />
             </Grid>
             <Grid item xs={8} style={{ marginTop: "2.4%", marginLeft: "5%" }}>

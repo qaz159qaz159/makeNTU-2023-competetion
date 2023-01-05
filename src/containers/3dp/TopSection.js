@@ -77,6 +77,7 @@ export default function Top(props) {
   const [newMachineTime, setNewMachineTime] = React.useState(0);
   const [clearMachineOpen, setClearMachineOpen] = React.useState(false);
   const [clearUserOpen, setClearUserOpen] = React.useState(false);
+  const [description, setDescription] = React.useState(false);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -434,12 +435,31 @@ export default function Top(props) {
     <>
       {authority === 0 && buttonState === 0 && (
         <>
-          <Typography
-            style={{ alignItems: "center", justifyContent: "center" }}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <h1>目前有 {machineList.length} 台3D列印機可以使用</h1>
-            <h1>前方目前有 {userList.length} 位使用者</h1>
-          </Typography>
+            <Typography
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "15px",
+              }}
+            >
+              <h1>目前有 {machineList.length} 台3D列印機可以使用</h1>
+              <h1>前方目前有 {userList.length} 位使用者</h1>
+            </Typography>
+            <Button
+              variant={"outlined"}
+              style={{ width: "100px", height: "100px" }}
+              onClick={() => setDescription(true)}
+            >
+              使用說明
+            </Button>
+          </div>
           <div
             style={{
               width: "100%",
@@ -658,6 +678,20 @@ export default function Top(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setHowToUseOpen(false)}>關閉</Button>
+          {/*<Button onClick={handleFinishUser}>結束</Button>*/}
+        </DialogActions>
+      </Dialog>
+      <Dialog open={description}>
+        <DialogTitle>操作說明</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ height: "100px" }}>
+            <div>1. 點選我要預約，即可預約3D列印機，送出後請等待工作人員安排</div>
+            <div>2. 顯示預約完成，表示成功預約，這時表示正在安排您的機台，若機台全部都在使用中，可能需要等待數分鐘</div>
+            <div>3. 當圖示變成使用中，表示已排到3D列印機，這時可前往服務台跟工作人員確認並開始使用</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDescription(false)}>關閉</Button>
           {/*<Button onClick={handleFinishUser}>結束</Button>*/}
         </DialogActions>
       </Dialog>

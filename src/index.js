@@ -18,12 +18,21 @@ import { createClient } from "graphql-ws";
 // import App from './App';
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:8000/graphql",
+  uri:
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8000/graphql"
+      : window.location.origin + "/graphql",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:8000/graphql",
+    url:
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+        ? "ws://localhost:8000/graphql"
+        : window.location.origin.replace("http", "ws") + "/graphql",
+    // url: "ws://localhost:8000/graphql",
   })
 );
 

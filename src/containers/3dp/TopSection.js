@@ -691,9 +691,17 @@ export default function Top(props) {
         <DialogTitle>操作說明</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ height: "100px" }}>
-            <div>1. 點選我要預約，即可預約3D列印機，送出後請等待工作人員安排</div>
-            <div>2. 顯示預約完成，表示成功預約，這時表示正在安排您的機台，若機台全部都在使用中，可能需要等待數分鐘</div>
-            <div>3. 當圖示變成使用中，表示已排到3D列印機，這時可前往服務台跟工作人員確認並開始使用</div>
+            <div>
+              1. 點選我要預約，即可預約3D列印機，送出後請等待工作人員安排
+            </div>
+            <div>
+              2.
+              顯示預約完成，表示成功預約，這時表示正在安排您的機台，若機台全部都在使用中，可能需要等待數分鐘
+            </div>
+            <div>
+              3.
+              當圖示變成使用中，表示已排到3D列印機，這時可前往服務台跟工作人員確認並開始使用
+            </div>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

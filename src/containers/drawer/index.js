@@ -160,7 +160,11 @@ const Drawer = ({ children }) => {
             to: "/adminlasercutter",
             icon: <AdminPanelSettingsIcon />,
           },
-          { text: "3D列印機管理", to: "/3dp", icon: <AdminPanelSettingsIcon /> },
+          {
+            text: "3D列印機管理",
+            to: "/3dp",
+            icon: <AdminPanelSettingsIcon />,
+          },
           {
             text: "各組資料",
             to: "/studentdata",

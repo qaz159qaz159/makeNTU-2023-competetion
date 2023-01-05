@@ -37,9 +37,9 @@ const Mutation = {
     const machines = await Model.Machine.find({});
     const user = await Team.findOne({ machine: name });
     if (user) {
-        user.machine = "";
-        user.status = 0;
-        await user.save();
+      user.machine = "";
+      user.status = 0;
+      await user.save();
     }
     pubsub.publish("machineUpdated", { machineUpdated: machines });
     const users = await Team.find({});

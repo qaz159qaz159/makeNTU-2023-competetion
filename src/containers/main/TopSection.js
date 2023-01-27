@@ -49,6 +49,7 @@ export default function Top(props) {
         <Grid
           container
           direction="column"
+          spacing={1}
           style={{
             padding: "10px",
             margin: "auto",
@@ -56,7 +57,7 @@ export default function Top(props) {
             // marginLeft: "30%",
             width: "90%",
             maxWidth: "1000px",
-            maxHeight: "500px",
+            // maxHeight: "500px",
           }}
         >
           {/* <Paper className={classes.paper}> */}
@@ -116,56 +117,144 @@ export default function Top(props) {
             </Grid>
           )}
           {isLogin && (
-            <Grid item xs={12}>
-              <Button
-                style={{
-                  width: "70%",
-                  // height: "30%",
-                  display: "flex",
-                  margin: "auto",
-                }}
-                variant="contained"
-                color="primary"
-                onClick={() => history.push("/3dp")}
-              >
-                <Link
-                  style={{ textDecoration: "none", color: "white" }}
-                  to="/courses"
+            <>
+              <Grid item xs={12}>
+                <Button
+                  style={{
+                    width: "70%",
+                    // height: "30%",
+                    display: "flex",
+                    margin: "auto",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => history.push("/3dp")}
                 >
-                  3D Printer
-                </Link>
-              </Button>
-            </Grid>
-          )}
-          {isLogin && (
-            <Grid item xs={12}>
-              <Button
-                style={{
-                  width: "70%",
-                  // height: "30%",
-                  display: "flex",
-                  margin: "auto",
-                }}
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  history.push(
-                    `/${authority ? "adminlasercutter" : "lasercutter"}`
-                  )
-                }
-              >
-                <Link
-                  style={{ textDecoration: "none", color: "white" }}
-                  to="/courses"
+                  <Link
+                    style={{ textDecoration: "none", color: "white" }}
+                    to="/3dp"
+                  >
+                    3D列印
+                  </Link>
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  style={{
+                    width: "70%",
+                    // height: "30%",
+                    display: "flex",
+                    margin: "auto",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    history.push(
+                      `/${authority ? "adminlasercutter" : "lasercutter"}`
+                    )
+                  }
                 >
-                  雷切
-                </Link>
-              </Button>
-            </Grid>
+                  <Link
+                    style={{ textDecoration: "none", color: "white" }}
+                    to={authority ? "/adminlasercutter" : "/lasercutter"}
+                  >
+                    雷射切割
+                  </Link>
+                </Button>
+              </Grid>
+            </>
           )}
           {/*<Grid item xs={12} style={{ width: "100%", display: "flex", justifyContent: "center" }}>*/}
           {/*  <img src={makentuImg} style={{ borderRadius: "50%" }} />*/}
           {/*</Grid>*/}
+          {isLogin &&
+            (authority ? (
+              <>
+                <Grid item xs={12}>
+                  <Button
+                    style={{
+                      width: "70%",
+                      // height: "30%",
+                      display: "flex",
+                      margin: "auto",
+                    }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => history.push("/boardlist")}
+                  >
+                    <Link
+                      style={{ textDecoration: "none", color: "white" }}
+                      to="/boardlist"
+                    >
+                      開發板＆工具列表
+                    </Link>
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    style={{
+                      width: "70%",
+                      // height: "30%",
+                      display: "flex",
+                      margin: "auto",
+                    }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => history.push("/requestStatus")}
+                  >
+                    <Link
+                      style={{ textDecoration: "none", color: "white" }}
+                      to="/requestStatus"
+                    >
+                      開發板＆工具借用管理
+                    </Link>
+                  </Button>
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={12}>
+                  <Button
+                    style={{
+                      width: "70%",
+                      // height: "30%",
+                      display: "flex",
+                      margin: "auto",
+                    }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => history.push("/user")}
+                  >
+                    <Link
+                      style={{ textDecoration: "none", color: "white" }}
+                      to="/user"
+                    >
+                      開發板＆工具借用表單
+                    </Link>
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    style={{
+                      width: "70%",
+                      // height: "30%",
+                      display: "flex",
+                      margin: "auto",
+                    }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => history.push("/user/status")}
+                  >
+                    <Link
+                      style={{ textDecoration: "none", color: "white" }}
+                      to="/user/status"
+                    >
+                      開發板＆工具管理
+                    </Link>
+                  </Button>
+                </Grid>
+              </>
+            ))}
         </Grid>
         {/*</Paper>*/}
       </div>

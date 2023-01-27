@@ -38,7 +38,7 @@ import { useMakeNTU } from "../../hooks/useMakeNTU";
 
 // route
 
-const drawerWidth = 200;
+const drawerWidth = 300;
 const maxPhoneWidth = 700;
 
 const useStyles = makeStyles((theme) => ({
@@ -180,12 +180,12 @@ const Drawer = ({ children }) => {
             icon: <AdminPanelSettingsIcon />,
           },
           {
-            text: "Items List",
+            text: "開發板＆工具列表",
             to: "/boardlist",
             icon: <DeveloperBoardIcon />,
           },
           {
-            text: "Request Status",
+            text: "開發板＆工具借用管理",
             to: "/requestStatus",
             icon: <FactCheckIcon />,
           },
@@ -194,12 +194,12 @@ const Drawer = ({ children }) => {
           //user區
           { text: "Home", to: "/", icon: <HomeIcon /> },
           {
-            text: "Borrow Items",
+            text: "開發板＆工具借用表單",
             to: "/user",
             icon: <DeveloperBoardIcon />,
           },
           {
-            text: "Your Status",
+            text: "開發板＆工具管理",
             to: "/user/status",
             icon: <FactCheckIcon />,
           },
@@ -267,14 +267,18 @@ const Drawer = ({ children }) => {
             </div>
           </Typography>
           <Typography variant="h6">{userName}</Typography>
-          <IconButton
-            className={clsx(classes.iconButton, {
-              [classes.hide]: !isLogin,
-            })}
-            onClick={() => dispatch(logout())}
-          >
-            <ExitToAppIcon />
-          </IconButton>
+          {isLogin ? (
+            <IconButton
+              className={clsx(classes.iconButton, {
+                [classes.hide]: !isLogin,
+              })}
+              onClick={() => dispatch(logout())}
+            >
+              <ExitToAppIcon />
+            </IconButton>
+          ) : (
+            <></>
+          )}
         </Toolbar>
       </AppBar>
       <MUIDrawer

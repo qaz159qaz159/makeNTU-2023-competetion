@@ -57,7 +57,7 @@ export default function Footer() {
     <FooterContainer>
       <Text>Developers</Text>
       <Members>
-        <p> 陳冠豪、楊竣凱、葉庭羽、徐明晧 林和毅 王雅茵 </p>
+        <p> 陳冠豪、楊竣凱、葉庭羽、徐明晧、林和毅、王雅茵、賴群貿 </p>
       </Members>
     </FooterContainer>
   );

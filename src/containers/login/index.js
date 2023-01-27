@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Avatar,
   Button,
@@ -122,7 +122,7 @@ export default function Login() {
               required
               fullWidth
               id="StudentId"
-              placeholder="Student ID"
+              placeholder="Account"
               value={values.account}
               name="StudentId"
               className={classes.accountmargin}
@@ -161,9 +161,10 @@ export default function Login() {
             <Button
               type="submit"
               fullWidth
-              variant="outlined"
+              variant="contained"
               color="primary"
               className={classes.submit}
+              sx={{ my: "10px" }}
             >
               <div>Sign in</div>
             </Button>

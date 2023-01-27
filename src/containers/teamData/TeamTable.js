@@ -191,7 +191,7 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Students
+          Teams
         </Typography>
       )}
       <Input
@@ -280,7 +280,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentTable({
+export default function TeamTable({
   data,
   handleEdit,
   handleDelete,
@@ -303,7 +303,7 @@ export default function StudentTable({
     setOrderBy(property);
   };
 
-  const studentFilter = (e) => {
+  const teamFilter = (e) => {
     return search
       ? e.teamName.toUpperCase().startsWith(search.toUpperCase()) ||
           e.id.toUpperCase().startsWith(search.toUpperCase())
@@ -313,9 +313,7 @@ export default function StudentTable({
   //
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const nowSelecteds = data
-        .filter((e) => studentFilter(e))
-        .map((n) => n.id);
+      const nowSelecteds = data.filter((e) => teamFilter(e)).map((n) => n.id);
       const newSelecteds = nowSelecteds.filter((id) => !selected.includes(id));
       if (newSelecteds.length === 0) {
         setSelected(selected.filter((id) => !nowSelecteds.includes(id)));
@@ -387,7 +385,7 @@ export default function StudentTable({
               classes={classes}
               numSelectedInPage={
                 data
-                  .filter((e) => studentFilter(e))
+                  .filter((e) => teamFilter(e))
                   .map((n) => n.id)
                   .filter((id) => selected.includes(id)).length
               }
@@ -395,11 +393,11 @@ export default function StudentTable({
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={data.filter((e) => studentFilter(e)).length}
+              rowCount={data.filter((e) => teamFilter(e)).length}
             />
             <TableBody>
               {stableSort(data, getComparator(order, orderBy))
-                .filter((e) => studentFilter(e))
+                .filter((e) => teamFilter(e))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
@@ -510,7 +508,7 @@ export default function StudentTable({
         <TablePagination
           rowsPerPageOptions={[50, 100, 200, 400]}
           component="div"
-          count={data.filter((e) => studentFilter(e)).length}
+          count={data.filter((e) => teamFilter(e)).length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -521,7 +519,7 @@ export default function StudentTable({
   );
 }
 
-StudentTable.propTypes = {
+TeamTable.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

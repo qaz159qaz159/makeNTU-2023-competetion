@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/material/styles";
 
 // Route
 import { Redirect } from "react-router";
-import PublicRoute from "./components/routes/publicRoute";
-import AdminRoute from "./components/routes/adminRoute";
+// import PublicRoute from "./components/routes/publicRoute";
+// import AdminRoute from "./components/routes/adminRoute";
+import PrivateRoute from "./components/routes/privateRoute";
 import LoginRoute from "./components/routes/loginRoute";
 import MainRoute from "./components/routes/mainRoute";
 import UserRoute from "./components/routes/userRoute";
-
 // containers
 import Drawer from "./containers/drawer";
 import Main from "./containers/main";
 import Login from "./containers/login";
-import StudentData from "./containers/studentData";
+import UserProgress from "./containers/userProgress";
+import UserStatus from "./containers/userStatus";
+import TeamData from "./containers/teamData";
+import AdminBoardList from "./containers/adminBoardList";
+import RequestStatus from "./containers/requestStatus";
 import AdminLaserCutter from "./containers/admin_leichie";
 import LaserCutter from "./containers/user_leichie";
 
@@ -48,15 +51,30 @@ const Routes = () => {
       <LoginRoute exact path="/login">
         <Login />
       </LoginRoute>
-      <AdminRoute exact path="/studentdata">
-        <StudentData />
-      </AdminRoute>
-      <AdminRoute exact path="/adminlasercutter">
+      <PrivateRoute exact path="/teamdata">
+        <TeamData />
+      </PrivateRoute>
+      <PrivateRoute exact path="/teamdata">
+        <TeamData />
+      </PrivateRoute>
+      <PrivateRoute exact path="/adminlasercutter">
         <AdminLaserCutter />
-      </AdminRoute>
-      <AdminRoute exact path="/lasercutter">
+      </PrivateRoute>
+      <PrivateRoute exact path="/lasercutter">
         <LaserCutter />
-      </AdminRoute>
+      </PrivateRoute>
+      <UserRoute exact path="/user">
+        <UserProgress />
+      </UserRoute>
+      <UserRoute exact path="/user/status">
+        <UserStatus />
+      </UserRoute>
+      <PrivateRoute exact path="/boardlist">
+        <AdminBoardList />
+      </PrivateRoute>
+      <PrivateRoute exact path="/requestStatus">
+        <RequestStatus />
+      </PrivateRoute>
       <Redirect to="/login" />
     </Switch>
   );
@@ -64,14 +82,12 @@ const Routes = () => {
 
 export default function App() {
   return (
-    <div>
-      <ThemeProvider theme={theme}>
-        <Router>
-          <Drawer>
-            <Routes />
-          </Drawer>
-        </Router>
-      </ThemeProvider>
+    <div style={{ userSelect: "none" }}>
+      <Router>
+        <Drawer>
+          <Routes />
+        </Drawer>
+      </Router>
     </div>
   );
 }

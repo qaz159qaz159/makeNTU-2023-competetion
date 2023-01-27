@@ -23,9 +23,10 @@ import {
 import Papa from "papaparse";
 import { selectSession } from "../../slices/sessionSlice";
 
-import StudentTable from "./StudentTable";
+import TeamTable from "./TeamTable";
 
-import { StudentDataAPI, PasswordAPI } from "../../api";
+import { TeamDataAPI, PasswordAPI } from "../../api";
+import { useMakeNTU } from "../../hooks/useMakeNTU";
 
 const characters =
   "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz123456789"; // no O, o, 0
@@ -58,9 +59,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 /**
- * This is Student Data Page
+ * This is Team Data Page
  */
-export default function StudentData() {
+export default function TeamData() {
   const classes = useStyles();
 
   const [data, setData] = React.useState([]);
@@ -89,39 +90,42 @@ export default function StudentData() {
     teamName: "",
     authority: "",
   });
-  const [newStudentMultiple, setNewStudentMultiple] = React.useState({
+  const [newTeamMultiple, setNewTeamMultiple] = React.useState({
     id: "",
     teamName: "",
     authority: "",
   });
-  const [newStudent, setNewStudent] = React.useState({
+  const [newTeam, setNewTeam] = React.useState({
     id: "",
     teamName: "",
     authority: "",
   });
-  const { authority } = useSelector(selectSession);
-
+  const { teamID, authority } = useSelector(selectSession);
+  const { subscribe } = useMakeNTU();
+  useEffect(() => {
+    subscribe({ id: teamID, authority: authority, page: "teamData" });
+  }, []);
   const showAlert = (severity, msg) => {
     setAlert({ open: true, severity, msg });
   };
 
-  const handleStudentDataReload = async () => {
+  const handleTeamDataReload = async () => {
     try {
-      setData((await StudentDataAPI.getStudentData()).data);
+      setData((await TeamDataAPI.getTeamData()).data);
     } catch (err) {
-      showAlert("error", "Failed to load student data.");
+      showAlert("error", "Failed to load team data.");
     }
   };
 
   useEffect(() => {
-    handleStudentDataReload();
+    handleTeamDataReload();
   }, []);
 
   const handleOpenAddMultiple = () => {
-    // console.log("handleOpenAddMultiple");
+    // // console.log("handleOpenAddMultiple");
     setUploaded(false);
     setAddMultipleOpen(true);
-    setNewStudentMultiple({
+    setNewTeamMultiple({
       id: "",
       teamName: "",
       authority: "",
@@ -131,14 +135,14 @@ export default function StudentData() {
   };
 
   const handleCloseAddMultiple = () => {
-    // console.log("handleCloseAddMultiple");
+    // // console.log("handleCloseAddMultiple");
     setAddMultipleOpen(false);
   };
 
   const handleOpenAdd = () => {
-    // console.log(data);
-    // console.log("handleOpenAdd");
-    setNewStudent({
+    // // console.log(data);
+    // // console.log("handleOpenAdd");
+    setNewTeam({
       id: "",
       teamName: "",
       authority: "",
@@ -157,8 +161,8 @@ export default function StudentData() {
   };
 
   const handleCloseAdd = () => {
-    // console.log("handleCloseAdd");
-    setNewStudent({
+    // // console.log("handleCloseAdd");
+    setNewTeam({
       id: "",
       teamName: "",
       authority: "",
@@ -177,14 +181,14 @@ export default function StudentData() {
   };
 
   const handleOpenEdit = (id) => {
-    // console.log("handleOpenEdit");
+    // // console.log("handleOpenEdit");
     setEditId(id);
-    // console.log(id);
-    const student = data.find((e) => e.id === id);
-    setNewStudent({
-      id: student.id,
-      teamName: student.teamName,
-      authority: String(student.authority),
+    // // console.log(id);
+    const team = data.find((e) => e.id === id);
+    setNewTeam({
+      id: team.id,
+      teamName: team.teamName,
+      authority: String(team.authority),
     });
     setErrors({
       id: false,
@@ -200,9 +204,9 @@ export default function StudentData() {
   };
 
   const handleCloseEdit = () => {
-    // console.log("handleCloseEdit");
+    // // console.log("handleCloseEdit");
     setEditId("");
-    setNewStudent({
+    setNewTeam({
       id: "",
       teamName: "",
       authority: "",
@@ -263,22 +267,22 @@ export default function StudentData() {
   };
 
   const onIdChange = (e) => {
-    setNewStudent({
-      ...newStudent,
+    setNewTeam({
+      ...newTeam,
       id: e.target.value,
     });
   };
 
   const onNameChange = (e) => {
-    setNewStudent({
-      ...newStudent,
+    setNewTeam({
+      ...newTeam,
       teamName: e.target.value,
     });
   };
 
   const onAuthorityChange = (e) => {
-    setNewStudent({
-      ...newStudent,
+    setNewTeam({
+      ...newTeam,
       authority: e.target.value,
     });
   };
@@ -288,24 +292,24 @@ export default function StudentData() {
   };
 
   const handleUploadCsv = async (efile) => {
-    // console.log(efile);
+    // // console.log(efile);
     if (efile) {
       Papa.parse(efile, {
         skipEmptyLines: true,
         complete(results) {
           let valid = true;
           let repeat = false;
-          results.data.slice(1).forEach((student) => {
+          results.data.slice(1).forEach((team) => {
             if (
-              // !/^(b|r|d)\d{8}$/i.test(student[0]) ||
-              !student[1]
+              // !/^(b|r|d)\d{8}$/i.test(team[0]) ||
+              !team[1]
             ) {
               valid = false;
-              // console.log(student);
+              // // console.log(team);
             }
-            if (testRepeatId(student[0])) {
+            if (testRepeatId(team[0])) {
               repeat = true;
-              // console.log(student);
+              // // console.log(team);
             }
           });
           if (valid && !repeat) {
@@ -318,26 +322,26 @@ export default function StudentData() {
                 },
               ]);
             }, []);
-            setNewStudentMultiple(newData);
+            setNewTeamMultiple(newData);
             setLoaded(true);
-            // console.log("Multiple student data loaded");
-            // console.log(newData);
+            // // console.log("Multiple team data loaded");
+            // // console.log(newData);
             setFilename(efile.name);
             return;
           }
           if (!valid && !repeat) {
-            showAlert("error", "Invalid student data format.");
+            showAlert("error", "Invalid team data format.");
           }
           if (valid && repeat) {
-            showAlert("error", "Student UserId repeat.");
+            showAlert("error", "Team UserId repeat.");
           }
           if (!valid && repeat) {
             showAlert(
               "error",
-              "Invalid student data format & Student UserId repeat."
+              "Invalid team data format & Team UserId repeat."
             );
           }
-          setNewStudentMultiple({
+          setNewTeamMultiple({
             id: "",
             teamName: "",
             authority: "",
@@ -349,33 +353,33 @@ export default function StudentData() {
     }
   };
 
-  const handleAddMultipleStudents = async () => {
-    // console.log("handleAddMultipleStudents");
+  const handleAddMultipleTeams = async () => {
+    // // console.log("handleAddMultipleTeams");
     if (loaded) {
-      const newData = newStudentMultiple.map((student) => {
+      const newData = newTeamMultiple.map((team) => {
         const password = genPassword();
-        return { ...student, password };
+        return { ...team, password };
       });
-      // console.log(newData);
-      // console.log("start post datas");
+      // // console.log(newData);
+      // // console.log("start post datas");
       try {
-        await StudentDataAPI.postStudentData(
-          newData.map((student) => {
+        await TeamDataAPI.postTeamData(
+          newData.map((team) => {
             return {
-              teamID: student.id,
-              password: student.password,
-              teamName: student.teamName,
-              authority: Number(student.authority),
+              teamID: team.id,
+              password: team.password,
+              teamName: team.teamName,
+              authority: Number(team.authority),
             };
           })
         );
-        // console.log("finish post");
+        // // console.log("finish post");
         setUploaded(true);
         setData(data.concat(newData));
-        // console.log(newData);
-        // console.log(data);
+        // // console.log(newData);
+        // // console.log(data);
 
-        setNewStudentMultiple({
+        setNewTeamMultiple({
           id: "",
           teamName: "",
           authority: "",
@@ -391,9 +395,9 @@ export default function StudentData() {
           });
         });
         setCsv(Papa.unparse(csvData));
-        showAlert("success", "Add multiple student data complete.");
+        showAlert("success", "Add multiple team data complete.");
       } catch (err) {
-        showAlert("error", "Failed to Add multiple student data.");
+        showAlert("error", "Failed to Add multiple team data.");
       }
     }
   };
@@ -415,14 +419,14 @@ export default function StudentData() {
   };
 
   const handleDownloadPassword = () => {
-    // console.log("download password");
+    // // console.log("download password");
     if (
       data.filter((e) => selected.includes(e.id)).filter((e) => !e.password)
         .length === 0
     ) {
-      // console.log(data.filter((e) => selected.includes(e.id)));
+      // // console.log(data.filter((e) => selected.includes(e.id)));
       const csvData = [];
-      // console.log(data);
+      // // console.log(data);
       data
         .slice(1)
         .filter((e) => selected.includes(e.id))
@@ -440,23 +444,23 @@ export default function StudentData() {
   };
 
   const handleDownload = () => {
-    // console.log(csv);
+    // // console.log(csv);
     download("datas.csv", csv);
   };
 
   const handleGeneratePassword = async () => {
-    // console.log("generate password");
+    // // console.log("generate password");
     const passwords = [];
     const updateData = data.map((e) => {
       if (selected.includes(e.id)) {
         const password = genPassword();
-        const student = e;
-        student.password = password;
+        const team = e;
+        team.password = password;
         passwords.push({
           teamID: e.id,
           new_password: password,
         });
-        return student;
+        return team;
       }
       return e;
     });
@@ -472,22 +476,22 @@ export default function StudentData() {
     }
   };
 
-  const judgeNewStudent = () => {
-    // console.log(newStudent);
+  const judgeNewTeam = () => {
+    // // console.log(newTeam);
     let error = false;
     let newErrors = errors;
     let newErrorsMsg = errorsMsg;
-    if (!newStudent.id) {
+    if (!newTeam.id) {
       newErrors = { ...newErrors, id: true };
       newErrorsMsg = { ...newErrorsMsg, id: "id should not be empty" };
       error = true;
     }
-    // else if (!/^(b|r|d)\d{8}$/i.test(newStudent.id)) {
+    // else if (!/^(b|r|d)\d{8}$/i.test(newTeam.id)) {
     //   newErrors = { ...newErrors, id: true };
     //   newErrorsMsg = { ...newErrorsMsg, id: "id invalid format" };
     //   error = true;
     // }
-    else if (editId === "" && testRepeatId(newStudent.id)) {
+    else if (editId === "" && testRepeatId(newTeam.id)) {
       newErrors = { ...newErrors, id: true };
       newErrorsMsg = { ...newErrorsMsg, id: "repeat userId" };
       error = true;
@@ -495,7 +499,7 @@ export default function StudentData() {
       newErrors = { ...newErrors, id: false };
       newErrorsMsg = { ...newErrorsMsg, id: "" };
     }
-    if (!newStudent.teamName) {
+    if (!newTeam.teamName) {
       newErrors = { ...newErrors, teamName: true };
       newErrorsMsg = {
         ...newErrorsMsg,
@@ -506,7 +510,7 @@ export default function StudentData() {
       newErrors = { ...newErrors, teamName: false };
       newErrorsMsg = { ...newErrorsMsg, teamName: "" };
     }
-    // if (!newStudent.authority) {
+    // if (!newTeam.authority) {
     //   newErrors = { ...newErrors, authority: true };
     //   newErrorsMsg = {
     //     ...newErrorsMsg,
@@ -514,7 +518,7 @@ export default function StudentData() {
     //   };
     //   error = true;
     // } else
-    if (!/^[012]$/.test(newStudent.authority)) {
+    if (!/^[012]$/.test(newTeam.authority)) {
       newErrors = { ...newErrors, authority: true };
       newErrorsMsg = {
         ...newErrorsMsg,
@@ -530,91 +534,92 @@ export default function StudentData() {
     return error;
   };
 
-  const handleAddStudent = async () => {
-    const error = judgeNewStudent();
+  const handleAddTeam = async () => {
+    const error = judgeNewTeam();
 
     if (!error) {
       const password = genPassword();
       try {
-        await StudentDataAPI.postStudentData([
+        await TeamDataAPI.postTeamData([
           {
-            teamID: newStudent.id,
+            teamID: newTeam.id,
             password,
-            teamName: newStudent.teamName,
-            authority: Number(newStudent.authority),
+            teamName: newTeam.teamName,
+            authority: Number(newTeam.authority),
+            myCards: {},
           },
         ]);
         setData(
           data.concat({
-            ...newStudent,
-            id: newStudent.id.toUpperCase(),
+            ...newTeam,
+            id: newTeam.id.toUpperCase(),
             password,
-            authority: Number(newStudent.authority),
+            authority: Number(newTeam.authority),
           })
         );
-        setNewStudent({
+        setNewTeam({
           id: "",
           teamName: "",
           authority: "",
         });
         handleCloseAdd();
-        showAlert("success", "Add student data success.");
+        showAlert("success", "Add team data success.");
       } catch {
         handleCloseAdd();
-        showAlert("error", "Failed to Add student data.");
+        showAlert("error", "Failed to Add team data.");
       }
     }
   };
 
-  const handleEditStudent = async () => {
-    const error = judgeNewStudent();
+  const handleEditTeam = async () => {
+    const error = judgeNewTeam();
     if (!error) {
       try {
-        await StudentDataAPI.putStudentData([
+        await TeamDataAPI.putTeamData([
           {
-            teamID: newStudent.id,
-            teamName: newStudent.teamName,
-            authority: Number(newStudent.authority),
+            teamID: newTeam.id,
+            teamName: newTeam.teamName,
+            authority: Number(newTeam.authority),
           },
         ]);
         setData(
           data.map((e) => {
-            if (e.id === newStudent.id) {
+            if (e.id === newTeam.id) {
               return {
-                id: newStudent.id,
-                teamName: newStudent.teamName,
-                authority: Number(newStudent.authority),
+                id: newTeam.id,
+                teamName: newTeam.teamName,
+                authority: Number(newTeam.authority),
               };
             }
             return e;
           })
         );
-        setNewStudent({
+        setNewTeam({
           id: "",
           teamName: "",
           authority: "",
         });
         handleCloseEdit();
-        showAlert("success", "Edit student data success.");
+        showAlert("success", "Edit team data success.");
       } catch (err) {
         handleCloseEdit();
-        showAlert("error", "Failed to Edit student data.");
+        showAlert("error", "Failed to Edit team data.");
       }
     }
   };
 
-  const handleDeleteStudent = async () => {
+  const handleDeleteTeam = async () => {
     try {
-      await StudentDataAPI.deleteStudentData(deleteIds);
-      setData(data.filter((student) => !deleteIds.includes(student.id)));
-      // console.log("delete student data finish : ");
-      // console.log(deleteIds);
+      await TeamDataAPI.deleteTeamData(deleteIds);
+      setData(data.filter((team) => !deleteIds.includes(team.id)));
+      // // console.log("delete team data finish : ");
+      // // console.log(deleteIds);
       setDeleteIds([]);
       setSelected([]);
       handleCloseDelete();
-      showAlert("success", "delete student data success.");
+      showAlert("success", "delete team data success.");
     } catch (err) {
-      showAlert("error", "Failed to delete student data.");
+      showAlert("error", "Failed to delete team data.");
       handleCloseDelete();
     }
   };
@@ -628,42 +633,43 @@ export default function StudentData() {
         onClose={handleCloseAdd}
       >
         {editId === "" ? (
-          <DialogTitle id="simple-dialog-title">Add Single Student</DialogTitle>
+          <DialogTitle id="simple-dialog-title">Add Single Team</DialogTitle>
         ) : (
-          <DialogTitle id="simple-dialog-title">
-            Edit Single Student
-          </DialogTitle>
+          <DialogTitle id="simple-dialog-title">Edit Single Team</DialogTitle>
         )}
-        <DialogContent>
+        <DialogContent sx={{ overflow: "hidden" }}>
           <TextField
             id="teamID"
             label="teamID"
             type="text"
             fullWidth
-            value={newStudent.id}
+            value={newTeam.id}
             error={errors.id}
             onChange={onIdChange}
             helperText={errorsMsg.id}
             disabled={editId !== ""}
+            sx={{ margin: "5px" }}
           />
           <TextField
             id="teamName"
             label="teamName"
             type="text"
             fullWidth
-            value={newStudent.teamName}
+            value={newTeam.teamName}
             error={errors.teamName}
             onChange={onNameChange}
             helperText={errorsMsg.teamName}
+            sx={{ margin: "5px" }}
           />
 
           <FormControl fullWidth>
             <InputLabel>authority</InputLabel>
             <Select
               fullWidth
-              value={newStudent.authority}
+              value={newTeam.authority}
               error={errors.authority}
               onChange={onAuthorityChange}
+              sx={{ margin: "5px" }}
             >
               {authorityData.map((e) => (
                 <MenuItem key={e} value={e}>
@@ -674,11 +680,14 @@ export default function StudentData() {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={editId === "" ? handleCloseAdd : handleCloseEdit}>
+          <Button
+            onClick={editId === "" ? handleCloseAdd : handleCloseEdit}
+            color="secondary"
+          >
             Cancel
           </Button>
           <Button
-            onClick={editId === "" ? handleAddStudent : handleEditStudent}
+            onClick={editId === "" ? handleAddTeam : handleEditTeam}
             variant="contained"
             color="primary"
           >
@@ -694,11 +703,11 @@ export default function StudentData() {
       >
         {invalidDelete ? (
           <DialogTitle id="simple-dialog-title">
-            Students with authority 1 are invalid to delete
+            Teams with authority 1 are invalid to delete
           </DialogTitle>
         ) : (
           <DialogTitle id="simple-dialog-title">
-            Are you sure to delete {deleteIds.length} students?
+            Are you sure to delete {deleteIds.length} teams?
           </DialogTitle>
         )}
         <DialogContent>
@@ -729,9 +738,11 @@ export default function StudentData() {
             <Button onClick={handleCloseDelete}>Done</Button>
           ) : (
             <>
-              <Button onClick={handleCloseDelete}>Cancel</Button>
+              <Button onClick={handleCloseDelete} color="secondary">
+                Cancel
+              </Button>
               <Button
-                onClick={handleDeleteStudent}
+                onClick={handleDeleteTeam}
                 variant="contained"
                 color="primary"
               >
@@ -751,7 +762,7 @@ export default function StudentData() {
           <DialogTitle id="simple-dialog-title">Upload Completed</DialogTitle>
         ) : (
           <DialogTitle id="simple-dialog-title">
-            Add multiple students from csv file
+            Add multiple teams from csv file
           </DialogTitle>
         )}
         <DialogContent>
@@ -773,7 +784,7 @@ export default function StudentData() {
                 type="file"
                 onChange={(e) => handleUploadCsv(e.target.files[0])}
               />
-              <Button variant="outlined" color="primary" component="span">
+              <Button variant="contained" color="primary" component="span">
                 Select csv file
               </Button>
             </label>
@@ -791,10 +802,12 @@ export default function StudentData() {
             </Button>
           ) : (
             <>
-              <Button onClick={handleCloseAddMultiple}>Cancel</Button>
+              <Button onClick={handleCloseAddMultiple} color="secondary">
+                Cancel
+              </Button>
               {loaded ? (
                 <Button
-                  onClick={handleAddMultipleStudents}
+                  onClick={handleAddMultipleTeams}
                   variant="contained"
                   color="primary"
                 >
@@ -815,11 +828,11 @@ export default function StudentData() {
       >
         {invalidRegenerate ? (
           <DialogTitle id="simple-dialog-title">
-            These student are invalid to regenerate password:
+            These team are invalid to regenerate password:
           </DialogTitle>
         ) : (
           <DialogTitle id="simple-dialog-title">
-            Are you sure to Regenerate password of {selected.length} students?
+            Are you sure to Regenerate password of {selected.length} teams?
           </DialogTitle>
         )}
         <DialogContent>
@@ -856,7 +869,9 @@ export default function StudentData() {
             </Button>
           ) : (
             <>
-              <Button onClick={handleCloseRegenerate}>Cancel</Button>
+              <Button onClick={handleCloseRegenerate} color="secondary">
+                Cancel
+              </Button>
               <Button
                 onClick={handleGeneratePassword}
                 variant="contained"
@@ -875,7 +890,7 @@ export default function StudentData() {
         onClose={handleCloseDownload}
       >
         <DialogTitle id="simple-dialog-title">
-          These student are invalid to download password
+          These team are invalid to download password
         </DialogTitle>
         <DialogContent>
           {data
@@ -921,7 +936,7 @@ export default function StudentData() {
                 onClick={handleOpenAdd}
                 disabled={authority !== 1}
               >
-                Add Single Student
+                Add Single Team
               </Button>
             </Grid>
             <Grid item>
@@ -931,7 +946,7 @@ export default function StudentData() {
                 onClick={handleOpenAddMultiple}
                 disabled={authority !== 1}
               >
-                Add Students (csv)
+                Add Teams (csv)
               </Button>
             </Grid>
             <Grid item>
@@ -957,7 +972,7 @@ export default function StudentData() {
           </Grid>
         </Grid>
         <Grid item sm={12}>
-          <StudentTable
+          <TeamTable
             data={data}
             handleEdit={handleOpenEdit}
             handleDelete={handleOpenDelete}

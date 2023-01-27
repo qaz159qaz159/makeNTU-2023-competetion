@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const FooterContainer = styled.div`
   width: 100%;
-  height: 10%;
+  height: 5vh;
   display: flex;
   margin: auto;
   flex-direction: column;
@@ -36,10 +36,11 @@ const Members = styled.div`
   align-items: center;
   /* justify-content: space-between; */
   @media screen and (max-width: 480px) {
+    color: #fff;
     width: 90%;
     height: 130px;
     display: flex;
-    overflow: auto;
+    // overflow: auto;
     font-size: 11px;
     letter-spacing: 1.5px;
     line-height: 1.5;
@@ -56,7 +57,7 @@ export default function Footer() {
     <FooterContainer>
       <Text>Developers</Text>
       <Members>
-        <p> 徐明晧 林和毅 王雅茵 </p>
+        <p> 陳冠豪、楊竣凱、葉庭羽、徐明晧 林和毅 王雅茵 </p>
       </Members>
     </FooterContainer>
   );

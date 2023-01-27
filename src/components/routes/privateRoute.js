@@ -4,8 +4,8 @@ import { Route, Redirect } from "react-router-dom";
 // slices
 import { selectSession } from "../../slices/sessionSlice";
 
-// TODO
-export default function AdminRoute({ children, path }) {
+// for admin
+export default function PrivateRoute({ children, path }) {
   const { isLogin, authority } = useSelector(selectSession);
   return (
     <Route

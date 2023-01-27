@@ -17,6 +17,8 @@ import {
   ListItemText,
   ListItemIcon,
   IconButton,
+  Alert,
+  Snackbar,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -24,11 +26,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import HomeIcon from "@mui/icons-material/Home"; // Main
 import ExitToAppIcon from "@mui/icons-material/ExitToApp"; // Login, Logout
-import PeopleIcon from "@mui/icons-material/People"; // Student Data
+import PeopleIcon from "@mui/icons-material/People"; // Team Data
+import DeveloperBoardIcon from "@mui/icons-material/DeveloperBoard"; //boardList
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; //租借開發版
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"; // admin icon
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Redirect } from "react-router";
 import { selectSession, logout } from "../../slices/sessionSlice";
+import { useMakeNTU } from "../../hooks/useMakeNTU";
 
 // route
 
@@ -40,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
+    position: "relative",
+    zIndex: theme.zIndex.drawer - 1000,
   },
   root: {
     //  display: "flex",
@@ -110,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     [theme.breakpoints.up("phone")]: {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.sharp,
@@ -132,15 +140,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Drawer = ({ children }) => {
-  const { isLogin, authority, userID } = useSelector(selectSession);
+  const { isLogin, authority, teamID } = useSelector(selectSession);
   const history = useHistory();
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-
+  const { alert, setAlert } = useMakeNTU();
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setOpen(() => !open);
   };
 
   const handleDrawerClose = () => {
@@ -154,7 +162,13 @@ const Drawer = ({ children }) => {
       ]
     : {
         1: [
-          { text: "Main", to: "/", icon: <HomeIcon /> },
+          //admin區
+          { text: "Home", to: "/", icon: <HomeIcon /> },
+          {
+            text: "各組資料",
+            to: "/teamdata",
+            icon: <PeopleIcon />,
+          },
           {
             text: "雷射切割機管理",
             to: "/adminlasercutter",
@@ -166,19 +180,35 @@ const Drawer = ({ children }) => {
             icon: <AdminPanelSettingsIcon />,
           },
           {
-            text: "各組資料",
-            to: "/studentdata",
-            icon: <PeopleIcon />,
+            text: "Items List",
+            to: "/boardlist",
+            icon: <DeveloperBoardIcon />,
+          },
+          {
+            text: "Request Status",
+            to: "/requestStatus",
+            icon: <FactCheckIcon />,
           },
         ],
         0: [
-          { text: "Main", to: "/", icon: <HomeIcon /> },
+          //user區
+          { text: "Home", to: "/", icon: <HomeIcon /> },
+          {
+            text: "Borrow Items",
+            to: "/user",
+            icon: <DeveloperBoardIcon />,
+          },
+          {
+            text: "Your Status",
+            to: "/user/status",
+            icon: <FactCheckIcon />,
+          },
           { text: "雷射切割機借用", to: "/lasercutter", icon: <PostAddIcon /> },
           { text: "3D列印機借用", to: "/3dp", icon: <PostAddIcon /> },
         ],
-      }[authority];
+      }[authority] || [{ text: "Home", to: "/", icon: <HomeIcon /> }];
 
-  const userName = isLogin ? userID : "";
+  const userName = isLogin ? teamID : "";
 
   return (
     <div className={classes.root}>
@@ -188,6 +218,7 @@ const Drawer = ({ children }) => {
           [classes.appBarShift]: open,
         })}
         position="fixed"
+        sx={{ backgroundColor: "rgb(15,15,15)" }}
       >
         <Toolbar>
           <IconButton
@@ -261,13 +292,13 @@ const Drawer = ({ children }) => {
         }}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
+          {/* <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <KeyboardArrowUpIcon />
             ) : (
               <ChevronLeftIcon />
             )}
-          </IconButton>
+          </IconButton> */}
         </div>
 
         <List>
@@ -295,6 +326,16 @@ const Drawer = ({ children }) => {
       >
         {children}
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={alert?.open}
+        autoHideDuration={alert?.duration ?? 1000}
+        onClose={() => setAlert({ ...alert, open: false })}
+      >
+        <Alert variant="filled" severity={alert?.severity}>
+          {alert?.msg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

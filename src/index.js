@@ -4,6 +4,11 @@ import { Provider } from "react-redux";
 import App from "./App";
 import store from "./store";
 import * as serviceWorker from "./serviceWorker";
+
+import { MakeNTUProvider } from "./hooks/useMakeNTU";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
+
 import {
   ApolloClient,
   InMemoryCache,
@@ -56,9 +61,13 @@ const client = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <MakeNTUProvider>
+            <App />
+          </MakeNTUProvider>
+        </Provider>
+      </ThemeProvider>
     </ApolloProvider>
   </React.StrictMode>,
 

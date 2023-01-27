@@ -1,7 +1,10 @@
-# This file is used for development, not for production!
-
 version: "3.4"
-
+web:
+  build:
+    context: .
+    dockerfile: ./Dockerfile
+  ports:
+    - "8000:8000"
 services:
   mongodb:
     image: mongo

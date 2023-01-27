@@ -1,7 +1,7 @@
-# Generate password for students
-# Read input from ./private-data/students.csv
-# Output json file to ./private-data/students.json
-# Output csv file to ./private-data/students_password.csv
+# Generate password for teams
+# Read input from ./private-data/teams.csv
+# Output json file to ./private-data/teams.json
+# Output csv file to ./private-data/teams_password.csv
 
 import os
 import string
@@ -11,9 +11,9 @@ import json
 
 # ========================================
 
-csv_input = './private-data/students.csv'
-json_output = './private-data/students.json'
-csv_output = './private-data/students_password.csv'
+csv_input = './private-data/teams.csv'
+json_output = './private-data/teams.json'
+csv_output = './private-data/teams_password.csv'
 
 json_data = list()
 csv_data = list()
@@ -34,7 +34,7 @@ with open(csv_input, newline='') as fin:
     for row in rows:
         password = gen_password()
         json_data.append({
-            'userID': row['id'],
+            'teamID': row['id'],
             'grade': int(row['grade']),
             'password': password
         })

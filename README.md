@@ -1,5 +1,7 @@
 # MakeNTU
 
+OK
+
 ## Run database
 ```
 cd server

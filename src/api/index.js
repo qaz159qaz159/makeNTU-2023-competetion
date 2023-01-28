@@ -2,7 +2,10 @@ import axios from "axios";
 import qs from "qs";
 
 const errorHandling = (error) => {
+  console.log("error", error);
   if (error.response.status === 403) window.location.replace("/");
+  if (error.response.status === 404) window.location.replace("/");
+  // window.location.replace("/");
 };
 
 export const SessionAPI = {
@@ -32,8 +35,8 @@ export const MachineAPI = {
       },
     });
   },
-  postPeople2Machine: (machineID, userID) => {
-    axios.post(`/api/people2machine`, qs.stringify({ machineID, userID }), {
+  postPeople2Machine: (machineID, teamID) => {
+    axios.post(`/api/people2machine`, qs.stringify({ machineID, teamID }), {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -88,23 +91,25 @@ export const TeamAPI = {
   },
 };
 
-export const StudentDataAPI = {
-  getStudentData: () =>
+export const TeamDataAPI = {
+  getTeamData: () =>
     axios
       .get(`/api/users`, {
         params: {
           teamName: 1,
           authority: 1,
+          myCards: 1,
+          requests: 1,
         },
       })
       .catch((error) => errorHandling(error)),
-  postStudentData: (teams) =>
+  postTeamData: (teams) =>
     axios.post(`/api/users`, teams).catch((error) => errorHandling(error)),
-  deleteStudentData: (ids) =>
+  deleteTeamData: (ids) =>
     axios
       .delete(`/api/users`, { data: [...ids] })
       .catch((error) => errorHandling(error)),
-  putStudentData: (team) =>
+  putTeamData: (team) =>
     axios.put(`/api/users`, team).catch((error) => errorHandling(error)),
 };
 

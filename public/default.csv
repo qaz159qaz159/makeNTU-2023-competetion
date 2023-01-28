@@ -1,0 +1,18 @@
+﻿ID,name,category,limit,totalNum,image
+A232891985,"Arduino UNO r3",Boards,2,10,https://www.nooelec.com/store/media/catalog/product/cache/1/image/1200x/040ec09b1e35df139433887a97daa66f/_/_/__57_1.jpg
+A252344254,"Arduino Leonardo",Boards,2,12,http://3.bp.blogspot.com/-Plkgj2VPZbk/UigxXkTjZJI/AAAAAAAAIEg/I-44L9z1FGQ/s1600/ArduinoLeonardoFront_2.jpg
+A249460801,"Arduino Intel Curie",Boards,2,10,https://www.progettiarduino.com/uploads/8/1/0/8/81088074/7746291_orig.jpg
+A264636972,"Arduino Mega2560",Boards,2,20,https://m.media-amazon.com/images/I/61HWKZzJoyL._AC_SL1000_.jpg
+A239310161,"Arduino Nano RP2040",Boards,2,25,https://m.media-amazon.com/images/I/510LGqoMXNL._AC_.jpg
+A234885190,"Arduino Micro",Boards,2,10,"https://res.cloudinary.com/rsc/image/upload/b_auto,c_pad,dpr_1.0,f_auto,h_303,q_auto,w_540/c_pad,h_303,w_540/F7717667-04?pgw=1"
+A289352217,"Arduino Ethernet",Boards,2,12,http://arduino.cc/en/uploads/Main/ArduinoEthernetShieldV3.jpg
+A262738679,"Ai-Thinker ESP8266",Boards,10,53,https://www.robotics.org.za/image/cache/catalog/waveshare/W16608/W16608-000-650x350.jpg
+A262311276,"Ai-Thinker ESP32",Boards,3,11,https://www.electronicscomp.com/image/cache/catalog/ai-thinker-esp32-cam-development-board-wifibluetooth-with-ov2640-camera-module-800x800.jpg
+A276764829,"Raspberry Pi 400",Boards,1,15,https://m.media-amazon.com/images/I/51pQUtJ3m5S._AC_SY350_.jpg
+A207574766,"KY-032 Infra Sensor",Modules,5,60,https://arduinomodules.info/wp-content/uploads/KY-032_IR_obstacle_avoidance_sensor_module_arduino.jpg
+A252639043,"KY-029 Dual color led",Modules,2,30,https://cdn.salla.sa/OwRbe/57AZc3Yzw0bfTNtSf45Xb5OHhoRNxV6Wyk5BMCrK.jpg
+A206088912,"KY-028 TEMP Sensor",Modules,2,20,https://sensorkit.joy-it.net/files/files/sensors/KY-028/KY-028.png
+A277191106,"KY-012 Active Buzzer",Modules,3,20,https://arduinomodules.info/wp-content/uploads/KY-012_passive_buzzer_arduino_module.jpg
+A254427998,"Scissors",Tools,2,30,https://www.ldoceonline.com/media/english/illustration/pair_scissors.jpg?version=1.2.59
+A204077706,"Screwdriver Set",Tools,2,30,https://www.harborfreight.com/media/catalog/product/cache/9fc4a8332f9638515cd199dd0f9238da/5/6/56508_W3.jpg
+A258967868,"Wrench",Tools,1,10,https://www.harborfreight.com/media/catalog/product/cache/9fc4a8332f9638515cd199dd0f9238da/4/7/47099_W3.jpg

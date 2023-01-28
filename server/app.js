@@ -20,9 +20,14 @@ const Subscription = require("./resolvers/Subscription");
 // const { PubSub } = require("graphql-subscriptions");
 const pubsub = require("./pubsub");
 const timer = require("./timer");
+
+const ws = require("ws");
+const wsConnect = require("./wsConnect");
+const path = require("path");
 // ========================================
 
 const port = process.env.PORT || 8000;
+const WSPORT = process.env.PORT || 7780;
 
 if (process.env.NODE_ENV === "development") {
   console.log("NODE_ENV = development");
@@ -118,6 +123,42 @@ db.once("open", async () => {
     })
   );
 
+  let oldReq = await model.RequestModel.find({
+    $or: [{ status: "pending" }, { status: "ready" }],
+  });
+  let nowTime = new Date().getTime();
+  oldReq.map(async (req) => {
+    if (nowTime - req.sendingTime > 15 * 60 * 1000 - 5000) {
+      await model.RequestModel.updateOne(
+        { _id: req._id },
+        { $set: { status: "expired" } }
+      );
+      req.requestBody.map(async (re) => {
+        await model.BoardModel.updateOne(
+          { name: re.board },
+          { $inc: { remain: re.quantity } }
+        );
+      });
+    } else {
+      setTimeout(
+        () => wsConnect.requestExpired(req.requestID),
+        15 * 60 * 1000 - (nowTime - req.sendingTime)
+      );
+    }
+  });
+  const WSServer = http.createServer(app);
+  const wss = new ws.WebSocketServer({ server: WSServer });
+
+  wss.on("connection", (ws) => {
+    ws.box = ""; //記page
+    ws.id = ""; //記id
+    ws.authority = ""; //記authority
+    ws.onmessage = wsConnect.onMessage(ws); //當ws有message時，執行後面的把丟入method
+    ws.onclose = wsConnect.onClose(ws);
+  });
+  WSServer.listen(WSPORT, () => {
+    console.log(`WS listening on ${WSPORT}`);
+  });
   // app.listen(port, () =>
   //   console.log(`App listening at http://localhost:${port}`)
   // );

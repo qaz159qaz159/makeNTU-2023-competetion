@@ -29,6 +29,7 @@ redisClient.on("error", console.error);
 
 const loginRequired = asyncHandler(async (req, res, next) => {
   if (!req.session.teamID) {
+    console.log("Login is required", req.session);
     res.status(403).end();
     return;
   }
@@ -38,6 +39,7 @@ const loginRequired = asyncHandler(async (req, res, next) => {
 const permissionRequired = (permission) =>
   asyncHandler(async (req, res, next) => {
     if (!req.session.authority || req.session.authority < permission) {
+      console.log("Permission denied", req.session);
       res.status(403).end();
       return;
     }
@@ -108,10 +110,10 @@ router.get(
   loginRequired,
   express.urlencoded({ extended: false }),
   asyncHandler(async (req, res) => {
-    const { machineID, userID } = req.body;
+    const { machineID, teamID } = req.body;
     const machine = await Machine.find({ MachineName: machineID });
     machine.machineStatus = "using";
-    machine.machineUserID = userID;
+    machine.machineUserID = teamID;
     machine.machineLeftTime = machine.machineTime;
     await machine.save();
     const machineList = await Machine.find({});
@@ -253,7 +255,7 @@ router
       }
       teamID = teamID.toUpperCase();
 
-      const user = await model.Team.findOne({ teamID }).exec();
+      const user = await model.TeamModel.findOne({ teamID }).exec();
       if (!user) {
         res.status(400).end();
         return;
@@ -320,7 +322,7 @@ router.route("/password").put(
         const newpasswordHash = await bcrypt.hash(data.new_password, salt);
         const filter = { teamID: data.teamID.toUpperCase() };
         const update = { password: newpasswordHash };
-        const result = await model.Team.findOneAndUpdate(filter, update);
+        const result = await model.TeamModel.findOneAndUpdate(filter, update);
       })
     );
 
@@ -333,7 +335,7 @@ router
   .get(
     permissionRequired(constants.AUTHORITY_ADMIN),
     asyncHandler(async (req, res, next) => {
-      const teamGroup = await model.Team.find({}).exec();
+      const teamGroup = await model.TeamModel.find({}).exec();
       const filtered = [];
       const items = Object.keys(req.query);
       let pass = true;
@@ -349,6 +351,7 @@ router
         filtered.push(filteredteam);
       });
       if (!pass) {
+        console.log("Can't access password", req.session);
         res.status(403).end();
         return;
       }
@@ -388,7 +391,7 @@ router
           const team = { ...teamRaw };
           team.password = hash;
           team.teamID = team.teamID.toUpperCase();
-          const match = await model.Team.findOne({
+          const match = await model.TeamModel.findOne({
             teamID: team.teamID,
           }).exec();
           if (!match) {
@@ -401,7 +404,7 @@ router
       // Save all teams
       await Promise.all(
         teams.map(async (team) => {
-          const teamDocument = new model.Team(team);
+          const teamDocument = new model.TeamModel(team);
           await teamDocument.save();
         })
       );
@@ -427,9 +430,9 @@ router
       await Promise.all(
         deleteData_new.map(async (data) => {
           const teamID = data.toUpperCase();
-          const team = await model.Team.findOne({ teamID }).exec();
+          const team = await model.TeamModel.findOne({ teamID }).exec();
           if (team) {
-            await model.Team.deleteOne({ teamID });
+            await model.TeamModel.deleteOne({ teamID });
           }
         })
       );
@@ -460,12 +463,12 @@ router
           const { teamName } = data;
           const salt = await bcrypt.genSalt(10);
           teamID = teamID.toUpperCase();
-          const team = await model.Team.findOne({ teamID }).exec();
+          const team = await model.TeamModel.findOne({ teamID }).exec();
           if (team) {
             if (password) {
               const hash = await bcrypt.hash(password, salt);
               password = hash;
-              await model.Team.updateOne(
+              await model.TeamModel.updateOne(
                 {
                   teamID,
                 },
@@ -476,7 +479,7 @@ router
                 }
               );
             } else {
-              await model.Team.updateOne(
+              await model.TeamModel.updateOne(
                 {
                   teamID,
                 },
@@ -503,7 +506,7 @@ router.route("/authority").put(
       res.status(400).end();
       return;
     }
-    console.log(modifiedData);
+    // console.log(modifiedData);
     modifiedData.forEach((data) => {
       if (
         typeof data.teamID === "string" &&
@@ -517,9 +520,9 @@ router.route("/authority").put(
         let { teamID } = data;
         const { authority } = data;
         teamID = teamID.toUpperCase();
-        const user = await model.Team.findOne({ teamID }).exec();
+        const user = await model.TeamModel.findOne({ teamID }).exec();
         if (user) {
-          await model.Team.updateOne({ teamID }, { authority });
+          await model.TeamModel.updateOne({ teamID }, { authority });
         }
       })
     );

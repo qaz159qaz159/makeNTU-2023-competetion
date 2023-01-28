@@ -20,7 +20,7 @@ require("yargs") // eslint-disable-line
   )
   .command(
     "export",
-    "Export student selections to server/database/private-data/ folder.",
+    "Export team selections to server/database/private-data/ folder.",
     () => {},
     (argv) => {
       exportSelections(argv.f);

@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 
 const model = require("./model");
 
-// Students with raw passwords, must be hashed later
+// Teams with raw passwords, must be hashed later
 const teamsRaw = require("../data/teams.json");
 
 // ========================================
@@ -52,7 +52,7 @@ module.exports = () => {
     // Save all teams
     await Promise.all(
       teams.map(async (team) => {
-        const teamDocument = new model.Team(team);
+        const teamDocument = new model.TeamModel(team);
         await teamDocument.save();
       })
     );

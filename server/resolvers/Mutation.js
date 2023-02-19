@@ -85,7 +85,7 @@ const Mutation = {
   },
   adminUpdateUser: async (
     parent,
-    { info: { teamId, status, machineName } },
+    { info: { teamId, status, machineName, duration } },
     { pubsub, timer }
   ) => {
     const user = await Team.findOne({ teamId: teamId });
@@ -94,6 +94,10 @@ const Mutation = {
       machine.status = -1;
       machine.user = null;
       machine.completeTime = -1;
+      console.log("duration", duration);
+      if (duration) {
+        machine.duration = duration;
+      }
       await machine.save();
       const machines = await Model.Machine.find({});
       pubsub.publish("machineUpdated", { machineUpdated: machines });
@@ -146,6 +150,7 @@ const Mutation = {
     machine.status = status;
     machine.user = null;
     machine.completeTime = -1;
+    // machine.duration = duration;
     await machine.save();
     const machines = await Model.Machine.find({});
     pubsub.publish("machineUpdated", { machineUpdated: machines });

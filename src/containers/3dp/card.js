@@ -149,6 +149,19 @@ export default function DPCard(props) {
   };
   // Delete Machine End
 
+  const getEndTime = (tmp) => {
+    console.log(typeof tmp);
+    var time = new Date();
+    time.setTime(time.getTime() + parseInt(tmp) * 60 * 1000);
+    const formattedTime = time.toLocaleTimeString("zh-Hans-CN", {
+      hour12: false,
+      hour: "numeric",
+      minute: "numeric",
+    });
+    const finalTime = formattedTime.split(":");
+    return finalTime[0] + " : " + finalTime[1];
+  }
+
   const getCard = (_new) => {
     console.log(data);
     if (!_new) {
@@ -184,9 +197,9 @@ export default function DPCard(props) {
                     color="text.secondary"
                     gutterBottom
                   >
-                    {data.userId === "-1"
-                      ? `時間：${data.time} 分鐘`
-                      : `時間：${data.duration} 分鐘`}
+                    {data.status === -1
+                      ? `時間：${data.duration} 分鐘`
+                      : `結束時間：${getEndTime(data.duration)}`}
                   </Typography>
                 </Grid>
               </Grid>

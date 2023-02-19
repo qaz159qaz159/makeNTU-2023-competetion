@@ -78,6 +78,7 @@ export default function Top(props) {
   const [clearMachineOpen, setClearMachineOpen] = React.useState(false);
   const [clearUserOpen, setClearUserOpen] = React.useState(false);
   const [description, setDescription] = React.useState(false);
+  const [durationTime, setDurationTime] = React.useState(0);
 
   const { data, loading, error, subscribeToMore } = useQuery(MACHINE_QUERY);
   const {
@@ -119,6 +120,10 @@ export default function Top(props) {
       console.log(error);
     }
   }, [userSubscribeToMore]);
+
+  useEffect(() => {
+    console.log(durationTime);
+  }, [durationTime]);
 
   useEffect(() => {
     if (data) {
@@ -192,12 +197,14 @@ export default function Top(props) {
       (user) => user.id === currentArrangeUser
     )[0];
 
+    console.log("1", durationTime);
     adminUpdateUser({
       variables: {
         input: {
           teamId: currentUser.teamId,
           status: 1,
           machineName: arrangeMachineName,
+          duration: parseInt(durationTime)
         },
       },
     });
@@ -493,7 +500,7 @@ export default function Top(props) {
           <h1 style={{ color: "green" }}>預約成功</h1>
         </div>
       )}
-      {authority === 1 && (
+      {(authority === 1 || authority === 0) && (
         <Element name="title">
           {/*<div className={classes.root}>*/}
           <div
@@ -503,56 +510,66 @@ export default function Top(props) {
               alignItems: "center",
             }}
           >
-            <div>
-              <Typography>
-                <h1>MakeNTU 3D列印機管理介面</h1>
-              </Typography>
-            </div>
-            <div>
-              <Button onClick={() => setHowToUseOpen(true)}>操作說明</Button>
-            </div>
+            {authority === 1 && (
+              <>
+                <div>
+                  <Typography>
+                    <h1>MakeNTU 3D列印機管理介面</h1>
+                  </Typography>
+                </div>
+                <div>
+                  <Button onClick={() => setHowToUseOpen(true)}>
+                    操作說明
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={handleNewMachineClickOpen}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  新增機台
-                </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => setClearMachineOpen(true)}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  清除機台
-                </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => setClearUserOpen(true)}
-                  style={{ width: "100%", height: "100px" }}
-                >
-                  清除使用者
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
-          <div style={{ height: "10px" }}></div>
+          {authority === 1 && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={handleNewMachineClickOpen}
+                      style={{ width: "100%", height: "100px" }}
+                    >
+                      新增機台
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setClearMachineOpen(true)}
+                      style={{ width: "100%", height: "100px" }}
+                    >
+                      清除機台
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setClearUserOpen(true)}
+                      style={{ width: "100%", height: "100px" }}
+                    >
+                      清除使用者
+                    </Button>
+                  </Grid>
+                </Grid>
+              </div>
+              <div style={{ height: "10px" }}></div>
+            </>
+          )}
           <Grid container spacing={2}>
             {/**/}
             <Grid item xs={10}>
@@ -616,30 +633,40 @@ export default function Top(props) {
           {/*</div>*/}
         </Element>
       )}
-      <Dialog open={arrangeMachineOpen}>
+      {authority === 1 && (<Dialog open={arrangeMachineOpen}>
         <DialogTitle>安排機台</DialogTitle>
         <DialogContent>
-          <DialogContentText style={{ height: "100px" }}>
+          <DialogContentText style={{height: "100px"}}>
             請安排機台！
           </DialogContentText>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">選擇機台</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={arrangeMachineName}
-              label="arrangeMachineName"
-              onChange={(e) => setArrangeMachineName(e.target.value)}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={arrangeMachineName}
+                label="arrangeMachineName"
+                onChange={(e) => setArrangeMachineName(e.target.value)}
             >
               {showMachineList()}
             </Select>
           </FormControl>
+          <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="使用時間(分鐘)"
+              type="number"
+              fullWidth
+              variant="standard"
+              onChange={(e) => setDurationTime(parseInt(e.target.value))}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setArrangeMachineOpen(false)}>取消</Button>
           <Button onClick={handleArrangeMachine}>安排</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog>)}
       <Dialog open={userRequestOpen}>
         <DialogTitle>預約機台</DialogTitle>
         <DialogContent>

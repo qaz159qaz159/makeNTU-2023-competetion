@@ -34,6 +34,7 @@ input UpdateUserInfo {
   teamId: Int!
   status: Int!
   machineName: String
+  duration: Int!
 }
 
 input DeleteMachineInfo {
